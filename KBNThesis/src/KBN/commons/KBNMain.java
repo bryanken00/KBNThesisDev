@@ -13,6 +13,8 @@ public class KBNMain {
 				try {
 					KBNMainFrame KBNMF = new KBNMainFrame();
 					KBNMF.setVisible(true);
+					
+					//Test Push
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
