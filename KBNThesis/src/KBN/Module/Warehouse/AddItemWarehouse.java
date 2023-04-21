@@ -9,6 +9,9 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import KBN.views.WarehouseModule;
+
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.event.ActionListener;

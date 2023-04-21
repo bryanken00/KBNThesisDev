@@ -1,4 +1,4 @@
-package KBN.Module.Warehouse;
+package KBN.views;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -9,9 +9,17 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import KBN.Module.Warehouse.AddDataWarehouse;
+import KBN.Module.Warehouse.AddItemWarehouse;
+import KBN.Module.Warehouse.ArchiveList;
+import KBN.Module.Warehouse.FinishProductTable;
+import KBN.Module.Warehouse.FirstInFirstOut;
+import KBN.Module.Warehouse.PackingMatsTable;
+import KBN.Module.Warehouse.SummaryTable;
+import KBN.Module.Warehouse.exportTable;
+import KBN.Module.Warehouse.genQRCode;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
-import KBN.views.KBNMainFrame;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -47,7 +55,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import com.toedter.calendar.JDateChooser;

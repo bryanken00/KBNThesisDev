@@ -12,8 +12,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import KBN.Module.Warehouse.WarehouseModule;
 import KBN.commons.dataSetter;
+import KBN.views.WarehouseModule;
 
 import javax.swing.JLabel;
 import java.awt.Font;
