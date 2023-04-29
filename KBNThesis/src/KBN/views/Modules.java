@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import KBN.Module.Marketing.MarketingModule;
 import KBN.Module.Production.ProductionModule;
 import KBN.commons.dataSetter;
 import java.awt.Font;

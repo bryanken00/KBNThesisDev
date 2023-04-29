@@ -6,16 +6,12 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="src/KBN/resources/libraries/jcalendar-1.4.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-20"/>
 	<classpathentry kind="lib" path="src/KBN/resources/libraries/core-3.3.0.jar"/>
 	<classpathentry kind="lib" path="src/KBN/resources/libraries/javase-3.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
