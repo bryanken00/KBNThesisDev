@@ -10,8 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.Dashboard;
+import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.RebrandingProd;
 import KBN.commons.DbConnection;
@@ -33,6 +35,8 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private KBNProducts kbnProd;
 	private RebrandingProd rebrandingProd;
 	private CustomerAccount custAccount;
+	private AuditTrail auditTrail;
+	private DeliveryStatus delStatus;
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -74,6 +78,8 @@ public class MarketingModule extends JFrame implements ActionListener{
 		kbnProd = new KBNProducts();
 		rebrandingProd = new RebrandingProd();
 		custAccount = new CustomerAccount();
+		auditTrail = new AuditTrail();
+		delStatus = new DeliveryStatus();
         
         //defaultSetup
         objComponent();
@@ -252,6 +258,8 @@ public class MarketingModule extends JFrame implements ActionListener{
 		kbnProd.setVisible(false);
 		rebrandingProd.setVisible(false);
 		custAccount.setVisible(false);
+		auditTrail.setVisible(false);
+		delStatus.setVisible(false);
 	}
 	
 	private void defaultPanel() {
@@ -259,6 +267,8 @@ public class MarketingModule extends JFrame implements ActionListener{
 		panelTab.add(kbnProd);
 		panelTab.add(rebrandingProd);
 		panelTab.add(custAccount);
+		panelTab.add(auditTrail);
+		panelTab.add(delStatus);
 		dashboard.setVisible(true);
 	}
 	
@@ -274,6 +284,11 @@ public class MarketingModule extends JFrame implements ActionListener{
 			rebrandProdPanelFunc();
 		if(e.getSource() == btnCustomerAccount)
 			custAccPanelFunc();
+		if(e.getSource() == btnAuditTrail)
+			AuditPanelFunc();
+		if(e.getSource() == btnDeliveryStatus)
+			delStatusPanelFunc();
+			
 			
 	}
 	
@@ -297,5 +312,14 @@ public class MarketingModule extends JFrame implements ActionListener{
 		custAccount.setVisible(true);
 	}
 	
+	private void AuditPanelFunc() {
+		setVisiblePanel();
+		auditTrail.setVisible(true);
+	}
+
+	private void delStatusPanelFunc() {
+		setVisiblePanel();
+		delStatus.setVisible(true);
+	}
 
 }
