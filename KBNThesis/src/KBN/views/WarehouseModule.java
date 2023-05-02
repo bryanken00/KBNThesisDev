@@ -685,7 +685,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	
 	private void searchFunc() {
 		String searchData = txtSearchBar.getText();
-		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE APPEARANCE = '" + searchData + "' OR CONTROL_NUMBER = '" + searchData + "' OR CATEGORIES = '" + searchData + "'";
+		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE APPEARANCE = '" + searchData + "' OR CATEGORIES = '" + searchData + "'";
 		printingTableData(sql);
 	}
 	

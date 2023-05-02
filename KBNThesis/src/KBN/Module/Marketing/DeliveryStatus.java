@@ -28,7 +28,7 @@ public class DeliveryStatus extends JPanel {
 		scrollPane.setViewportView(table);
 		
 		JLabel lblNewLabel = new JLabel("List of Deliveries");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 24));
 		lblNewLabel.setBounds(26, 11, 202, 76);
 		add(lblNewLabel);
 		
