@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import KBN.Module.Warehouse.AddDataWarehouse;
 import KBN.Module.Warehouse.AddItemWarehouse;
 import KBN.Module.Warehouse.ArchiveList;
+import KBN.Module.Warehouse.ArchiveRightClick;
 import KBN.Module.Warehouse.FinishProductTable;
 import KBN.Module.Warehouse.FirstInFirstOut;
 import KBN.Module.Warehouse.PackingMatsTable;
@@ -42,6 +43,8 @@ import javax.swing.JTable;
 import javax.swing.JScrollBar;
 import java.awt.ScrollPane;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -59,7 +62,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import com.toedter.calendar.JDateChooser;
 
-public class WarehouseModule extends JFrame implements ActionListener, PropertyChangeListener, MouseListener{
+public class WarehouseModule extends JFrame implements ActionListener, PropertyChangeListener, MouseListener, KeyListener{
 
 	
 
@@ -75,6 +78,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private genQRCode genQR;
 	private SummaryTable sumTable;
 	private exportTable exportT;
+	private ArchiveRightClick archiveRC;
 	
 	private String columnDefaultData[];
 	private DefaultTableModel main;
@@ -117,6 +121,8 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private JDateChooser dateTo;
 	private JButton btnExportSummary;
 	private JButton btnCompute;
+	private JLabel label;
+	private JLabel label_1;
 	
 
 	public WarehouseModule() {
@@ -140,6 +146,10 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		dbConn = new DbConnection();
 		genQR = new genQRCode();
 		exportT = new exportTable();
+		archiveRC = new ArchiveRightClick();
+		
+		archiveRC.setVisible(false);
+		contentPane.add(archiveRC);
         //Component
         objComponents();
         
@@ -158,6 +168,8 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		tablePanel.add(arc);
 		sumTable = new SummaryTable();
 		tablePanel.add(sumTable);
+		
+
 		
         //defaultData
 		tableSetup();
@@ -350,6 +362,10 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnCompute.addActionListener(this);
 		panel.add(btnCompute);
 		
+		label_1 = new JLabel("New label");
+		label_1.setBounds(0, 272, 266, 33);
+		panel.add(label_1);
+		
 		dateFrom.setVisible(false);
 		dateTo.setVisible(false);
 		btnExportSummary.setVisible(false);
@@ -410,6 +426,10 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel_2_1.setBounds(807, 11, 188, 134);
 		panel_1.add(panel_2_1);
 		
+		label = new JLabel("New label");
+		label.setBounds(0, 0, 200, 173);
+		panel_1.add(label);
+		
 		tablePanel = new JPanel();
 		tablePanel.setBounds(259, 174, 1005, 547);
 		contentPane.add(tablePanel);
@@ -420,6 +440,8 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		tablePanel.add(scrollPane);
 		
 		table = new JTable();
+		table.addMouseListener(this);
+		table.addKeyListener(this);
 		scrollPane.setViewportView(table);
 	}
 	
@@ -985,7 +1007,12 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() == table) {
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				archiveRC.setVisible(true);
+				archiveRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
+			}
+		}
 		
 	}
 
@@ -1003,6 +1030,8 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		if(e.getSource() == table)
+			return;
 		Component c = e.getComponent();
 		((JButton)c).setIcon(new ImageIcon(WarehouseModule.class.getResource("/KBN/resources/warehouse/warehouseButton.png")));
 		((JButton)c).setHorizontalTextPosition(JLabel.CENTER);
@@ -1011,8 +1040,30 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		if(e.getSource() == table)
+			return;
 		Component c = e.getComponent();
 		((JButton)c).setIcon(null);
 		((JButton)c).setBackground(Color.white);
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == 27) {
+			archiveRC.setVisible(false);
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
