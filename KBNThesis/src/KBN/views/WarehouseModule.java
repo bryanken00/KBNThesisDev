@@ -16,6 +16,7 @@ import KBN.Module.Warehouse.ArchiveRightClick;
 import KBN.Module.Warehouse.FinishProductTable;
 import KBN.Module.Warehouse.FirstInFirstOut;
 import KBN.Module.Warehouse.PackingMatsTable;
+import KBN.Module.Warehouse.RestoreRightClick;
 import KBN.Module.Warehouse.SummaryTable;
 import KBN.Module.Warehouse.exportTable;
 import KBN.Module.Warehouse.genQRCode;
@@ -79,6 +80,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private SummaryTable sumTable;
 	private exportTable exportT;
 	private ArchiveRightClick archiveRC;
+	private RestoreRightClick restoreRC;
 	
 	private String columnDefaultData[];
 	private DefaultTableModel main;
@@ -121,8 +123,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private JDateChooser dateTo;
 	private JButton btnExportSummary;
 	private JButton btnCompute;
-	private JLabel label;
-	private JLabel label_1;
 	
 
 	public WarehouseModule() {
@@ -147,9 +147,9 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		genQR = new genQRCode();
 		exportT = new exportTable();
 		archiveRC = new ArchiveRightClick();
+		restoreRC = new RestoreRightClick();
 		
-		archiveRC.setVisible(false);
-		contentPane.add(archiveRC);
+
         //Component
         objComponents();
         
@@ -166,6 +166,8 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		df = new SimpleDateFormat("yyyy-MM-dd");
 		arc = new ArchiveList();
 		tablePanel.add(arc);
+		arc.table.addMouseListener(this);
+		arc.table.addKeyListener(this);
 		sumTable = new SummaryTable();
 		tablePanel.add(sumTable);
 		
@@ -362,10 +364,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnCompute.addActionListener(this);
 		panel.add(btnCompute);
 		
-		label_1 = new JLabel("New label");
-		label_1.setBounds(0, 272, 266, 33);
-		panel.add(label_1);
-		
 		dateFrom.setVisible(false);
 		dateTo.setVisible(false);
 		btnExportSummary.setVisible(false);
@@ -426,9 +424,13 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel_2_1.setBounds(807, 11, 188, 134);
 		panel_1.add(panel_2_1);
 		
-		label = new JLabel("New label");
-		label.setBounds(0, 0, 200, 173);
-		panel_1.add(label);
+		archiveRC.setVisible(false);
+		archiveRC.btnArchive.addActionListener(this);
+		contentPane.add(archiveRC);
+		
+		restoreRC.setVisible(false);
+		restoreRC.btnRestore.addActionListener(this);
+		contentPane.add(restoreRC);
 		
 		tablePanel = new JPanel();
 		tablePanel.setBounds(259, 174, 1005, 547);
@@ -542,104 +544,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnRawMats) {
-			
-			rawMatsFunction();
-			
-		}else if(e.getSource() == btnAddItem) {
-			
-			addItem();
-			
-		}else if(e.getSource() == btnFinishProduct) {
-			
-			FinishProductFunc();
-			
-		}else if(e.getSource() == btnPackMats) {
-			
-			PackingMatsFunc();
-			
-		}else if(e.getSource() == btnfirstinFirstout) {
-			
-			FirstInFunc();
-			
-		}else if(e.getSource() == cbCategories) {
-			
-			String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE CATEGORIES = '" + cbCategories.getSelectedItem() + "'";
-			printingTableData(sql);
-			
-		}else if(e.getSource() == btnSearch) {
-			
-			searchFunc();
-			
-		}else if(e.getSource() == cbSort) {
-			
-			sortingFunc();
-			
-		}else if(e.getSource() == btnArchiveList) {
-			
-			ArchiveListFunc();
-			
-		}else if(e.getSource() == btnArchive) {
-			
-			archiveItemFunc();
-			
-		}else if(e.getSource() == btnRestore) {
-			
-			restoreItemFunc();
-			
-		}else if(e.getSource() == btnQRCode) {
-			
-			qrcodeFunc();
-			
-		}else if(e.getSource() == btnSummary) {
-			
-			sumTableFunc();
-			
-		}else if(e.getSource() == btnCompute) {
-			
-			computeSummary();
-			
-		}else if(e.getSource() == btnExportSummary) {
-			
-			btnExportFunc();
-			
-		}
-		
-		
-		
-		
-		if(this.getTitle().equals("Warehouse Inventory")) {
-			cbCategories.setVisible(true);
-		}else {
-			cbCategories.setVisible(false);
-		}
-		
-		
-		buttonVisible();
-		
-		if(this.getTitle().equals("Warehouse Inventory - Archive List")){
-			cbArchiveCat.setVisible(true);
-			btnRestore.setVisible(true);
-			btnQRCode.setVisible(true);
-		}else if(this.getTitle().equals("Warehouse Inventory")) {
-			btnAddItem.setVisible(true);
-			btnArchive.setVisible(true);
-			btnQRCode.setVisible(true);
-		}else if(this.getTitle().equals("Warehouse Inventory - First In First Out")) {
-			cbFIFO.setVisible(true);
-			btnItemIn.setVisible(true);
-			btnItemOut.setVisible(true);
-		}else if(this.getTitle().equals("Warehouse Inventory - Summary")) {
-			dateFrom.setVisible(true);
-			dateTo.setVisible(true);
-			btnExportSummary.setVisible(true);
-			btnCompute.setVisible(true);
-			cbCategories.setVisible(true);
-		}
-	}
-
-	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if(evt.getSource() == dateChooser) {
 			String date = df.format(dateChooser.getDate());
@@ -745,51 +649,58 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	
 	//button archive
 	private void archiveItemFunc() {
-		//"ID", "SUPPLIER", "MATERIAL NAME", "CODE NAME","DATE", "CURRENT VOLUME", "APPEARANCE", "RELEASED", "REJECT", "HOLD", "PROD RETURN"
-		String todayReleased = table.getValueAt(table.getSelectedRow(), 7) + "";
-		String MatsName = table.getValueAt(table.getSelectedRow(), 2) + "";
-		String CodeName = table.getValueAt(table.getSelectedRow(), 3) + "";
-		String Supplier = table.getValueAt(table.getSelectedRow(), 1) + "";
-		String dateToday1 = table.getValueAt(table.getSelectedRow(), 4) + "";
-		int dia = JOptionPane.showConfirmDialog(null, "You want to Archive this item\n" + MatsName + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
+		
+		int[] selectedRows = table.getSelectedRows();
+
+		int dia = JOptionPane.showConfirmDialog(null, "You want to Archive the selected item?", "Confirmation", JOptionPane.YES_NO_OPTION);
+
 		if (dia == JOptionPane.YES_OPTION) {
-			String itemID = table.getValueAt(table.getSelectedRow(), 0) + "";
+			for (int i = 0; i < selectedRows.length; i++) {
+				//"ID", "SUPPLIER", "MATERIAL NAME", "CODE NAME","DATE", "CURRENT VOLUME", "APPEARANCE", "RELEASED", "REJECT", "HOLD", "PROD RETURN"
+				String todayReleased = table.getValueAt(selectedRows[i], 7) + "";
+				String MatsName = table.getValueAt(selectedRows[i], 2) + "";
+				String CodeName = table.getValueAt(selectedRows[i], 3) + "";
+				String Supplier = table.getValueAt(selectedRows[i], 1) + "";
+				String dateToday1 = table.getValueAt(selectedRows[i], 4) + "";
+				String itemID = table.getValueAt(table.getSelectedRow(), 0) + "";
 
-			String userName = lblUsername.getText();
-			Date date = new Date();
-		    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		    String dateToday = formatter.format(date);
-		    
-			String sqlInsert = "INSERT INTO tblcurrentmonth_archive \n"
-					+ "SELECT * \n"
-					+ "FROM tblcurrentmonth \n"
-					+ "WHERE itemID = '" + itemID + "';";
-			String sqlInsert2 =  "INSERT INTO tblArchiveUser VALUES('" + itemID + "','" + userName + "','" + dateToday + "');";
-			
-			
-			String sqlUpdate = "UPDATE tblcurrentmonth"
-					+ " SET todayCurrentVolume = todayCurrentVolume + " + todayReleased 
-					+ " WHERE MATERIAL_NAME = '" + MatsName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY >= '" + dateToday1 + "'";
-			
-			System.out.println(sqlInsert);
-			
-			archiveInsert(sqlInsert);
-			
-			archiveInsert(sqlInsert2);
-			
-			
-			String sqlDelete = "DELETE FROM tblcurrentmonth WHERE itemID = '" + itemID + "';";
-			archiveDelete(sqlDelete, " added to Archive List");
+				String userName = lblUsername.getText();
+				Date date = new Date();
+			    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			    String dateToday = formatter.format(date);
+			    
+				String sqlInsert = "INSERT INTO tblcurrentmonth_archive \n"
+						+ "SELECT * \n"
+						+ "FROM tblcurrentmonth \n"
+						+ "WHERE itemID = '" + itemID + "';";
+				String sqlInsert2 =  "INSERT INTO tblArchiveUser VALUES('" + itemID + "','" + userName + "','" + dateToday + "');";
+				
+				
+				String sqlUpdate = "UPDATE tblcurrentmonth"
+						+ " SET todayCurrentVolume = todayCurrentVolume + " + todayReleased 
+						+ " WHERE MATERIAL_NAME = '" + MatsName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY >= '" + dateToday1 + "'";
+				
+				System.out.println(sqlInsert);
+				
+				archiveInsert(sqlInsert);
+				
+				archiveInsert(sqlInsert2);
+				
+				
+				String sqlDelete = "DELETE FROM tblcurrentmonth WHERE itemID = '" + itemID + "';";
+				archiveDelete(sqlDelete);
 
-			updateTableData(sqlUpdate);
-			System.out.println(sqlUpdate);
-			
-			main.removeRow(table.getSelectedRow());
-			table.setModel(main);
+				updateTableData(sqlUpdate);
+				
+				main.removeRow(selectedRows[i]);
+				table.setModel(main);
+			}
+
+			JOptionPane.showMessageDialog(null, "Item added to Archive");
+			archiveRC.setVisible(false);
 		} else {
 			//cancel
 		}
-
 	}
 	
 	private void updateTableData(String sql) {
@@ -814,15 +725,15 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
 		}
 	}
-	private void archiveDelete(String sql, String message) {
+	private void archiveDelete(String sql) {
 		try {
 
 			int i = st.executeUpdate(sql);
-			if(i != 0) {
-				JOptionPane.showMessageDialog(null, "Item " + message);
-			}else {
-				JOptionPane.showMessageDialog(null, "DELETE: SOMETHING WRONG");
-			}
+//			if(i != 0) {
+//				JOptionPane.showMessageDialog(null, "Item " + message);
+//			}else {
+//				JOptionPane.showMessageDialog(null, "DELETE: SOMETHING WRONG");
+//			}
 			
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
@@ -865,51 +776,57 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	
 	
 	private void restoreItemFunc() {
-		String Supplier = arc.table.getValueAt(arc.table.getSelectedRow(), 1) + "";
-		String MatsName = arc.table.getValueAt(arc.table.getSelectedRow(), 2) + "";
-		String CodeName = arc.table.getValueAt(arc.table.getSelectedRow(), 3) + "";
-		String todayReleased = arc.table.getValueAt(arc.table.getSelectedRow(), 4) + "";
-		String dateToday1 = arc.table.getValueAt(arc.table.getSelectedRow(), 5) + "";
-
-		int dia = JOptionPane.showConfirmDialog(null, "You want to Restore this item\n" + MatsName + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
+		
+		int[] selectedRows = arc.table.getSelectedRows();
+		
+		int dia = JOptionPane.showConfirmDialog(null, "You want to Restore the selected item?", "Confirmation", JOptionPane.YES_NO_OPTION);
 		
 		if (dia == JOptionPane.YES_OPTION) {
-			
-			String itemID = arc.table.getValueAt(arc.table.getSelectedRow(), 0) + "";
-			
-			String sqlInsert = "INSERT INTO tblcurrentmonth "
-					+ "SELECT * "
-					+ "FROM tblcurrentmonth_archive "
-					+ "WHERE itemID = '" + itemID + "'";
-//			System.out.println("INSERT: " + sqlInsert);
-			
-			String sqlDelete = "DELETE tblcurrentmonth_archive, tblarchiveuser "
-					+ "FROM tblcurrentmonth_archive "
-					+ "INNER JOIN tblarchiveuser ON tblcurrentmonth_archive.itemID = tblarchiveuser.itemID "
-					+ "WHERE tblcurrentmonth_archive.itemID = '" + itemID + "';";
-
-//			"ID", "SUPPLIER", "MATERIAL NAME", "CODE NAME", "RELEASED VOLUME", "PRODUCT DATE", "USER - Archive", "ARCHIVE DATE"
-
-
-			
-			
-			String sqlUpdate = "UPDATE tblcurrentmonth"
-					+ " SET todayCurrentVolume = todayCurrentVolume - " + todayReleased 
-					+ " WHERE MATERIAL_NAME = '" + MatsName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY > '" + dateToday1 + "'";
-
-			archiveInsert(sqlInsert);
-			archiveDelete(sqlDelete, " Restore");
-			
-			updateTableData(sqlUpdate);
-			
-			arc.main.removeRow(arc.table.getSelectedRow());
-			arc.table.setModel(arc.main);
-			
+			for (int i = 0; i < selectedRows.length; i++) {
+				
+				String Supplier = arc.table.getValueAt(selectedRows[i], 1) + "";
+				String MatsName = arc.table.getValueAt(selectedRows[i], 2) + "";
+				String CodeName = arc.table.getValueAt(selectedRows[i], 3) + "";
+				String todayReleased = arc.table.getValueAt(selectedRows[i], 4) + "";
+				String dateToday1 = arc.table.getValueAt(selectedRows[i], 5) + "";
+	
+	
+					
+					String itemID = arc.table.getValueAt(selectedRows[i], 0) + "";
+					
+					String sqlInsert = "INSERT INTO tblcurrentmonth "
+							+ "SELECT * "
+							+ "FROM tblcurrentmonth_archive "
+							+ "WHERE itemID = '" + itemID + "'";
+	//				System.out.println("INSERT: " + sqlInsert);
+					
+					String sqlDelete = "DELETE tblcurrentmonth_archive, tblarchiveuser "
+							+ "FROM tblcurrentmonth_archive "
+							+ "INNER JOIN tblarchiveuser ON tblcurrentmonth_archive.itemID = tblarchiveuser.itemID "
+							+ "WHERE tblcurrentmonth_archive.itemID = '" + itemID + "';";
+	
+	//				"ID", "SUPPLIER", "MATERIAL NAME", "CODE NAME", "RELEASED VOLUME", "PRODUCT DATE", "USER - Archive", "ARCHIVE DATE"
+	
+	
+					
+					
+					String sqlUpdate = "UPDATE tblcurrentmonth"
+							+ " SET todayCurrentVolume = todayCurrentVolume - " + todayReleased 
+							+ " WHERE MATERIAL_NAME = '" + MatsName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY > '" + dateToday1 + "'";
+	
+					archiveInsert(sqlInsert);
+					archiveDelete(sqlDelete);
+					
+					updateTableData(sqlUpdate);
+					
+					arc.main.removeRow(selectedRows[i]);
+					arc.table.setModel(arc.main);
+					
+	
+			}
 		} else {
 			//cancel
 		}
-		
-
 	}
 	
 	private void qrcodeFunc() {			
@@ -1004,6 +921,11 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		}
         
 	}
+	
+	private void disableRightclick() {
+		archiveRC.setVisible(false);
+		restoreRC.setVisible(false);
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -1011,6 +933,14 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				archiveRC.setVisible(true);
 				archiveRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
+			}
+		}
+		
+		if(e.getSource() == arc.table) {
+			System.out.println("test");
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				restoreRC.setVisible(true);
+				restoreRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
 			}
 		}
 		
@@ -1030,21 +960,32 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		if(e.getSource() == table)
+		
+		if(e.getComponent() instanceof JButton) {
+			Component c = e.getComponent();
+			((JButton)c).setIcon(new ImageIcon(WarehouseModule.class.getResource("/KBN/resources/warehouse/warehouseButton.png")));
+			((JButton)c).setHorizontalTextPosition(JLabel.CENTER);
+			((JButton)c).setVerticalTextPosition(JLabel.CENTER);
+		}
+		else
 			return;
-		Component c = e.getComponent();
-		((JButton)c).setIcon(new ImageIcon(WarehouseModule.class.getResource("/KBN/resources/warehouse/warehouseButton.png")));
-		((JButton)c).setHorizontalTextPosition(JLabel.CENTER);
-		((JButton)c).setVerticalTextPosition(JLabel.CENTER);
+		
+		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		if(e.getSource() == table)
+		
+		if(e.getComponent() instanceof JButton) {
+			Component c = e.getComponent();
+			((JButton)c).setIcon(null);
+			((JButton)c).setBackground(Color.white);
+		}
+		
+		else
 			return;
-		Component c = e.getComponent();
-		((JButton)c).setIcon(null);
-		((JButton)c).setBackground(Color.white);
+
 	}
 
 	@Override
@@ -1056,7 +997,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == 27) {
-			archiveRC.setVisible(false);
+			disableRightclick();
 		}
 		
 	}
@@ -1066,4 +1007,106 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == btnRawMats) {
+			
+			rawMatsFunction();
+			
+		}else if(e.getSource() == btnAddItem) {
+			
+			addItem();
+			
+		}else if(e.getSource() == btnFinishProduct) {
+			
+			FinishProductFunc();
+			
+		}else if(e.getSource() == btnPackMats) {
+			
+			PackingMatsFunc();
+			
+		}else if(e.getSource() == btnfirstinFirstout) {
+			
+			FirstInFunc();
+			
+		}else if(e.getSource() == cbCategories) {
+			
+			String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE CATEGORIES = '" + cbCategories.getSelectedItem() + "'";
+			printingTableData(sql);
+			
+		}else if(e.getSource() == btnSearch) {
+			
+			searchFunc();
+			
+		}else if(e.getSource() == cbSort) {
+			
+			sortingFunc();
+			
+		}else if(e.getSource() == btnArchiveList) {
+			
+			ArchiveListFunc();
+			disableRightclick();
+			
+		}else if(e.getSource() == archiveRC.btnArchive) {
+			
+			archiveItemFunc();
+			
+		}else if(e.getSource() == restoreRC.btnRestore) {
+			
+			restoreItemFunc();
+			
+		}else if(e.getSource() == btnQRCode) {
+			
+			qrcodeFunc();
+			disableRightclick();
+			
+		}else if(e.getSource() == btnSummary) {
+			
+			sumTableFunc();
+			disableRightclick();
+			
+		}else if(e.getSource() == btnCompute) {
+			
+			computeSummary();
+			
+		}else if(e.getSource() == btnExportSummary) {
+			
+			btnExportFunc();
+			
+		}
+		
+		
+		
+		
+		if(this.getTitle().equals("Warehouse Inventory")) {
+			cbCategories.setVisible(true);
+		}else {
+			cbCategories.setVisible(false);
+		}
+		
+		
+		buttonVisible();
+		
+		if(this.getTitle().equals("Warehouse Inventory - Archive List")){
+			cbArchiveCat.setVisible(true);
+			btnRestore.setVisible(true);
+			btnQRCode.setVisible(true);
+		}else if(this.getTitle().equals("Warehouse Inventory")) {
+			btnAddItem.setVisible(true);
+			btnArchive.setVisible(true);
+			btnQRCode.setVisible(true);
+		}else if(this.getTitle().equals("Warehouse Inventory - First In First Out")) {
+			cbFIFO.setVisible(true);
+			btnItemIn.setVisible(true);
+			btnItemOut.setVisible(true);
+		}else if(this.getTitle().equals("Warehouse Inventory - Summary")) {
+			dateFrom.setVisible(true);
+			dateTo.setVisible(true);
+			btnExportSummary.setVisible(true);
+			btnCompute.setVisible(true);
+			cbCategories.setVisible(true);
+		}
+	}
+
 }

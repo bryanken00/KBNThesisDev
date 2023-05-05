@@ -6,7 +6,7 @@ import java.awt.Color;
 import java.awt.Font;
 
 public class ArchiveRightClick extends JPanel {
-	private JButton btnArchive;
+	public JButton btnArchive;
 
 	/**
 	 * Create the panel.
