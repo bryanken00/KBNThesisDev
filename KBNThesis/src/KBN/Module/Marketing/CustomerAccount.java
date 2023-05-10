@@ -7,6 +7,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JLabel;
+
+import java.awt.Color;
+import java.awt.Font;
+
 import javax.swing.ImageIcon;
 
 public class CustomerAccount extends JPanel {
@@ -16,7 +20,7 @@ public class CustomerAccount extends JPanel {
 	public JTable table;
 	public JScrollPane scrollPane;
 	public JTextField txtSearchBar;
-	public JButton btnCreate;
+	public JButton btnCreate; 
 	public JLabel lblNewLabel;
 	
 	public CustomerAccount() {
@@ -38,6 +42,10 @@ public class CustomerAccount extends JPanel {
 		
 		btnCreate = new JButton("Create");
 		btnCreate.setBounds(831, 57, 120, 28);
+		btnCreate.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnCreate.setFocusable(false);
+		btnCreate.setBorderPainted(false);
+		btnCreate.setBackground(Color.WHITE);
 		add(btnCreate);
 		
 		lblNewLabel = new JLabel("");

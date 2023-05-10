@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 
 import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
+import KBN.Module.Marketing.CustomerCreateAccount;
 import KBN.Module.Marketing.Dashboard;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
@@ -37,6 +38,7 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private CustomerAccount custAccount;
 	private AuditTrail auditTrail;
 	private DeliveryStatus delStatus;
+	private CustomerCreateAccount custCreateAccount;
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -80,14 +82,20 @@ public class MarketingModule extends JFrame implements ActionListener{
 		custAccount = new CustomerAccount();
 		auditTrail = new AuditTrail();
 		delStatus = new DeliveryStatus();
-        
+		custCreateAccount = new CustomerCreateAccount();
+		
         //defaultSetup
         objComponent();
         setUsername();
         setActionList();
         setVisiblePanel();
         defaultPanel();
-        
+        buttonImplementation();
+	}
+	
+	
+	private void buttonImplementation() {
+		custAccount.btnCreate.addActionListener(this);
 	}
 	
 	private void objComponent() {
@@ -276,10 +284,8 @@ public class MarketingModule extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnDashboard)
 			dashboardPanelFunc();
-		
 		if(e.getSource() == btnKbn)
 			KBNPanelFunc();
-		
 		if(e.getSource() == btnRebranding)
 			rebrandProdPanelFunc();
 		if(e.getSource() == btnCustomerAccount)
@@ -289,7 +295,8 @@ public class MarketingModule extends JFrame implements ActionListener{
 		if(e.getSource() == btnDeliveryStatus)
 			delStatusPanelFunc();
 			
-			
+		if(e.getSource() == custAccount.btnCreate)
+			custAccountCreateAccount();
 	}
 	
 	private void dashboardPanelFunc() {
@@ -322,4 +329,11 @@ public class MarketingModule extends JFrame implements ActionListener{
 		delStatus.setVisible(true);
 	}
 
+	
+	
+	// Other class button
+	
+	private void custAccountCreateAccount() {
+		custCreateAccount.setVisible(true);
+	}
 }
