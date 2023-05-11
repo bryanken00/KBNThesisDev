@@ -5,6 +5,9 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -20,6 +23,7 @@ import KBN.Module.Marketing.RebrandingProd;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
@@ -39,6 +43,10 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private AuditTrail auditTrail;
 	private DeliveryStatus delStatus;
 	private CustomerCreateAccount custCreateAccount;
+	
+	// Object
+	private Statement st;
+	private ResultSet rs;
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -74,7 +82,7 @@ public class MarketingModule extends JFrame implements ActionListener{
         this.setLocation(x, y);
         
         
-        //declaration
+        // Declaration
         dbConn = new DbConnection();
 		dashboard = new Dashboard();
 		kbnProd = new KBNProducts();
@@ -84,13 +92,15 @@ public class MarketingModule extends JFrame implements ActionListener{
 		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
 		
-        //defaultSetup
+        // DefaultSetup
         objComponent();
         setUsername();
         setActionList();
         setVisiblePanel();
         defaultPanel();
         buttonImplementation();
+        custAccountFunc();
+        
 	}
 	
 	
@@ -335,5 +345,26 @@ public class MarketingModule extends JFrame implements ActionListener{
 	
 	private void custAccountCreateAccount() {
 		custCreateAccount.setVisible(true);
+	}
+	
+	private void custAccountFunc() {
+		try {
+            st = dbConn.getConnection().createStatement();
+			String sql = "SELECT UserID, Number FROM tblcustomerinformation";
+			st.execute(sql);
+			
+			rs = st.getResultSet();
+			ArrayList SQLResult = new ArrayList<>();
+			
+			while(rs.next()) {
+				SQLResult.add(rs.getString(1));
+				SQLResult.add(rs.getString(2));
+				custAccount.main.addRow(SQLResult.toArray());
+				SQLResult.clear();
+			}
+			custAccount.table.setModel(custAccount.main);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error CustAccFunc: " + e.getMessage());
+		}
 	}
 }
