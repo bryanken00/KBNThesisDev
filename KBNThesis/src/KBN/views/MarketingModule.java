@@ -19,6 +19,8 @@ import KBN.Module.Marketing.CustomerCreateAccount;
 import KBN.Module.Marketing.Dashboard;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
+import KBN.Module.Marketing.OrderListPanelData;
+import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.RebrandingProd;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
@@ -43,6 +45,7 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private AuditTrail auditTrail;
 	private DeliveryStatus delStatus;
 	private CustomerCreateAccount custCreateAccount;
+	private OrderingPanel orderPanel;
 	
 	// Object
 	private Statement st;
@@ -91,6 +94,7 @@ public class MarketingModule extends JFrame implements ActionListener{
 		auditTrail = new AuditTrail();
 		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
+		orderPanel = new OrderingPanel();
 		
         // DefaultSetup
         objComponent();
@@ -278,6 +282,7 @@ public class MarketingModule extends JFrame implements ActionListener{
 		custAccount.setVisible(false);
 		auditTrail.setVisible(false);
 		delStatus.setVisible(false);
+		orderPanel.setVisible(false);
 	}
 	
 	private void defaultPanel() {
@@ -287,6 +292,7 @@ public class MarketingModule extends JFrame implements ActionListener{
 		panelTab.add(custAccount);
 		panelTab.add(auditTrail);
 		panelTab.add(delStatus);
+		panelTab.add(orderPanel);
 		dashboard.setVisible(true);
 	}
 	
@@ -304,7 +310,11 @@ public class MarketingModule extends JFrame implements ActionListener{
 			AuditPanelFunc();
 		if(e.getSource() == btnDeliveryStatus)
 			delStatusPanelFunc();
+		if(e.getSource() == btnOrdering)
+			orderPanelFunc();
 			
+		
+		//inside Panel 
 		if(e.getSource() == custAccount.btnCreate)
 			custAccountCreateAccount();
 	}
@@ -337,6 +347,19 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private void delStatusPanelFunc() {
 		setVisiblePanel();
 		delStatus.setVisible(true);
+	}
+
+	private void orderPanelFunc() {
+		setVisiblePanel();
+		orderPanel.setVisible(true);
+		orderPanel.orderLPanel.opd.iOrderCount(20);
+		// tblOrderCheckOut
+//		try {
+//			st = dbConn.getConnection().createStatement();
+//			st.execute("");
+//		}catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, "OrderPanelFunction ERROR: " + e.getMessage());
+//		}
 	}
 
 	
