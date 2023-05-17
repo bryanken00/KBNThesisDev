@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -30,10 +32,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 
 
-public class MarketingModule extends JFrame implements ActionListener{
+public class MarketingModule extends JFrame implements ActionListener, MouseListener{
 
 	//Class Import
 	private DbConnection dbConn;
@@ -66,6 +69,11 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private JButton btnReturnProducts;
 	private JButton btnAuditTrail;
 	private JPanel panelTab;
+	
+	
+	private int OrderListIndexClicked;
+	
+	private int OrderCount;
 
 	public MarketingModule() {
 		setResizable(false);
@@ -99,6 +107,7 @@ public class MarketingModule extends JFrame implements ActionListener{
         // DefaultSetup
         objComponent();
         setUsername();
+        orderCounter();
         setActionList();
         setVisiblePanel();
         defaultPanel();
@@ -107,6 +116,37 @@ public class MarketingModule extends JFrame implements ActionListener{
         
 	}
 	
+	private void orderCounter() {
+		try {
+			st = dbConn.getConnection().createStatement();
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+			st.execute(sql);
+			rs = st.getResultSet();
+			while(rs.next())
+				OrderCount = rs.getInt(1);
+			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
+		}
+		setOrderListData();
+	}
+	
+	private void setOrderListData() {
+		try {
+			String sql = "SELECT a.`OrderRefNumber`, a.UserID, b.FirstName, b.LastName FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
+				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				i++;
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
+		}
+	}
 	
 	private void buttonImplementation() {
 		custAccount.btnCreate.addActionListener(this);
@@ -273,6 +313,12 @@ public class MarketingModule extends JFrame implements ActionListener{
 		btnDeliveryStatus.addActionListener(this);
 		btnReturnProducts.addActionListener(this);
 		btnAuditTrail.addActionListener(this);
+		
+		//Mouse
+		for(int i = 0; i < OrderCount; i++) {
+			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
+		}
+		
 	}
 	
 	private void setVisiblePanel() {
@@ -352,7 +398,7 @@ public class MarketingModule extends JFrame implements ActionListener{
 	private void orderPanelFunc() {
 		setVisiblePanel();
 		orderPanel.setVisible(true);
-		orderPanel.orderLPanel.opd.iOrderCount(20);
+		
 		// tblOrderCheckOut
 //		try {
 //			st = dbConn.getConnection().createStatement();
@@ -389,5 +435,92 @@ public class MarketingModule extends JFrame implements ActionListener{
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error CustAccFunc: " + e.getMessage());
 		}
+	}
+	
+	private void tableOrderList() {
+		
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+        Component clickedComponent = e.getComponent();
+        for (int i = 0; i < OrderCount; i++) {
+            if (clickedComponent == this.orderPanel.orderLPanel.opd.orderList[i]) {
+            	OrderListIndexClicked = i;
+                break;
+            }
+        }
+        orderPanel.main.setRowCount(0);
+        orderPanel.table.setModel(orderPanel.main);
+        panelDataSetter();
+	}
+	
+	private void panelDataSetter() {
+		try {
+			String refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
+	        orderPanel.lblRefNum.setText(refNum);
+	        orderPanel.lblCustName.setText(this.orderPanel.orderLPanel.opd.lblName[OrderListIndexClicked].getText());
+	        String sql = "SELECT a.OrderRefNumber, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, c.Address, c.Discount FROM tblordercheckout AS a JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber JOIN tblcustomerinformation AS c ON a.UserID = c.UserID WHERE a.OrderRefNumber = '" + refNum + "'";
+	        st.execute(sql);
+	        rs = st.getResultSet();
+	        ArrayList tableData = new ArrayList<>();
+
+	        int TotalQuantity = 0;
+	        int TotalDiscount = 0;
+	        int TotalAmount = 0;
+	        while(rs.next()) {
+	        	orderPanel.lblOrderD.setText(rs.getString(2));
+	        	orderPanel.lblAdd.setText(rs.getString(7));
+	        	tableData.add(rs.getString(3));
+	        	tableData.add(rs.getString(4));
+	        	tableData.add(rs.getString(5));
+	        	tableData.add(rs.getString(8));
+	        	tableData.add(rs.getString(6));
+	        	orderPanel.main.addRow(tableData.toArray());
+	        	tableData.clear();
+	        	TotalQuantity += Integer.parseInt(rs.getString(4));
+	        	TotalDiscount += Integer.parseInt(rs.getString(8));
+	        	TotalAmount += Integer.parseInt(rs.getString(6));
+	        }
+	        
+
+	        int TotalItem = orderPanel.table.getRowCount();
+	        
+	        orderPanel.lblItemCount.setText("Item: " + TotalItem);
+	        orderPanel.lblQuantityCount.setText("Total Quantity: " + TotalQuantity);
+	        orderPanel.lblDiscount.setText("Total Discount: " + TotalItem);
+	        orderPanel.lblTotalAmount.setText("Total Amount: " + TotalAmount);
+	        
+		}catch (Exception e) {
+			JOptionPane.showConfirmDialog(null, "ERROR panelDataSetter: " + e.getMessage());
+		}
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

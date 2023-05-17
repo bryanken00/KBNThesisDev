@@ -254,7 +254,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 					String Description = paneText.getText();
 					
 					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "')";
-					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "');";
+					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','');";
 					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
 					
 					System.out.println(sqlCustAccInfo);

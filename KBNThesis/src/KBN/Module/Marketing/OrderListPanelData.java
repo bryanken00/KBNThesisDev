@@ -68,24 +68,24 @@ public class OrderListPanelData extends JPanel {
 		
 		lblName[i] = new JLabel();
 		lblName[i].setText("Username " + i);
-		lblName[i].setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblName[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblName[i].setBounds(10, 36, 136, 22);
 		orderList[i].add(lblName[i]);
 		
 		lblStatus[i] = new JLabel();
 		lblStatus[i].setText("Order Status " + i);
-		lblStatus[i].setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblStatus[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblStatus[i].setBounds(182, 36, 108, 22);
 		orderList[i].add(lblStatus[i]);
 		
 		lblTextAmount[i] = new JLabel();
 		lblTextAmount[i].setText("Total Amount ");
-		lblTextAmount[i].setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTextAmount[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTextAmount[i].setBounds(10, 69, 108, 22);
 		orderList[i].add(lblTextAmount[i]);
 		
 		lblTotalAmmount[i] = new JLabel();
-		lblTotalAmmount[i].setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTotalAmmount[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTotalAmmount[i].setBounds(182, 69, 108, 22);
 		orderList[i].add(lblTotalAmmount[i]);
 		
