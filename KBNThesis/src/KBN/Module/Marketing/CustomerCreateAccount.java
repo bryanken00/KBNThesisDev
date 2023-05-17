@@ -20,6 +20,8 @@ import javax.swing.JTextField;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
@@ -30,7 +32,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import javax.swing.JEditorPane;
 
-public class CustomerCreateAccount extends JDialog implements ActionListener{
+public class CustomerCreateAccount extends JDialog implements ActionListener, KeyListener{
 	private DbConnection dbConn;
 	private Statement st;
 	private ResultSet rs;
@@ -50,6 +52,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener{
 	private JButton btnRegister;
 	private JEditorPane paneText;
 	private JButton btnGeneratePass;
+	private JLabel lblWarning;
 	
 	public CustomerCreateAccount() {
 		setResizable(false);
@@ -128,6 +131,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener{
         txtContact = new JTextField();
         txtContact.setColumns(10);
         txtContact.setBounds(309, 256, 487, 30);
+        txtContact.addKeyListener(this);
         getContentPane().add(txtContact);
         
         JSeparator separator = new JSeparator();
@@ -179,6 +183,12 @@ public class CustomerCreateAccount extends JDialog implements ActionListener{
         btnGeneratePass.setBackground(Color.WHITE);
         btnGeneratePass.setBounds(572, 368, 224, 28);
         getContentPane().add(btnGeneratePass);
+        
+        lblWarning = new JLabel("*Number Only! press number to enable*");
+        lblWarning.setForeground(new Color(255, 0, 0));
+        lblWarning.setBounds(453, 232, 343, 19);
+        lblWarning.setVisible(false);
+        getContentPane().add(lblWarning);
         
         dbConn = new DbConnection();
         arr = new ArrayList<>();
@@ -262,5 +272,28 @@ public class CustomerCreateAccount extends JDialog implements ActionListener{
 
 
 		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyCode() == 8) {
+			txtContact.setEditable(true);
+			lblWarning.setVisible(false);
+		}else {
+			txtContact.setEditable(false);
+			lblWarning.setVisible(true);
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
