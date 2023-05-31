@@ -39,16 +39,17 @@ public class OrderingPanel extends JPanel {
 	public JPanel middlePanel;
 	public JSeparator separator_1;
 	public JLabel lblOrderStatus;
-	public JButton btnMarketing_1;
-	public JButton btnMarketing_2;
-	public JButton btnMarketing_3;
-	public JButton btnMarketing_4;
-	public JButton btnMarketing_5;
+	public JButton btnProcessComplete;
+	public JButton btnDelivery;
+	public JButton btnProductionComplete;
+	public JButton btnInvoice;
+	public JButton btnDeliveryComplete;
 	public JPanel tablePanel;
 	public JLabel lblItemCount;
 	public JLabel lblQuantityCount;
 	public JLabel lblDiscount;
 	public JLabel lblTotalAmount;
+	public JButton btnApproved;
 
     public OrderingPanel() {
         setBounds(0, 0, 989, 699);
@@ -132,53 +133,53 @@ public class OrderingPanel extends JPanel {
         lblOrderStatus.setBounds(10, 11, 136, 20);
         middlePanel.add(lblOrderStatus);
         
-        JButton btnMarketing = new JButton("<html>Order<br>Approved</html>");
-        btnMarketing.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnMarketing.setFocusable(false);
-        btnMarketing.setBorderPainted(false);
-        btnMarketing.setBackground(Color.WHITE);
-        btnMarketing.setBounds(13, 46, 86, 29);
-        middlePanel.add(btnMarketing);
+        btnApproved = new JButton("<html>Order<br>Approved</html>");
+        btnApproved.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnApproved.setFocusable(false);
+        btnApproved.setBorderPainted(false);
+        btnApproved.setBackground(Color.WHITE);
+        btnApproved.setBounds(13, 46, 86, 29);
+        middlePanel.add(btnApproved);
         
-        btnMarketing_1 = new JButton("<html>Processing<br>complete</html>");
-        btnMarketing_1.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnMarketing_1.setFocusable(false);
-        btnMarketing_1.setBorderPainted(false);
-        btnMarketing_1.setBackground(Color.WHITE);
-        btnMarketing_1.setBounds(112, 46, 86, 29);
-        middlePanel.add(btnMarketing_1);
+        btnProcessComplete = new JButton("<html>Processing<br>complete</html>");
+        btnProcessComplete.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnProcessComplete.setFocusable(false);
+        btnProcessComplete.setBorderPainted(false);
+        btnProcessComplete.setBackground(Color.WHITE);
+        btnProcessComplete.setBounds(112, 46, 86, 29);
+        middlePanel.add(btnProcessComplete);
         
-        btnMarketing_2 = new JButton("<html>On<br>Delivery</html>");
-        btnMarketing_2.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnMarketing_2.setFocusable(false);
-        btnMarketing_2.setBorderPainted(false);
-        btnMarketing_2.setBackground(Color.WHITE);
-        btnMarketing_2.setBounds(310, 46, 86, 29);
-        middlePanel.add(btnMarketing_2);
+        btnDelivery = new JButton("<html>On<br>Delivery</html>");
+        btnDelivery.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnDelivery.setFocusable(false);
+        btnDelivery.setBorderPainted(false);
+        btnDelivery.setBackground(Color.WHITE);
+        btnDelivery.setBounds(310, 46, 86, 29);
+        middlePanel.add(btnDelivery);
         
-        btnMarketing_3 = new JButton("<html>Production<br>complete</html>");
-        btnMarketing_3.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnMarketing_3.setFocusable(false);
-        btnMarketing_3.setBorderPainted(false);
-        btnMarketing_3.setBackground(Color.WHITE);
-        btnMarketing_3.setBounds(211, 46, 86, 29);
-        middlePanel.add(btnMarketing_3);
+        btnProductionComplete = new JButton("<html>Production<br>complete</html>");
+        btnProductionComplete.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnProductionComplete.setFocusable(false);
+        btnProductionComplete.setBorderPainted(false);
+        btnProductionComplete.setBackground(Color.WHITE);
+        btnProductionComplete.setBounds(211, 46, 86, 29);
+        middlePanel.add(btnProductionComplete);
         
-        btnMarketing_4 = new JButton("Invoice");
-        btnMarketing_4.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnMarketing_4.setFocusable(false);
-        btnMarketing_4.setBorderPainted(false);
-        btnMarketing_4.setBackground(Color.WHITE);
-        btnMarketing_4.setBounds(508, 46, 86, 29);
-        middlePanel.add(btnMarketing_4);
+        btnInvoice = new JButton("Invoice");
+        btnInvoice.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnInvoice.setFocusable(false);
+        btnInvoice.setBorderPainted(false);
+        btnInvoice.setBackground(Color.WHITE);
+        btnInvoice.setBounds(508, 46, 86, 29);
+        middlePanel.add(btnInvoice);
         
-        btnMarketing_5 = new JButton("<html>Deliver<br>Complete</html>");
-        btnMarketing_5.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnMarketing_5.setFocusable(false);
-        btnMarketing_5.setBorderPainted(false);
-        btnMarketing_5.setBackground(Color.WHITE);
-        btnMarketing_5.setBounds(409, 46, 86, 29);
-        middlePanel.add(btnMarketing_5);
+        btnDeliveryComplete = new JButton("<html>Deliver<br>Complete</html>");
+        btnDeliveryComplete.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnDeliveryComplete.setFocusable(false);
+        btnDeliveryComplete.setBorderPainted(false);
+        btnDeliveryComplete.setBackground(Color.WHITE);
+        btnDeliveryComplete.setBounds(409, 46, 86, 29);
+        middlePanel.add(btnDeliveryComplete);
         
         tablePanel = new JPanel();
         tablePanel.setBounds(10, 224, 613, 442);
@@ -208,7 +209,6 @@ public class OrderingPanel extends JPanel {
         lblTotalAmount.setBounds(460, 411, 136, 14);
         tablePanel.add(lblTotalAmount);
         
-
         
         // Setter
         orderLPanel = new OrderListPanel();

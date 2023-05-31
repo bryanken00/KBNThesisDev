@@ -53,6 +53,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	// Object
 	private Statement st;
 	private ResultSet rs;
+	private String refNum;
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -314,6 +315,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnReturnProducts.addActionListener(this);
 		btnAuditTrail.addActionListener(this);
 		
+		
+		//OrderPanel
+		orderPanel.btnApproved.addActionListener(this);
+		orderPanel.btnDelivery.addActionListener(this);
+		orderPanel.btnDeliveryComplete.addActionListener(this);
+		orderPanel.btnInvoice.addActionListener(this);
+		orderPanel.btnProcessComplete.addActionListener(this);
+		orderPanel.btnProductionComplete.addActionListener(this);
+		
 		//Mouse
 		for(int i = 0; i < OrderCount; i++) {
 			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
@@ -363,6 +373,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//inside Panel 
 		if(e.getSource() == custAccount.btnCreate)
 			custAccountCreateAccount();
+		
+		if(e.getSource() == orderPanel.btnApproved)
+			System.out.println("APPROVED");
 	}
 	
 	private void dashboardPanelFunc() {
@@ -398,14 +411,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderPanelFunc() {
 		setVisiblePanel();
 		orderPanel.setVisible(true);
-		
-		// tblOrderCheckOut
-//		try {
-//			st = dbConn.getConnection().createStatement();
-//			st.execute("");
-//		}catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, "OrderPanelFunction ERROR: " + e.getMessage());
-//		}
 	}
 
 	
@@ -458,7 +463,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void panelDataSetter() {
 		try {
-			String refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
+			refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
 	        orderPanel.lblRefNum.setText(refNum);
 	        orderPanel.lblCustName.setText(this.orderPanel.orderLPanel.opd.lblName[OrderListIndexClicked].getText());
 	        String sql = "SELECT a.OrderRefNumber, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, a.Address, c.Discount FROM tblordercheckout AS a JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber JOIN tblcustomerinformation AS c ON a.UserID = c.UserID WHERE a.OrderRefNumber = '" + refNum + "'";
@@ -491,9 +496,66 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        orderPanel.lblQuantityCount.setText("Total Quantity: " + TotalQuantity);
 	        orderPanel.lblDiscount.setText("Total Discount: " + TotalItem);
 	        orderPanel.lblTotalAmount.setText("Total Amount: " + TotalAmount);
+	  
+	        orderStatusSetter();
 	        
 		}catch (Exception e) {
 			JOptionPane.showConfirmDialog(null, "ERROR panelDataSetter: " + e.getMessage());
+		}
+	}
+	
+	private void orderStatusSetter() {
+		try {
+			orderPanel.btnApproved.setBackground(Color.white);
+			orderPanel.btnDelivery.setBackground(Color.white);
+			orderPanel.btnDeliveryComplete.setBackground(Color.white);
+			orderPanel.btnInvoice.setBackground(Color.white);
+			orderPanel.btnProcessComplete.setBackground(Color.white);
+			orderPanel.btnProductionComplete.setBackground(Color.white);
+			
+			
+	        String sqlOrderStatus = "SELECT status FROM tblOrderStatus WHERE OrderRefNumber = '" + refNum + "'";
+	        st.execute(sqlOrderStatus);
+	        rs = st.getResultSet();
+	        String status = "";
+	        while(rs.next()) {
+	        	status = rs.getString(1);
+	        }
+	        
+	        if(status.equals("toPay")) {
+	        	
+	        }
+	        else if(status.equals("OrderApproved")) {
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        }
+	        else if(status.equals("ProcessComplete")) {
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
+	        }else if(status.equals("ProductionComplete")) {
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
+	        }else if(status.equals("Delivery")) {
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
+	        }else if(status.equals("DeliveryComplete")) {
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
+	        }else if(status.equals("Invoice")) {
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnInvoice.setBackground(new Color(13, 164, 0));
+	        }
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR ORDER STATUS: " + e.getMessage());
 		}
 	}
 
