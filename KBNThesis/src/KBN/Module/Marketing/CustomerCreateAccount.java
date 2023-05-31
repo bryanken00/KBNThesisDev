@@ -31,6 +31,7 @@ import java.util.Random;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import javax.swing.JEditorPane;
+import javax.swing.SwingConstants;
 
 public class CustomerCreateAccount extends JDialog implements ActionListener, KeyListener{
 	private DbConnection dbConn;
@@ -38,13 +39,15 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 	private ResultSet rs;
 	private ArrayList arr;
 	
+	private int random;
+	
 	
 	//password
 	private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz1234567890";
 	private JTextField txtLN;
 	private JTextField txtFN;
 	private JTextField txtMI;
-	private JTextField textField_3;
+	private JTextField txtEmail;
 	private JTextField txtAddress;
 	private JTextField txtContact;
 	private JTextField txtUsername;
@@ -53,6 +56,15 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 	private JEditorPane paneText;
 	private JButton btnGeneratePass;
 	private JLabel lblWarning;
+	private JLabel lblUsername;
+	private JLabel lblPassword;
+	private JLabel lblContactNumber;
+	private JLabel lblLastName_1;
+	private JLabel lblLastName;
+	private JLabel lblFirstName;
+	private JLabel lblMi;
+	private JLabel lblAddress;
+	private JLabel lblWarning_1[];
 	
 	public CustomerCreateAccount() {
 		setResizable(false);
@@ -67,7 +79,18 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         int y = (dim.height-h)/2;
         this.setLocation(x, y);
         getContentPane().setLayout(null);
-        
+
+    	lblWarning_1 = new JLabel[10];
+        for(int i = 0; i < 10; i++) {
+        	lblWarning_1[i] = new JLabel("*");
+        	lblWarning_1[i].setForeground(Color.RED);
+        	lblWarning_1[i].setHorizontalAlignment(SwingConstants.CENTER);
+        	lblWarning_1[i].setFont(new Font("Tahoma", Font.PLAIN, 14));
+        	lblWarning_1[i].setVisible(false);
+            getContentPane().add(lblWarning_1[i]);
+        }
+
+
         JLabel lblNewLabel = new JLabel("Create Account");
         lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblNewLabel.setBounds(24, 24, 134, 30);
@@ -75,15 +98,16 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         
         txtLN = new JTextField();
         txtLN.setBounds(24, 114, 224, 30);
+    	lblWarning_1[0].setBounds(4, 114, 20, 19);
         getContentPane().add(txtLN);
         txtLN.setColumns(10);
         
-        JLabel lblLastName = new JLabel("Last Name");
+        lblLastName = new JLabel("Last Name");
         lblLastName.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblLastName.setBounds(24, 84, 134, 30);
         getContentPane().add(lblLastName);
         
-        JLabel lblFirstName = new JLabel("First Name");
+        lblFirstName = new JLabel("First Name");
         lblFirstName.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblFirstName.setBounds(309, 84, 134, 30);
         getContentPane().add(lblFirstName);
@@ -91,9 +115,10 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         txtFN = new JTextField();
         txtFN.setColumns(10);
         txtFN.setBounds(309, 114, 224, 30);
+    	lblWarning_1[1].setBounds(289, 114, 20, 19);
         getContentPane().add(txtFN);
         
-        JLabel lblMi = new JLabel("M.I");
+        lblMi = new JLabel("M.I");
         lblMi.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblMi.setBounds(572, 84, 134, 30);
         getContentPane().add(lblMi);
@@ -101,14 +126,16 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         txtMI = new JTextField();
         txtMI.setColumns(10);
         txtMI.setBounds(572, 114, 224, 30);
+    	lblWarning_1[2].setBounds(552, 114, 20, 19);
         getContentPane().add(txtMI);
         
-        textField_3 = new JTextField();
-        textField_3.setColumns(10);
-        textField_3.setBounds(24, 185, 224, 30);
-        getContentPane().add(textField_3);
+        txtEmail = new JTextField();
+        txtEmail.setColumns(10);
+        txtEmail.setBounds(24, 185, 224, 30);
+    	lblWarning_1[3].setBounds(4, 185, 20, 19);
+        getContentPane().add(txtEmail);
         
-        JLabel lblLastName_1 = new JLabel("");
+        lblLastName_1 = new JLabel("");
         lblLastName_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblLastName_1.setBounds(24, 155, 134, 30);
         getContentPane().add(lblLastName_1);
@@ -116,14 +143,15 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         txtAddress = new JTextField();
         txtAddress.setColumns(10);
         txtAddress.setBounds(309, 185, 487, 30);
+    	lblWarning_1[4].setBounds(289, 185, 20, 19);
         getContentPane().add(txtAddress);
         
-        JLabel lblAddress = new JLabel("Address");
+        lblAddress = new JLabel("Address");
         lblAddress.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblAddress.setBounds(309, 155, 134, 30);
         getContentPane().add(lblAddress);
         
-        JLabel lblContactNumber = new JLabel("Contact Number");
+        lblContactNumber = new JLabel("Contact Number");
         lblContactNumber.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblContactNumber.setBounds(309, 226, 134, 30);
         getContentPane().add(lblContactNumber);
@@ -131,6 +159,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         txtContact = new JTextField();
         txtContact.setColumns(10);
         txtContact.setBounds(309, 256, 487, 30);
+    	lblWarning_1[5].setBounds(289, 256, 20, 19);
         txtContact.addKeyListener(this);
         getContentPane().add(txtContact);
         
@@ -147,7 +176,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         lblDescription.setBounds(24, 226, 134, 30);
         getContentPane().add(lblDescription);
         
-        JLabel lblUsername = new JLabel("Username");
+        lblUsername = new JLabel("Username");
         lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblUsername.setBounds(309, 297, 134, 30);
         getContentPane().add(lblUsername);
@@ -155,9 +184,10 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         txtUsername = new JTextField();
         txtUsername.setColumns(10);
         txtUsername.setBounds(309, 327, 224, 30);
+    	lblWarning_1[6].setBounds(289, 327, 20, 19);
         getContentPane().add(txtUsername);
         
-        JLabel lblPassword = new JLabel("Password");
+        lblPassword = new JLabel("Password");
         lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblPassword.setBounds(572, 297, 134, 30);
         getContentPane().add(lblPassword);
@@ -166,6 +196,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         txtPassword.setEditable(false);
         txtPassword.setColumns(10);
         txtPassword.setBounds(572, 327, 224, 30);
+    	lblWarning_1[7].setBounds(552, 327, 20, 19);
         getContentPane().add(txtPassword);
         
         btnRegister = new JButton("Register");
@@ -190,10 +221,27 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         lblWarning.setVisible(false);
         getContentPane().add(lblWarning);
         
+        JLabel lblEmail = new JLabel("Email");
+        lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        lblEmail.setBounds(24, 155, 134, 30);
+        getContentPane().add(lblEmail);
+        
+
+        
         dbConn = new DbConnection();
         arr = new ArrayList<>();
         btnRegister.addActionListener(this);
         btnGeneratePass.addActionListener(this);
+
+		Random rand = new Random();
+		random = 0;
+		while(true) {
+			random = rand.nextInt(999);
+			if(random > 100)
+				break;
+			else
+				continue;
+		}
         
 	}
 	
@@ -211,10 +259,15 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
     }
     
 
+    
+    private void setWarningVisibleFalse() {
+    	for(int i = 0; i < 10; i++) {
+    		lblWarning_1[i].setVisible(false);
+    	}
+    }
+    
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Random rand = new Random();
-		int random = 0;
 		
 		if(e.getSource() == btnGeneratePass) {
 			String password = passwordGenerator(8);
@@ -222,6 +275,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 		}
 		
 		if(e.getSource() == btnRegister) {
+			setWarningVisibleFalse();
 			try {
 				st = dbConn.getConnection().createStatement();
 				String sql = "SELECT Username FROM tblCustomerAccount";
@@ -231,16 +285,37 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 				while(rs.next())
 					arr.add(rs.getString(1));
 				
-				if(arr.contains(txtUsername.getText()))
+				if(arr.contains(txtUsername.getText())) {
 					JOptionPane.showMessageDialog(null, "Username Alaready Exist");
-				else if(!txtFN.getText().isEmpty() && !txtLN.getText().isEmpty() && !txtAddress.getText().isEmpty() && !txtContact.getText().isEmpty() && !txtUsername.getText().isEmpty() && !txtPassword.getText().isEmpty()) {
-					while(true) {
-						random = rand.nextInt(999);
-						if(random > 100)
-							break;
-						else
-							continue;
-					}
+					return;
+				}
+				
+				
+				if(txtAddress.getText().isEmpty())
+		        	lblWarning_1[4].setVisible(true);
+				
+				if(txtContact.getText().isEmpty())
+		        	lblWarning_1[5].setVisible(true);
+				
+				if(txtEmail.getText().isEmpty())
+		        	lblWarning_1[3].setVisible(true);
+				
+				if(txtFN.getText().isEmpty())
+		        	lblWarning_1[1].setVisible(true);
+				
+				if(txtLN.getText().isEmpty())
+		        	lblWarning_1[0].setVisible(true);
+				
+				if(txtMI.getText().isEmpty())
+		        	lblWarning_1[2].setVisible(true);
+				
+				if(txtPassword.getText().isEmpty())
+		        	lblWarning_1[7].setVisible(true);
+				
+				if(txtUsername.getText().isEmpty())
+		        	lblWarning_1[6].setVisible(true);
+				if(!txtFN.getText().isEmpty() && !txtLN.getText().isEmpty() && !txtAddress.getText().isEmpty() && !txtContact.getText().isEmpty() && !txtUsername.getText().isEmpty() && !txtPassword.getText().isEmpty() && !txtEmail.getText().isEmpty()) {
+
 					// tblCustAccount
 					String userID = txtUsername.getText() + "#" + random;
 					String Username = txtUsername.getText();
@@ -252,16 +327,19 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 					String Address = txtAddress.getText();
 					String Number = txtContact.getText();
 					String Description = paneText.getText();
+					String Email = txtEmail.getText();
 					
 					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "')";
-					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','');";
+					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "')";
 					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
 					
-					System.out.println(sqlCustAccInfo);
+//					System.out.println(sqlCustAccInfo);
 					
 					st.execute(sqlCustAcc);
 					st.execute(sqlCustAccInfo);
 					st.execute(sqlOrders);
+					JOptionPane.showMessageDialog(null, "Registration completed");
+					this.dispose();
 					
 				}else {
 					JOptionPane.showMessageDialog(null, "Please complete the form");
@@ -296,4 +374,6 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 		// TODO Auto-generated method stub
 		
 	}
+
+
 }
