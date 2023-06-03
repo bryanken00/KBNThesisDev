@@ -53,6 +53,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	// Object
 	private Statement st;
 	private ResultSet rs;
+	
+	
 	private String refNum;
 	
 	private JPanel contentPane;
@@ -112,7 +114,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         setActionList();
         setVisiblePanel();
         defaultPanel();
-        buttonImplementation();
         custAccountFunc();
         
 	}
@@ -147,10 +148,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
 		}
-	}
-	
-	private void buttonImplementation() {
-		custAccount.btnCreate.addActionListener(this);
 	}
 	
 	private void objComponent() {
@@ -324,6 +321,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanel.btnProcessComplete.addActionListener(this);
 		orderPanel.btnProductionComplete.addActionListener(this);
 		
+		//CustomerAccount Panel
+		custAccount.btnCreate.addActionListener(this);
+		
 		//Mouse
 		for(int i = 0; i < OrderCount; i++) {
 			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
@@ -368,6 +368,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			delStatusPanelFunc();
 		if(e.getSource() == btnOrdering)
 			orderPanelFunc();
+		if(e.getSource() == orderPanel.btnApproved)
+			orderPanelBTNAPPROVED();
 			
 		
 		//inside Panel 
@@ -412,6 +414,23 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		setVisiblePanel();
 		orderPanel.setVisible(true);
 	}
+	
+	private void orderPanelBTNAPPROVED() {
+		try {
+			orderPanel.main.setRowCount(0);
+	        orderPanel.table.setModel(orderPanel.main);
+			String sql = "UPDATE tblorderstatus SET Status = 'ProcessComplete' WHERE OrderRefNumber = '" + refNum + "';";
+			int i = st.executeUpdate(sql);
+			if(i == 1)
+				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " has been Approved");
+			else
+				JOptionPane.showMessageDialog(null, "Something wrong");
+			panelDataSetter();
+			orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+		}catch (Exception e1) {
+			JOptionPane.showMessageDialog(null, "ERROR btnApproved: " + e1.getMessage());
+		}
+	}
 
 	
 	
@@ -424,15 +443,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccountFunc() {
 		try {
             st = dbConn.getConnection().createStatement();
-			String sql = "SELECT UserID, Number FROM tblcustomerinformation";
+			String sql = "SELECT Firstname, Lastname, Email, Number FROM tblcustomerinformation";
 			st.execute(sql);
 			
 			rs = st.getResultSet();
 			ArrayList SQLResult = new ArrayList<>();
 			
 			while(rs.next()) {
-				SQLResult.add(rs.getString(1));
-				SQLResult.add(rs.getString(2));
+				SQLResult.add(rs.getString(1) + " " + rs.getString(2));
+				SQLResult.add(rs.getString(3));
+				SQLResult.add(rs.getString(4));
 				custAccount.main.addRow(SQLResult.toArray());
 				SQLResult.clear();
 			}
