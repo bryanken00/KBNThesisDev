@@ -24,6 +24,7 @@ import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.RebrandingProd;
+import KBN.Module.Marketing.Testing;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 import javax.swing.JLabel;
@@ -49,6 +50,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private DeliveryStatus delStatus;
 	private CustomerCreateAccount custCreateAccount;
 	private OrderingPanel orderPanel;
+	private Testing testing;
 	
 	// Object
 	private Statement st;
@@ -106,6 +108,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
 		orderPanel = new OrderingPanel();
+		testing = new Testing();
 		
         // DefaultSetup
         objComponent();
@@ -311,6 +314,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDeliveryStatus.addActionListener(this);
 		btnReturnProducts.addActionListener(this);
 		btnAuditTrail.addActionListener(this);
+		custAccount.lblNewLabel.addMouseListener(this);
 		
 		
 		//OrderPanel
@@ -582,7 +586,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() == custAccount.lblNewLabel) {
+			testing.setVisible(true);
+			testing.setModal(true);
+		}
 		
 	}
 

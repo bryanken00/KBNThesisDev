@@ -833,12 +833,15 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		
 //		{"ID", "SUPPLIER", "MATERIAL NAME", "CODE NAME","DATE", "CURRENT VOLUME", "APPEARANCE", "RELEASED", "REJECT", "HOLD", "PROD RETURN"};
 
-		String itemID = table.getValueAt(table.getSelectedRow(), 0) + "";
-		String itemName = table.getValueAt(table.getSelectedRow(), 2) + "";
-		String itemDate = table.getValueAt(table.getSelectedRow(), 4) + "";
 		
-		String QRCodeName = itemName + " " + itemDate +".png";
-		String url = "localhost/KBNTHESIS/?id="+itemID+"&user="+itemDate;
+		String MN = table.getValueAt(table.getSelectedRow(), 2) + "";
+		String CN = table.getValueAt(table.getSelectedRow(), 3) + "";
+		String S = table.getValueAt(table.getSelectedRow(), 1) + "";
+		String itemDate = table.getValueAt(table.getSelectedRow(), 4) + "";
+		String Volume = table.getValueAt(table.getSelectedRow(), 5) + "";
+		
+		String QRCodeName = MN + " " + itemDate +".png";
+		String url = "localhost/KBNTHESIS/?MN=" + MN + "&CN=" + CN + "&S=" + S + "&date=" + itemDate+"&tv=" + Volume;
 		try {
 			genQR.gettingURL(url, QRCodeName);
 		}catch (Exception e1) {

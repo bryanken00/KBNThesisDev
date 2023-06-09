@@ -36,22 +36,28 @@ public class CustomerAccount extends JPanel {
 		
 		txtSearchBar = new JTextField();
 		txtSearchBar.setText("search bar");
-		txtSearchBar.setBounds(338, 57, 483, 28);
+		txtSearchBar.setBounds(24, 59, 483, 28);
 		add(txtSearchBar);
 		txtSearchBar.setColumns(10);
 		
 		btnCreate = new JButton("Create");
-		btnCreate.setBounds(831, 57, 120, 28);
+		btnCreate.setBounds(602, 57, 120, 28);
 		btnCreate.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnCreate.setFocusable(false);
 		btnCreate.setBorderPainted(false);
 		btnCreate.setBackground(Color.WHITE);
 		add(btnCreate);
 		
+		JLabel lblNewLabel_1 = new JLabel("icon");
+		lblNewLabel_1.setBounds(917, 11, 46, 28);
+		add(lblNewLabel_1);
+		
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
 		lblNewLabel.setBounds(0, 0, 989, 699);
 		add(lblNewLabel);
+		
+
 		
 		tableSetup();
 		
