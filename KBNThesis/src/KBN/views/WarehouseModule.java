@@ -177,6 +177,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		tableSetup();
         setUsername();
         mouseList();
+        buttonList();
         
         tableDisable();
 		scrollPane.setVisible(true);
@@ -204,14 +205,12 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnAddItem = new JButton("Add Item");
 		btnAddItem.setBounds(10, 102, 241, 46);
 		panel.add(btnAddItem);
-		btnAddItem.addActionListener(this);
 		btnAddItem.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnAddItem.setFocusable(false);
 		btnAddItem.setBorderPainted(false);
 		btnAddItem.setBackground(Color.WHITE);
 		
 		btnArchive = new JButton("Archive");
-		btnArchive.addActionListener(this);
 		btnArchive.setBounds(10, 159, 241, 46);
 		panel.add(btnArchive);
 		btnArchive.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
@@ -224,7 +223,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel.add(separator_1);
 		
 		btnQRCode = new JButton("<html><center>QR-Code <br/> Generator</center></html>");
-		btnQRCode.addActionListener(this);
 		btnQRCode.setBounds(10, 216, 241, 46);
 		panel.add(btnQRCode);
 		btnQRCode.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
@@ -235,7 +233,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnRawMats = new JButton("Raw Materials");
 		btnRawMats.setBounds(10, 297, 241, 46);
 		panel.add(btnRawMats);
-		btnRawMats.addActionListener(this);
 		btnRawMats.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnRawMats.setFocusable(false);
 		btnRawMats.setBorderPainted(false);
@@ -244,7 +241,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnPackMats = new JButton("<html><center>Packaging <br/> Materials</center></html>");
 		btnPackMats.setBounds(10, 354, 241, 46);
 		panel.add(btnPackMats);
-		btnPackMats.addActionListener(this);
 		btnPackMats.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnPackMats.setFocusable(false);
 		btnPackMats.setBorderPainted(false);
@@ -252,7 +248,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		
 		btnFinishProduct = new JButton("Finish Products");
 		btnFinishProduct.setBounds(10, 411, 241, 46);
-		btnFinishProduct.addActionListener(this);
 		btnFinishProduct.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnFinishProduct.setFocusable(false);
 		btnFinishProduct.setBorderPainted(false);
@@ -261,7 +256,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		
 		btnfirstinFirstout = new JButton("<html><center>First-In<br/> First-Out</center></html>");
 		btnfirstinFirstout.setBounds(10, 468, 241, 46);
-		btnfirstinFirstout.addActionListener(this);
 		btnfirstinFirstout.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnfirstinFirstout.setFocusable(false);
 		btnfirstinFirstout.setBorderPainted(false);
@@ -269,7 +263,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel.add(btnfirstinFirstout);
 		
 		btnArchiveList = new JButton("Archive List");
-		btnArchiveList.addActionListener(this);
 		btnArchiveList.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnArchiveList.setFocusable(false);
 		btnArchiveList.setBorderPainted(false);
@@ -278,7 +271,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel.add(btnArchiveList);
 		
 		btnSummary = new JButton("Summary");
-		btnSummary.addActionListener(this);
 		btnSummary.setBounds(10, 582, 241, 46);
 		panel.add(btnSummary);
 		btnSummary.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
@@ -302,7 +294,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel.add(cbArchiveCat);
 		
 		btnRestore = new JButton("Restore");
-		btnRestore.addActionListener(this);
 		btnRestore.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnRestore.setFocusable(false);
 		btnRestore.setBorderPainted(false);
@@ -346,7 +337,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnExportSummary.setBorderPainted(false);
 		btnExportSummary.setBackground(Color.WHITE);
 		btnExportSummary.setBounds(10, 102, 241, 33);
-		btnExportSummary.addActionListener(this);
 		panel.add(btnExportSummary);
 		
 
@@ -361,7 +351,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnCompute.setBackground(Color.WHITE);
 		btnCompute.setBounds(10, 229, 241, 33);
 		btnCompute.setVisible(false);
-		btnCompute.addActionListener(this);
 		panel.add(btnCompute);
 		
 		dateFrom.setVisible(false);
@@ -382,7 +371,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		cbSort.setBounds(10, 100, 200, 46);
 		cbSort.setFocusable(false);
 		cbSort.setOpaque(false);
-		cbSort.addActionListener(this);
 		panel_1.add(cbSort);
 		
 		cbCategories = new JComboBox();
@@ -390,11 +378,9 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		cbCategories.setFocusable(false);
 		cbCategories.setBounds(220, 100, 200, 46);
 		cbCategories.setVisible(true);
-		cbCategories.addActionListener(this);
 		panel_1.add(cbCategories);
 
 		btnSearch = new JButton("");
-		btnSearch.addActionListener(this);
 		btnSearch.setIcon(new ImageIcon(WarehouseModule.class.getResource("/KBN/resources/searchIcon.png")));
 		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSearch.setFocusable(false);
@@ -425,11 +411,9 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		panel_1.add(panel_2_1);
 		
 		archiveRC.setVisible(false);
-		archiveRC.btnArchive.addActionListener(this);
 		contentPane.add(archiveRC);
 		
 		restoreRC.setVisible(false);
-		restoreRC.btnRestore.addActionListener(this);
 		contentPane.add(restoreRC);
 		
 		tablePanel = new JPanel();
@@ -457,6 +441,28 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnAddItem.addMouseListener(this);
 		btnArchive.addMouseListener(this);
 		btnQRCode.addMouseListener(this);
+	}
+	
+	private void buttonList() {
+		btnAddItem.addActionListener(this);
+		btnArchive.addActionListener(this);
+		btnQRCode.addActionListener(this);
+		btnRawMats.addActionListener(this);
+		btnFinishProduct.addActionListener(this);
+		btnPackMats.addActionListener(this);
+		btnfirstinFirstout.addActionListener(this);
+		btnArchiveList.addActionListener(this);
+		btnSummary.addActionListener(this);
+		btnRestore.addActionListener(this);
+		btnExportSummary.addActionListener(this);
+		btnCompute.addActionListener(this);
+		cbSort.addActionListener(this);
+		cbCategories.addActionListener(this);
+		btnSearch.addActionListener(this);
+		archiveRC.btnArchive.addActionListener(this);
+		archiveRC.btnAddItem.addActionListener(this);
+		archiveRC.btnQRGen.addActionListener(this);
+		restoreRC.btnRestore.addActionListener(this);
 	}
 	
 	
@@ -935,7 +941,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		if(e.getSource() == table) {
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				archiveRC.setVisible(true);
-				archiveRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
+				archiveRC.setBounds(e.getX() + 266, e.getY() + 176, 200, 90);
 			}
 		}
 		
@@ -943,7 +949,9 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			System.out.println("test");
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				restoreRC.setVisible(true);
-				restoreRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
+//				restoreRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
+				restoreRC.setAlignmentX(e.getX());
+				restoreRC.setAlignmentY(e.getY());
 			}
 		}
 		
@@ -1017,7 +1025,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			
 			rawMatsFunction();
 			
-		}else if(e.getSource() == btnAddItem) {
+		}else if(e.getSource() == archiveRC.btnAddItem) {
 			
 			addItem();
 			
@@ -1059,7 +1067,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			
 			restoreItemFunc();
 			
-		}else if(e.getSource() == btnQRCode) {
+		}else if(e.getSource() == archiveRC.btnQRGen) {
 			
 			qrcodeFunc();
 			disableRightclick();
