@@ -19,9 +19,7 @@ public class OrderListPanel extends JPanel {
 	public OrderListPanelData opd;
 	
 	private JTextField txtSearch;
-	/**
-	 * Create the panel.
-	 */
+	
 	public OrderListPanel() {
 		setBounds(0, 0, 320, 677);
 		setLayout(null);

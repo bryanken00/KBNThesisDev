@@ -22,6 +22,7 @@ public class CustomerAccount extends JPanel {
 	public JTextField txtSearchBar;
 	public JButton btnCreate; 
 	public JLabel lblNewLabel;
+	public JLabel lblNotif;
 	
 	public CustomerAccount() {
         this.setBounds(0, 0, 989, 699);
@@ -48,9 +49,10 @@ public class CustomerAccount extends JPanel {
 		btnCreate.setBackground(Color.WHITE);
 		add(btnCreate);
 		
-		JLabel lblNewLabel_1 = new JLabel("icon");
-		lblNewLabel_1.setBounds(917, 11, 46, 28);
-		add(lblNewLabel_1);
+		lblNotif = new JLabel("icon");
+		lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
+		lblNotif.setBounds(917, 11, 32, 32);
+		add(lblNotif);
 		
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));

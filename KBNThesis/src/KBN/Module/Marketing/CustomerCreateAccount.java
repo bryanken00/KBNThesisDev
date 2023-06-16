@@ -68,7 +68,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 	
 	public CustomerCreateAccount() {
 		setResizable(false);
-        setBounds(100, 100, 834, 487);
+        setBounds(0, 0, 834, 487);
 		this.setModal(true);
 		
 		//set UI to center of screen
@@ -204,7 +204,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         btnRegister.setFocusable(false);
         btnRegister.setBorderPainted(false);
         btnRegister.setBackground(Color.WHITE);
-        btnRegister.setBounds(676, 31, 120, 28);
+        btnRegister.setBounds(676, 26, 120, 28);
         getContentPane().add(btnRegister);
         
         btnGeneratePass = new JButton("Generate Password");

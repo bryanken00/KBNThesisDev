@@ -21,10 +21,10 @@ import KBN.Module.Marketing.CustomerCreateAccount;
 import KBN.Module.Marketing.Dashboard;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
-import KBN.Module.Marketing.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.RebrandingProd;
-import KBN.Module.Marketing.Testing;
+import KBN.Module.Marketing.preRegis.preRegList;
+import KBN.Module.Marketing.preRegis.preRegister;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 import javax.swing.JLabel;
@@ -50,7 +50,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private DeliveryStatus delStatus;
 	private CustomerCreateAccount custCreateAccount;
 	private OrderingPanel orderPanel;
-	private Testing testing;
+	private preRegister preReg;
+	private preRegList preRegisList;
 	
 	// Object
 	private Statement st;
@@ -78,7 +79,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private int OrderListIndexClicked;
 	
-	private int OrderCount;
+	private int OrderCount; // Order List
+	private int rowCount; // Pre - Registration
 
 	public MarketingModule() {
 		setResizable(false);
@@ -108,7 +110,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
 		orderPanel = new OrderingPanel();
-		testing = new Testing();
+		preReg = new preRegister();
 		
         // DefaultSetup
         objComponent();
@@ -118,7 +120,28 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         setVisiblePanel();
         defaultPanel();
         custAccountFunc();
+        preRegCounter();
         
+	}
+	
+	private void preRegCounter() {
+		try {
+			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			if(rs.next())
+				rowCount = rs.getInt(1);
+			System.out.println(rowCount);
+			if(rowCount == 0) {
+				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
+			}else {
+				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
+				custAccount.lblNotif.addMouseListener(this);
+			}
+			preReg.preReg.preRegCount(rowCount);
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR preRegCounter: " + e.getMessage());
+		}
 	}
 	
 	private void orderCounter() {
@@ -127,8 +150,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
 			st.execute(sql);
 			rs = st.getResultSet();
-			while(rs.next())
+			
+			if(rs.next())
 				OrderCount = rs.getInt(1);
+			
 			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
@@ -314,7 +339,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDeliveryStatus.addActionListener(this);
 		btnReturnProducts.addActionListener(this);
 		btnAuditTrail.addActionListener(this);
-		custAccount.lblNewLabel.addMouseListener(this);
 		
 		
 		//OrderPanel
@@ -374,6 +398,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanelFunc();
 		if(e.getSource() == orderPanel.btnApproved)
 			orderPanelBTNAPPROVED();
+//		if(e.getSource() == btnPro)
 			
 		
 		//inside Panel 
@@ -391,6 +416,25 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void KBNPanelFunc() {
 		setVisiblePanel();
+		
+		
+
+        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
+        
+//        kbnProd
+        
+        try {
+        	String sql = "SELECT prodImg, prodName, Quantity, Sold FROM tblproducts";
+        	st.execute(sql);
+        	rs = st.getResultSet();
+        	while(rs.next()) {
+            	String imgPath = "http://localhost/webdevelopment/thesis1_website/Products/resources/" + rs.getString(1) ;
+            	Object[] data = {imgPath, rs.getString(2), rs.getString(3), rs.getString(4)};
+            	kbnProd.main.addRow(data);
+        	}
+        }catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "KBNProducts: " + e.getMessage());
+		}
 		kbnProd.setVisible(true);
 	}
 	
@@ -586,9 +630,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(e.getSource() == custAccount.lblNewLabel) {
-			testing.setVisible(true);
-			testing.setModal(true);
+		if(e.getSource() == custAccount.lblNotif) {
+			preReg.setVisible(true);
 		}
 		
 	}

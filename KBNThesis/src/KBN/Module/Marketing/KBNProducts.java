@@ -3,10 +3,18 @@ package KBN.Module.Marketing;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class KBNProducts extends JPanel {
@@ -15,11 +23,11 @@ public class KBNProducts extends JPanel {
 	public DefaultTableModel main;
 	public JTable table;
 	public JScrollPane scrollPane;
-	private JTextField txtSearchBar;
-	private JComboBox cbSoldProd;
-	private JComboBox cbCategories;
-	private JComboBox cbSort;
-	private JLabel lblNewLabel_1;
+	public JTextField txtSearchBar;
+	public JComboBox cbSoldProd;
+	public JComboBox cbCategories;
+	public JComboBox cbSort;
+	public JLabel lblNewLabel_1;
 	
 	public KBNProducts() {
         this.setBounds(0, 0, 989, 699);
@@ -69,8 +77,42 @@ public class KBNProducts extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		columnDefaultData = new String[] {"BASTA ITO KBN PRODUCTS TO (MARKETING)"};
-		main.setColumnIdentifiers(columnDefaultData);
+        String columnIdentifiers[] = {"Product", "Product Name", "Quantity", "Sold"};
+        main.setColumnIdentifiers(columnIdentifiers);
 		table.setModel(main);
+		
+		// set First Column width
+        TableColumn productColumn = table.getColumnModel().getColumn(0);
+        productColumn.setPreferredWidth(80);
+        
+		// to convert the path into img or to render
+		table.getColumnModel().getColumn(0).setCellRenderer(new ProductImageRenderer());
 	}
+	
+    private class ProductImageRenderer extends DefaultTableCellRenderer {
+
+        protected void setValue(Object value) {
+            if (value instanceof String) {
+                String imageUrl = (String) value;
+                try {
+                    // Load the image from the web URL
+                    URL url = new URL(imageUrl);
+                    Image image = ImageIO.read(url);
+                    
+                    // Set the fixed image size
+                    int width = 80;
+                    int height = 200;
+                    
+                    // Scale the image to fit the cell without preserving aspect ratio
+                    Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+                    ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                    setIcon(scaledIcon);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                setText("");
+            }
+        }
+    }
 }

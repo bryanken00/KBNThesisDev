@@ -459,9 +459,13 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		cbSort.addActionListener(this);
 		cbCategories.addActionListener(this);
 		btnSearch.addActionListener(this);
+		
+		// Class Archive Right Click
 		archiveRC.btnArchive.addActionListener(this);
 		archiveRC.btnAddItem.addActionListener(this);
 		archiveRC.btnQRGen.addActionListener(this);
+		
+		// Class Restore Right Click
 		restoreRC.btnRestore.addActionListener(this);
 	}
 	
