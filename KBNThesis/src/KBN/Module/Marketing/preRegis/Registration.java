@@ -11,13 +11,13 @@ import java.awt.Color;
 
 public class Registration extends JPanel {
 	
-	public JTextField txtLastName;
+	public JTextField txtLN;
 	public JTextField txtEmail;
 	public JTextField txtAddress;
 	public JTextField txtContact;
 	public JTextField txtUsername;
 	public JTextField txtPassword;
-	public JTextField txtFirstName;
+	public JTextField txtFN;
 	public JTextField txtMI;
 	public JLabel lblWarning;
 	public JButton btnRegister;
@@ -33,10 +33,10 @@ public class Registration extends JPanel {
 		lblNewLabel.setBounds(24, 37, 134, 30);
 		add(lblNewLabel);
 		
-		txtLastName = new JTextField();
-		txtLastName.setColumns(10);
-		txtLastName.setBounds(24, 127, 224, 30);
-		add(txtLastName);
+		txtLN = new JTextField();
+		txtLN.setColumns(10);
+		txtLN.setBounds(24, 127, 224, 30);
+		add(txtLN);
 		
 		JLabel lblLastName = new JLabel("Last Name");
 		lblLastName.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -135,10 +135,10 @@ public class Registration extends JPanel {
 		lblFirstName.setBounds(309, 97, 134, 30);
 		add(lblFirstName);
 		
-		txtFirstName = new JTextField();
-		txtFirstName.setColumns(10);
-		txtFirstName.setBounds(309, 127, 224, 30);
-		add(txtFirstName);
+		txtFN = new JTextField();
+		txtFN.setColumns(10);
+		txtFN.setBounds(309, 127, 224, 30);
+		add(txtFN);
 		
 		txtMI = new JTextField();
 		txtMI.setColumns(10);

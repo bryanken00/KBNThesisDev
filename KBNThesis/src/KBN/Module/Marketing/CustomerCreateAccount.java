@@ -314,6 +314,7 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 				
 				if(txtUsername.getText().isEmpty())
 		        	lblWarning_1[6].setVisible(true);
+				
 				if(!txtFN.getText().isEmpty() && !txtLN.getText().isEmpty() && !txtAddress.getText().isEmpty() && !txtContact.getText().isEmpty() && !txtUsername.getText().isEmpty() && !txtPassword.getText().isEmpty() && !txtEmail.getText().isEmpty()) {
 
 					// tblCustAccount
@@ -331,13 +332,13 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 					
 					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "')";
 					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "')";
-					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
+//					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
 					
 //					System.out.println(sqlCustAccInfo);
 					
 					st.execute(sqlCustAcc);
 					st.execute(sqlCustAccInfo);
-					st.execute(sqlOrders);
+//					st.execute(sqlOrders);
 					JOptionPane.showMessageDialog(null, "Registration completed");
 					this.dispose();
 					

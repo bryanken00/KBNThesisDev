@@ -23,6 +23,7 @@ import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.RebrandingProd;
+import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
 import KBN.commons.DbConnection;
@@ -116,11 +117,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         objComponent();
         setUsername();
         orderCounter();
+        preRegCounter();
         setActionList();
         setVisiblePanel();
         defaultPanel();
         custAccountFunc();
-        preRegCounter();
         
 	}
 	
@@ -131,7 +132,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rs = st.getResultSet();
 			if(rs.next())
 				rowCount = rs.getInt(1);
-			System.out.println(rowCount);
 			if(rowCount == 0) {
 				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
 			}else {
@@ -357,6 +357,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
 		}
 		
+		for(int i = 0; i < rowCount; i++) {
+			this.preReg.preReg.panel[i].addMouseListener(this);
+		}
+		
 	}
 	
 	private void setVisiblePanel() {
@@ -517,16 +521,63 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		
         Component clickedComponent = e.getComponent();
         for (int i = 0; i < OrderCount; i++) {
             if (clickedComponent == this.orderPanel.orderLPanel.opd.orderList[i]) {
             	OrderListIndexClicked = i;
+                orderPanel.main.setRowCount(0);
+                orderPanel.table.setModel(orderPanel.main);
+                panelDataSetter();
                 break;
             }
         }
-        orderPanel.main.setRowCount(0);
-        orderPanel.table.setModel(orderPanel.main);
-        panelDataSetter();
+        
+        for(int i = 0; i < rowCount; i++) {
+        	if(clickedComponent == this.preReg.preReg.panel[i]) {
+        		preRegDataSetter(i);
+        	}
+        }
+        
+	}
+	
+	private void preRegDataSetter(int index) {
+		String regID = preReg.preReg.rowID.get(index).toString();
+//		System.out.println(regID); // debugging
+		try {
+			String sql = "SELECT Firstname, Middlename, Lastname, Contactnum, Emailadd, Street, Barangay, City, Province, Brand FROM tblpreregistration WHERE ID = '" + regID + "'";
+			
+			String FName = "";
+			String MName = "";
+			String LName = "";
+			String Contact = "";
+			String Email = "";
+			String Address = "";
+			String Brand = "";
+			
+			st.execute(sql);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				FName = rs.getString(1);
+				MName = rs.getString(2);
+				LName = rs.getString(3);
+				Contact = rs.getString(4);
+				Email = rs.getString(5);
+				Address = rs.getString(6) + " " + rs.getString(7) + " " + rs.getString(8) + ", " + rs.getString(9);
+				Brand = rs.getString(10);
+			}
+
+			preReg.reg.txtLN.setText(LName);
+			preReg.reg.txtFN.setText(FName);
+			preReg.reg.txtMI.setText(MName);
+			preReg.reg.txtContact.setText(Contact);
+			preReg.reg.txtEmail.setText(Email);
+			preReg.reg.txtAddress.setText(Address);
+			preReg.reg.txtBrand.setText(Brand);
+
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "preRegDataSetter ERROR: " + e.getMessage());
+		}
 	}
 	
 	private void panelDataSetter() {
@@ -627,10 +678,28 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 
-
+	private void noticListSetter() {
+		try {
+			String sql = "SELECT ID, FirstName, MiddleName, LastName, Brand, City, Province FROM tblpreregistration WHERE status = 'pending'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int initialRow = 0;
+			while(rs.next()) {
+				preReg.preReg.rowID.add(rs.getString(1));
+				preReg.preReg.lblName[initialRow].setText(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
+				preReg.preReg.lblBrand[initialRow].setText(rs.getString(5));
+				preReg.preReg.lblAddress[initialRow].setText(rs.getString(6) + ", " + rs.getString(7));
+				initialRow++;
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error NotifSetter: " + e.getMessage());
+		}
+	}
+	
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(e.getSource() == custAccount.lblNotif) {
+			noticListSetter();
 			preReg.setVisible(true);
 		}
 		
@@ -639,7 +708,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 

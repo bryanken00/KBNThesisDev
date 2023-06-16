@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -14,6 +15,8 @@ public class preRegList extends JPanel {
 	public JLabel lblName[];
 	public JLabel lblBrand[];
 	public JLabel lblAddress[];
+	
+	public ArrayList rowID;
 	public int rowCount = 0;
 	
 	public preRegList() {
@@ -33,6 +36,7 @@ public class preRegList extends JPanel {
 		lblName = new JLabel[rowCount];
 		lblBrand = new JLabel[rowCount];
 		lblAddress = new JLabel[rowCount];
+		rowID = new ArrayList<>();
 		
 		
 		for(int i = 0; i < rowCount; i++) {
@@ -45,7 +49,6 @@ public class preRegList extends JPanel {
 		int y = 0;
 		if(i > 0)
 			y = 100*i;
-		
 		panel[i] = new JPanel();
 		panel[i].setBounds(0, y, 240, 100);
 		panel[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
