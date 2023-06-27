@@ -117,7 +117,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         // DefaultSetup
         objComponent();
         setUsername();
-        orderCounter();
+//        orderCounter();
         preRegStatus();
         setActionList();
         setVisiblePanel();
@@ -367,15 +367,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
-		//Mouse
-		for(int i = 0; i < OrderCount; i++) {
-			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
-		}
+
 	}
 	
 	private void preRegMouseList() {
 		for(int i = 0; i < rowCount; i++) {
 			this.preReg.preReg.panel[i].addMouseListener(this);
+		}
+	}
+	
+	private void orderPanelMouseList() {
+		for(int i = 0; i < OrderCount; i++) {
+			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
 		}
 	}
 	
@@ -439,7 +442,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		
 
-        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
+//        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
         
 //        kbnProd
         
@@ -480,6 +483,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	private void orderPanelFunc() {
 		setVisiblePanel();
+		orderCounter();
 		orderPanel.setVisible(true);
 	}
 	
