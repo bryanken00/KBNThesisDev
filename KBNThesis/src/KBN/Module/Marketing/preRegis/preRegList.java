@@ -16,7 +16,7 @@ public class preRegList extends JPanel {
 	public JLabel lblBrand[];
 	public JLabel lblAddress[];
 	
-	public ArrayList rowID;
+	public static ArrayList rowID;
 	public int rowCount = 0;
 	
 	public preRegList() {

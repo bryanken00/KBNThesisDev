@@ -60,6 +60,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	
 	private String refNum;
+	public static String regID;
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -117,7 +118,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         objComponent();
         setUsername();
         orderCounter();
-        preRegCounter();
+        preRegStatus();
         setActionList();
         setVisiblePanel();
         defaultPanel();
@@ -125,19 +126,34 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         
 	}
 	
-	private void preRegCounter() {
+	private void preRegStatus() {
+		String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
 		try {
-			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
 			st.execute(sql);
 			rs = st.getResultSet();
 			if(rs.next())
 				rowCount = rs.getInt(1);
+			
 			if(rowCount == 0) {
 				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
 			}else {
 				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
 				custAccount.lblNotif.addMouseListener(this);
 			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	private void preRegCounter() {
+		try {
+			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				rowCount = rs.getInt(1);
+			
 			preReg.preReg.preRegCount(rowCount);
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR preRegCounter: " + e.getMessage());
@@ -351,16 +367,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
-		
 		//Mouse
 		for(int i = 0; i < OrderCount; i++) {
 			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
 		}
-		
+	}
+	
+	private void preRegMouseList() {
 		for(int i = 0; i < rowCount; i++) {
 			this.preReg.preReg.panel[i].addMouseListener(this);
 		}
-		
 	}
 	
 	private void setVisiblePanel() {
@@ -542,8 +558,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void preRegDataSetter(int index) {
-		String regID = preReg.preReg.rowID.get(index).toString();
-//		System.out.println(regID); // debugging
+		regID = preReg.preReg.rowID.get(index).toString();
+		System.out.println(regID); // debugging
 		try {
 			String sql = "SELECT Firstname, Middlename, Lastname, Contactnum, Emailadd, Street, Barangay, City, Province, Brand FROM tblpreregistration WHERE ID = '" + regID + "'";
 			
@@ -680,6 +696,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	private void noticListSetter() {
 		try {
+			preReg = new preRegister();
+			preRegCounter();
+			preRegMouseList();
 			String sql = "SELECT ID, FirstName, MiddleName, LastName, Brand, City, Province FROM tblpreregistration WHERE status = 'pending'";
 			st.execute(sql);
 			rs = st.getResultSet();

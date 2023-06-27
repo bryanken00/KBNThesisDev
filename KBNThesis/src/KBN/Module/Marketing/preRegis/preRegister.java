@@ -27,6 +27,7 @@ import javax.swing.border.EmptyBorder;
 import KBN.Module.Marketing.OrderListPanel;
 import KBN.Module.Marketing.OrderListPanelData;
 import KBN.commons.DbConnection;
+import KBN.views.MarketingModule;
 
 public class preRegister extends JDialog implements ActionListener {
 	private JScrollPane scrollPane;
@@ -35,6 +36,7 @@ public class preRegister extends JDialog implements ActionListener {
 	
 	private DbConnection dbConn;
 	public Registration reg;
+	private MarketingModule mModule;
 	
 	
 	private Statement st;
@@ -42,8 +44,6 @@ public class preRegister extends JDialog implements ActionListener {
 	private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz1234567890";
 	private ArrayList arr;
 	private int random;
-	
-	public int ID = 0;
 	
 	public preRegList preReg;
 	
@@ -129,6 +129,7 @@ public class preRegister extends JDialog implements ActionListener {
 		
 		if(e.getSource() == reg.btnRegister) {
 			try {
+				String ID = mModule.regID;
 				st = dbConn.getConnection().createStatement();
 				String sql = "SELECT Username FROM tblCustomerAccount";
 				st.execute(sql);
@@ -144,7 +145,7 @@ public class preRegister extends JDialog implements ActionListener {
 				
 				if(!reg.txtFN.getText().isEmpty() && !reg.txtLN.getText().isEmpty() && !reg.txtAddress.getText().isEmpty() && !reg.txtContact.getText().isEmpty() && !reg.txtUsername.getText().isEmpty() && !reg.txtPassword.getText().isEmpty() && !reg.txtEmail.getText().isEmpty()) {
 					// tblCustAccount
-					int ID = getRowID();
+//					int ID = getRowID();
 					String userID = reg.txtUsername.getText() + "#" + random;
 					String Username = reg.txtUsername.getText();
 					String Password = reg.txtPassword.getText();
@@ -161,25 +162,25 @@ public class preRegister extends JDialog implements ActionListener {
 					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "')";
 					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "'";
 //					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
+					System.out.println("sqlCustAcc: " + sqlCustAcc);
+					System.out.println("sqlCustAccInfo: " + sqlCustAccInfo);
+					System.out.println("sqlUpdatePreReg: " + sqlUpdatePreReg);
 					
 //					System.out.println(sqlCustAccInfo);
 					
 					st.execute(sqlCustAcc);
 					st.execute(sqlCustAccInfo);
 					st.execute(sqlUpdatePreReg);
+					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
 //					st.execute(sqlOrders);
+				}else {
+					JOptionPane.showMessageDialog(null, "Please Complete the form");
 				}
 			}catch (Exception e1) {
-				// TODO: handle exception
+				JOptionPane.showMessageDialog(null, "ERROR Register: " + e1.getMessage());
 			}
 		}
 	}
 	
-	private int getRowID() {
-		return ID;
-	}
-	
-	public void setRowID(int rrowID) {
-		this.ID = rrowID;
-	}
+
 }
