@@ -439,20 +439,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void KBNPanelFunc() {
 		setVisiblePanel();
-		
-		
-
+		kbnProd.main.setRowCount(0);
+		kbnProd.table.setModel(kbnProd.main);
 //        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
         
 //        kbnProd
         
         try {
-        	String sql = "SELECT prodImg, prodName, Quantity, Sold FROM tblproducts";
+        	String sql = "SELECT prodName, Quantity, Sold FROM tblproducts";
         	st.execute(sql);
         	rs = st.getResultSet();
         	while(rs.next()) {
-            	String imgPath = "http://localhost/webdevelopment/thesis1_website/Products/resources/" + rs.getString(1) ;
-            	Object[] data = {imgPath, rs.getString(2), rs.getString(3), rs.getString(4)};
+            	Object[] data = {rs.getString(1), rs.getString(2), rs.getString(1)};
             	kbnProd.main.addRow(data);
         	}
         }catch (Exception e) {

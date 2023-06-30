@@ -77,42 +77,13 @@ public class KBNProducts extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-        String columnIdentifiers[] = {"Product", "Product Name", "Quantity", "Sold"};
+        String columnIdentifiers[] = {"Product Name", "Quantity", "Sold"};
         main.setColumnIdentifiers(columnIdentifiers);
 		table.setModel(main);
 		
 		// set First Column width
         TableColumn productColumn = table.getColumnModel().getColumn(0);
         productColumn.setPreferredWidth(80);
-        
-		// to convert the path into img or to render
-		table.getColumnModel().getColumn(0).setCellRenderer(new ProductImageRenderer());
 	}
-	
-    private class ProductImageRenderer extends DefaultTableCellRenderer {
 
-        protected void setValue(Object value) {
-            if (value instanceof String) {
-                String imageUrl = (String) value;
-                try {
-                    // Load the image from the web URL
-                    URL url = new URL(imageUrl);
-                    Image image = ImageIO.read(url);
-                    
-                    // Set the fixed image size
-                    int width = 80;
-                    int height = 200;
-                    
-                    // Scale the image to fit the cell without preserving aspect ratio
-                    Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_DEFAULT);
-                    ImageIcon scaledIcon = new ImageIcon(scaledImage);
-                    setIcon(scaledIcon);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                setText("");
-            }
-        }
-    }
 }
