@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -123,7 +124,35 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         setVisiblePanel();
         defaultPanel();
         custAccountFunc();
-        
+        mostSoldProd();
+	}
+	
+	private void mostSoldProd() {
+		try {
+			String sqlAllTime = "SELECT ProdName, prodVolume, Sold FROM tblproducts ORDER BY Sold DESC LIMIT 1";
+			st.execute(sqlAllTime);
+			rs = st.getResultSet();
+			if(rs.next())
+				dashboard.lblMostSoldProd.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
+			
+			int currentYear = LocalDate.now().getYear();
+			int currentMonth = LocalDate.now().getMonthValue();
+			String sqlMonthly = "SELECT a.prodName, a.prodVolume, SUM(c.Quantity) AS Quantity "
+					+ "FROM tblproducts AS a "
+					+ "JOIN tblordercheckout AS b "
+					+ "JOIN tblordercheckoutdata AS c ON c.OrderRefNumber = b.OrderRefNumber AND c.ProductName = a.prodName AND c.volume = a.prodVolume "
+					+ "WHERE EXTRACT(YEAR FROM b.OrderDate) = " + currentYear + " "
+					+ "AND EXTRACT(MONTH FROM b.OrderDate) = " + currentMonth + " "
+					+ "GROUP BY a.prodID, a.prodName, a.prodVolume "
+					+ "ORDER BY SUM(c.Quantity) DESC LIMIT 1";
+//			System.out.println(sqlMonthly); //debug
+			st.execute(sqlMonthly);
+			rs = st.getResultSet();
+			if(rs.next())
+				dashboard.lblMonthlyMostSold.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR mostSoldProd: " + e.getMessage());
+		}
 	}
 	
 	private void preRegStatus() {
@@ -434,6 +463,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void dashboardPanelFunc() {
 		setVisiblePanel();
+		mostSoldProd();
 		dashboard.setVisible(true);
 	}
 	
