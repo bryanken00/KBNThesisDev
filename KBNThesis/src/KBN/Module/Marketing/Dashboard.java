@@ -29,12 +29,7 @@ public class Dashboard extends JPanel {
 	public JLabel lblTitleMostSoldMonthly;
 	public JLabel lblMonthlyMostSold;
 	public JPanel chartPanel;
-	
-	private Statement st;
-	private ResultSet rs;
-	
-	private DashboardSalesChartData dashChartData;
-	private DbConnection dbConn;
+	public JLabel lblChartTitle;
 
     public Dashboard() {
         this.setBounds(0, 0, 989, 699);
@@ -90,69 +85,18 @@ public class Dashboard extends JPanel {
         
         chartPanel = new JPanel();
         chartPanel.setBounds(10, 234, 593, 454);
+        chartPanel.setLayout(null);
         add(chartPanel);
+        
+        lblChartTitle = new JLabel("Sale Chart:");
+        lblChartTitle.setBounds(10, 11, 573, 22);
+        chartPanel.add(lblChartTitle);
 
         lblBackground = new JLabel("");
         lblBackground.setIcon(new ImageIcon(Dashboard.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
         lblBackground.setBounds(0, 0, 989, 699);
         add(lblBackground);
-        
 
-        
-        dbConn = new DbConnection();
-        
-        chartdataSetter();
-        
-    }
-    
-    private void chartdataSetter() {
-    	try {
-            List<Integer> scores = new ArrayList<Integer>();
-            List<String> date = new ArrayList<String>();
-            int max = 0;
-    		
-    		st = dbConn.getConnection().createStatement();
 
-    		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
-    				+ "GROUP BY b.OrderDate "
-    				+ "ORDER BY SUM(a.Quantity) DESC LIMIT 1";
-    		
-    		st.execute(sqlMaxCounterYaxis);
-    		rs = st.getResultSet();
-    		
-    		if(rs.next())
-    			max = rs.getInt(1);
-            	
-    		String X_axis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
-    				+ "GROUP BY b.OrderDate ";
-    		
-    		st.execute(X_axis);
-    		rs = st.getResultSet();
-    		
-    	    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
-    		
-    		while(rs.next()) {
-                scores.add(rs.getInt(1));
-        	    Date orderDate = rs.getDate(2);
-        	    String formattedDate = dateFormat.format(orderDate);
-                date.add(formattedDate);
-                System.out.println(date);
-    		}
-    		
-//            dashChartData = new DashboardSalesChartData(scores);
-            chartPanel.setLayout(null);
-            
-            dashChartData = new DashboardSalesChartData(scores, max, date);
-            dashChartData.setBounds(45, 46, 538, 397);
-            chartPanel.add(dashChartData);
-            
-            JLabel lblNewLabel_1 = new JLabel("Sales Chart:");
-            lblNewLabel_1.setBounds(10, 11, 556, 24);
-            chartPanel.add(lblNewLabel_1);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "ChartData: " + e.getMessage());
-		}
     }
 }

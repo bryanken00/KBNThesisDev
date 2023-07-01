@@ -9,8 +9,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -20,6 +23,7 @@ import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.CustomerCreateAccount;
 import KBN.Module.Marketing.Dashboard;
+import KBN.Module.Marketing.DashboardSalesChartData;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.OrderingPanel;
@@ -79,6 +83,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private JButton btnAuditTrail;
 	private JPanel panelTab;
 	
+
+	private DashboardSalesChartData dashChartData;
+	
 	
 	private int OrderListIndexClicked;
 	
@@ -125,6 +132,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         defaultPanel();
         custAccountFunc();
         mostSoldProd();
+		chartdataSetter();
 	}
 	
 	private void mostSoldProd() {
@@ -464,8 +472,54 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void dashboardPanelFunc() {
 		setVisiblePanel();
 		mostSoldProd();
+		chartdataSetter();
 		dashboard.setVisible(true);
 	}
+	
+    private void chartdataSetter() {
+    	try {
+            List<Integer> scores = new ArrayList<Integer>();
+            List<String> date = new ArrayList<String>();
+            int max = 0;
+    		
+    		st = dbConn.getConnection().createStatement();
+
+    		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
+    				+ "GROUP BY b.OrderDate "
+    				+ "ORDER BY SUM(a.Quantity) DESC LIMIT 1";
+    		
+    		st.execute(sqlMaxCounterYaxis);
+    		rs = st.getResultSet();
+    		
+    		if(rs.next())
+    			max = rs.getInt(1);
+            	
+    		String X_axis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
+    				+ "GROUP BY b.OrderDate ";
+    		
+    		st.execute(X_axis);
+    		rs = st.getResultSet();
+    		
+    	    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
+    		
+    		while(rs.next()) {
+                scores.add(rs.getInt(1));
+        	    Date orderDate = rs.getDate(2);
+        	    String formattedDate = dateFormat.format(orderDate);
+                date.add(formattedDate);
+    		}
+
+            dashChartData = new DashboardSalesChartData(scores, max, date);
+            dashChartData.setBounds(20, 25, 563, 383);
+            dashboard.chartPanel.add(dashChartData);
+            
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ChartData: " + e.getMessage());
+		}
+    }
 	
 	private void KBNPanelFunc() {
 		setVisiblePanel();
