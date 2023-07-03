@@ -37,7 +37,12 @@ public class KBNProducts extends JPanel {
 		scrollPane.setBounds(26, 146, 933, 511);
 		add(scrollPane);
 		
-		table = new JTable();
+		table = new JTable(){
+		public boolean isCellEditable(int rowIndex, int colIndex) {
+			return false;
+			}
+		};
+		table.setDefaultEditor(getClass(), null);
 		scrollPane.setViewportView(table);
 		
 		
@@ -77,13 +82,15 @@ public class KBNProducts extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-        String columnIdentifiers[] = {"Product Name", "Quantity", "Sold"};
+        String columnIdentifiers[] = {"ProdID", "Product Name", "Quantity", "Sold"};
         main.setColumnIdentifiers(columnIdentifiers);
 		table.setModel(main);
 		
-		// set First Column width
-        TableColumn productColumn = table.getColumnModel().getColumn(0);
-        productColumn.setPreferredWidth(80);
+		// hide 1st column
+		table.getColumnModel().getColumn(0).setMinWidth(0);
+        table.getColumnModel().getColumn(0).setMaxWidth(0);
+        
+		// set 2nd Column width
+        table.getColumnModel().getColumn(1).setPreferredWidth(400);;
 	}
-
 }

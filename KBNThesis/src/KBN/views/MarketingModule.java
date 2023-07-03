@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
@@ -27,7 +29,9 @@ import KBN.Module.Marketing.DashboardSalesChartData;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.OrderingPanel;
+import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.RebrandingProd;
+import KBN.Module.Marketing.RightClick;
 import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
@@ -43,7 +47,7 @@ import java.awt.Component;
 import java.awt.Font;
 
 
-public class MarketingModule extends JFrame implements ActionListener, MouseListener{
+public class MarketingModule extends JFrame implements ActionListener, MouseListener, KeyListener{
 
 	//Class Import
 	private DbConnection dbConn;
@@ -58,6 +62,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private OrderingPanel orderPanel;
 	private preRegister preReg;
 	private preRegList preRegisList;
+	private RightClick rightClick;
+	private ProductDetails prodDetails;
 	
 	// Object
 	private Statement st;
@@ -121,6 +127,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		custCreateAccount = new CustomerCreateAccount();
 		orderPanel = new OrderingPanel();
 		preReg = new preRegister();
+		// Start Right Click
+		rightClick = new RightClick();
+			this.add(rightClick);
+			rightClick.setVisible(false);
+		// End Right Click
+			
+		prodDetails = new ProductDetails();
+		
+		
 		
         // DefaultSetup
         objComponent();
@@ -133,102 +148,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         custAccountFunc();
         mostSoldProd();
 		chartdataSetter();
-	}
-	
-	private void mostSoldProd() {
-		try {
-			String sqlAllTime = "SELECT ProdName, prodVolume, Sold FROM tblproducts ORDER BY Sold DESC LIMIT 1";
-			st.execute(sqlAllTime);
-			rs = st.getResultSet();
-			if(rs.next())
-				dashboard.lblMostSoldProd.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
-			
-			int currentYear = LocalDate.now().getYear();
-			int currentMonth = LocalDate.now().getMonthValue();
-			String sqlMonthly = "SELECT a.prodName, a.prodVolume, SUM(c.Quantity) AS Quantity "
-					+ "FROM tblproducts AS a "
-					+ "JOIN tblordercheckout AS b "
-					+ "JOIN tblordercheckoutdata AS c ON c.OrderRefNumber = b.OrderRefNumber AND c.ProductName = a.prodName AND c.volume = a.prodVolume "
-					+ "WHERE EXTRACT(YEAR FROM b.OrderDate) = " + currentYear + " "
-					+ "AND EXTRACT(MONTH FROM b.OrderDate) = " + currentMonth + " "
-					+ "GROUP BY a.prodID, a.prodName, a.prodVolume "
-					+ "ORDER BY SUM(c.Quantity) DESC LIMIT 1";
-//			System.out.println(sqlMonthly); //debug
-			st.execute(sqlMonthly);
-			rs = st.getResultSet();
-			if(rs.next())
-				dashboard.lblMonthlyMostSold.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
-		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "ERROR mostSoldProd: " + e.getMessage());
-		}
-	}
-	
-	private void preRegStatus() {
-		String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
-		try {
-			st.execute(sql);
-			rs = st.getResultSet();
-			if(rs.next())
-				rowCount = rs.getInt(1);
-			
-			if(rowCount == 0) {
-				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
-			}else {
-				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
-				custAccount.lblNotif.addMouseListener(this);
-			}
-		} catch (Exception e) {
-			
-		}
-	}
-	
-	private void preRegCounter() {
-		try {
-			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
-			st.execute(sql);
-			rs = st.getResultSet();
-			
-			if(rs.next())
-				rowCount = rs.getInt(1);
-			
-			preReg.preReg.preRegCount(rowCount);
-		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "ERROR preRegCounter: " + e.getMessage());
-		}
-	}
-	
-	private void orderCounter() {
-		try {
-			st = dbConn.getConnection().createStatement();
-			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
-			st.execute(sql);
-			rs = st.getResultSet();
-			
-			if(rs.next())
-				OrderCount = rs.getInt(1);
-			
-			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
-		}
-		setOrderListData();
-	}
-	
-	private void setOrderListData() {
-		try {
-			String sql = "SELECT a.`OrderRefNumber`, a.UserID, b.FirstName, b.LastName FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID";
-			st.execute(sql);
-			rs = st.getResultSet();
-			int i = 0;
-			while(rs.next()) {
-				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
-				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
-				i++;
-			}
-			
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
-		}
 	}
 	
 	private void objComponent() {
@@ -375,10 +294,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 	}
 	
-	private void setUsername() {
-		dataSet = new dataSetter();
-		lblUsername.setText(dataSet.getUsername());
-	}
 	
 	private void setActionList() {
 		btnDashboard.addActionListener(this);
@@ -404,40 +319,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
+		
+		//KBN ProdMouseList
+		kbnProd.table.addMouseListener(this);
+		
+		//RightClick
+		
+		rightClick.btnAddItem.addActionListener(this);
+		rightClick.btnEdit.addActionListener(this);
+		rightClick.btnArchive.addActionListener(this);
+		rightClick.addKeyListener(this);
+		kbnProd.table.addKeyListener(this);
 
-	}
-	
-	private void preRegMouseList() {
-		for(int i = 0; i < rowCount; i++) {
-			this.preReg.preReg.panel[i].addMouseListener(this);
-		}
-	}
-	
-	private void orderPanelMouseList() {
-		for(int i = 0; i < OrderCount; i++) {
-			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
-		}
-	}
-	
-	private void setVisiblePanel() {
-		dashboard.setVisible(false);
-		kbnProd.setVisible(false);
-		rebrandingProd.setVisible(false);
-		custAccount.setVisible(false);
-		auditTrail.setVisible(false);
-		delStatus.setVisible(false);
-		orderPanel.setVisible(false);
-	}
-	
-	private void defaultPanel() {
-		panelTab.add(dashboard);
-		panelTab.add(kbnProd);
-		panelTab.add(rebrandingProd);
-		panelTab.add(custAccount);
-		panelTab.add(auditTrail);
-		panelTab.add(delStatus);
-		panelTab.add(orderPanel);
-		dashboard.setVisible(true);
 	}
 	
 	@Override
@@ -467,7 +360,105 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		if(e.getSource() == orderPanel.btnApproved)
 			System.out.println("APPROVED");
+		
+		if(e.getSource() == rightClick.btnEdit)
+			prodDetailsFunc();
 	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if(e.getSource() == custAccount.lblNotif) {
+			noticListSetter();
+			preReg.setVisible(true);
+		}
+		if(e.getSource() == kbnProd.table) {
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				rightClick.setVisible(true);
+				rightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
+			}
+		}
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+	 * 
+	 * 
+	 *	KEY 
+	 * 
+	 * 
+	 * 
+	 */
+	
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+		if(e.getSource() == kbnProd.table || e.getSource() == rightClick) {
+			if(e.getKeyCode() == 27) {
+				rightClick.setVisible(false);
+			}
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	// Defaults
+	
+	private void setVisiblePanel() {
+		dashboard.setVisible(false);
+		kbnProd.setVisible(false);
+		rebrandingProd.setVisible(false);
+		custAccount.setVisible(false);
+		auditTrail.setVisible(false);
+		delStatus.setVisible(false);
+		orderPanel.setVisible(false);
+	}
+	
+	private void defaultPanel() {
+		panelTab.add(dashboard);
+		panelTab.add(kbnProd);
+		panelTab.add(rebrandingProd);
+		panelTab.add(custAccount);
+		panelTab.add(auditTrail);
+		panelTab.add(delStatus);
+		panelTab.add(orderPanel);
+		dashboard.setVisible(true);
+	}
+	
+	private void setUsername() {
+		dataSet = new dataSetter();
+		lblUsername.setText(dataSet.getUsername());
+	}
+
 	
 	private void dashboardPanelFunc() {
 		setVisiblePanel();
@@ -475,6 +466,127 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		chartdataSetter();
 		dashboard.setVisible(true);
 	}
+	
+	private void prodDetailsFunc() {
+	    if (kbnProd.table.getSelectedRow() != -1) {
+	        String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
+	        prodDetails.ProductDetails(ID);
+	        prodDetails.setVisible(true);
+	        // prodDetails.ProductDetails(ID);
+	    } else {
+	        JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
+	    }
+	}
+	
+	private void mostSoldProd() {
+		try {
+			String sqlAllTime = "SELECT ProdName, prodVolume, Sold FROM tblproducts ORDER BY Sold DESC LIMIT 1";
+			st.execute(sqlAllTime);
+			rs = st.getResultSet();
+			if(rs.next())
+				dashboard.lblMostSoldProd.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
+			
+			int currentYear = LocalDate.now().getYear();
+			int currentMonth = LocalDate.now().getMonthValue();
+			String sqlMonthly = "SELECT a.prodName, a.prodVolume, SUM(c.Quantity) AS Quantity "
+					+ "FROM tblproducts AS a "
+					+ "JOIN tblordercheckout AS b "
+					+ "JOIN tblordercheckoutdata AS c ON c.OrderRefNumber = b.OrderRefNumber AND c.ProductName = a.prodName AND c.volume = a.prodVolume "
+					+ "WHERE EXTRACT(YEAR FROM b.OrderDate) = " + currentYear + " "
+					+ "AND EXTRACT(MONTH FROM b.OrderDate) = " + currentMonth + " "
+					+ "GROUP BY a.prodID, a.prodName, a.prodVolume "
+					+ "ORDER BY SUM(c.Quantity) DESC LIMIT 1";
+//			System.out.println(sqlMonthly); //debug
+			st.execute(sqlMonthly);
+			rs = st.getResultSet();
+			if(rs.next())
+				dashboard.lblMonthlyMostSold.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR mostSoldProd: " + e.getMessage());
+		}
+	}
+	
+	private void preRegStatus() {
+		String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
+		try {
+			st.execute(sql);
+			rs = st.getResultSet();
+			if(rs.next())
+				rowCount = rs.getInt(1);
+			
+			if(rowCount == 0) {
+				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
+			}else {
+				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
+				custAccount.lblNotif.addMouseListener(this);
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	private void preRegCounter() {
+		try {
+			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				rowCount = rs.getInt(1);
+			
+			preReg.preReg.preRegCount(rowCount);
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR preRegCounter: " + e.getMessage());
+		}
+	}
+	
+	private void orderCounter() {
+		try {
+			st = dbConn.getConnection().createStatement();
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				OrderCount = rs.getInt(1);
+			
+			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
+		}
+		setOrderListData();
+	}
+	
+	private void setOrderListData() {
+		try {
+			String sql = "SELECT a.`OrderRefNumber`, a.UserID, b.FirstName, b.LastName FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
+				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				i++;
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
+		}
+	}
+	
+	
+	private void preRegMouseList() {
+		for(int i = 0; i < rowCount; i++) {
+			this.preReg.preReg.panel[i].addMouseListener(this);
+		}
+	}
+	
+	private void orderPanelMouseList() {
+		for(int i = 0; i < OrderCount; i++) {
+			this.orderPanel.orderLPanel.opd.orderList[i].addMouseListener(this);
+		}
+	}
+	
 	
     private void chartdataSetter() {
     	try {
@@ -530,12 +642,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //        kbnProd
         
         try {
-        	String sql = "SELECT prodName, Quantity, Sold FROM tblproducts";
+        	String sql = "SELECT prodID, prodName, Quantity, Sold FROM tblproducts";
         	st.execute(sql);
         	rs = st.getResultSet();
         	while(rs.next()) {
-            	Object[] data = {rs.getString(1), rs.getString(2), rs.getString(1)};
+            	Object[] data = {rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)};
             	kbnProd.main.addRow(data);
+//            	System.out.println(rs.getString(1));
         	}
         }catch (Exception e) {
         	JOptionPane.showMessageDialog(null, "KBNProducts: " + e.getMessage());
@@ -799,33 +912,5 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error NotifSetter: " + e.getMessage());
 		}
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if(e.getSource() == custAccount.lblNotif) {
-			noticListSetter();
-			preReg.setVisible(true);
-		}
-		
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		
-	}
-
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-
-	}
-
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }
