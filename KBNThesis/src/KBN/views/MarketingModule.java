@@ -560,7 +560,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void setOrderListData() {
 		try {
-			String sql = "SELECT a.`OrderRefNumber`, a.UserID, b.FirstName, b.LastName FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID";
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber";
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -568,7 +568,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
 				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
 				//status indicator
-				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource("/KBN/resources/Marketing/OrderList/green.png")));
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource("/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png")));
 				i++;
 			}
 			
