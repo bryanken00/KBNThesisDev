@@ -28,6 +28,7 @@ import KBN.Module.Marketing.Dashboard;
 import KBN.Module.Marketing.DashboardSalesChartData;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
+import KBN.Module.Marketing.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.RebrandingProd;
@@ -566,6 +567,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			while(rs.next()) {
 				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
 				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				//status indicator
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource("/KBN/resources/Marketing/OrderList/green.png")));
 				i++;
 			}
 			
@@ -679,6 +682,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderPanelFunc() {
 		setVisiblePanel();
 		orderCounter();
+		orderPanelMouseList();
 		orderPanel.setVisible(true);
 	}
 	

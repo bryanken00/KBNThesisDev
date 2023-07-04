@@ -1,6 +1,7 @@
 package KBN.Module.Marketing;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ public class OrderListPanelData extends JPanel {
 	public JLabel[] lblStatus;
 	public JLabel[] lblTextAmount;
 	public JLabel[] lblTotalAmmount;
+	public JLabel[] lblOrderStatusColor;
 	public JSeparator[] separator;
 	
 	public int OrderCount;
@@ -24,7 +26,6 @@ public class OrderListPanelData extends JPanel {
 	public OrderListPanelData() {
 		setBounds(0, 0, 320, 1000);
 		setLayout(null);
-
 	}
 	
 	public void iOrderCount(int count) {
@@ -40,6 +41,7 @@ public class OrderListPanelData extends JPanel {
 		lblStatus = new JLabel[OrderCount];
 		lblTextAmount = new JLabel[OrderCount];
 		lblTotalAmmount = new JLabel[OrderCount];
+		lblOrderStatusColor = new JLabel[OrderCount];
 		separator = new JSeparator[OrderCount];
 		
 		for(int i = 0; i < OrderCount; i++) {
@@ -88,6 +90,10 @@ public class OrderListPanelData extends JPanel {
 		lblTotalAmmount[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTotalAmmount[i].setBounds(182, 69, 108, 22);
 		orderList[i].add(lblTotalAmmount[i]);
+		
+		lblOrderStatusColor[i] = new JLabel("");
+		lblOrderStatusColor[i].setBounds(246, 11, 46, 15);
+		orderList[i].add(lblOrderStatusColor[i]);
 		
 		separator[i] = new JSeparator();
 		separator[i].setBounds(10, 63, 280, 7);
