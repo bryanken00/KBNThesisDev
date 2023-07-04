@@ -29,6 +29,7 @@ import KBN.Module.Marketing.DashboardSalesChartData;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.OrderListPanelData;
+import KBN.Module.Marketing.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.RebrandingProd;
@@ -65,6 +66,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private preRegList preRegisList;
 	private RightClick rightClick;
 	private ProductDetails prodDetails;
+	private OrderPanelPopupInstruction orderPanelInstruction;
 	
 	// Object
 	private Statement st;
@@ -135,7 +137,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// End Right Click
 			
 		prodDetails = new ProductDetails();
-		
+		orderPanelInstruction = new OrderPanelPopupInstruction();
 		
 		
         // DefaultSetup
@@ -317,6 +319,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanel.btnInvoice.addActionListener(this);
 		orderPanel.btnProcessComplete.addActionListener(this);
 		orderPanel.btnProductionComplete.addActionListener(this);
+		orderPanel.orderLPanel.lblInstruction.addMouseListener(this);
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
@@ -331,6 +334,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rightClick.btnArchive.addActionListener(this);
 		rightClick.addKeyListener(this);
 		kbnProd.table.addKeyListener(this);
+		
+		
 
 	}
 	
@@ -389,13 +394,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-
+		if(e.getSource() == orderPanel.orderLPanel.lblInstruction) {
+			orderPanelInstruction.setBounds(e.getX() + 910, e.getY() + 250, 174, 144);
+			orderPanelInstruction.setVisible(true);
+		}
 	}
 
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() == orderPanel.orderLPanel.lblInstruction) {
+			orderPanelInstruction.setVisible(false);
+		}
 		
 	}
 	

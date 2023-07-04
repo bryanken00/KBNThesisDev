@@ -18,7 +18,9 @@ public class OrderListPanel extends JPanel {
 	// Class Import
 	public OrderListPanelData opd;
 	
-	private JTextField txtSearch;
+	public JTextField txtSearch;
+	public JLabel lblInstruction;
+	private JLabel lblNewlabel;
 	
 	public OrderListPanel() {
 		setBounds(0, 0, 320, 677);
@@ -32,6 +34,11 @@ public class OrderListPanel extends JPanel {
 		opd = new OrderListPanelData();
 		scrollPane.setViewportView(opd);
 		
+		lblInstruction = new JLabel("");
+		lblInstruction.setIcon(new ImageIcon(OrderListPanel.class.getResource("/KBN/resources/Marketing/OrderList/informationMarketing.png")));
+		lblInstruction.setBounds(280, 45, 32, 32);
+		add(lblInstruction);
+		
 		JLabel lblNewLabel = new JLabel("Order List");
 		lblNewLabel.setIcon(new ImageIcon(OrderListPanel.class.getResource("/KBN/resources/Marketing/OrderList/Order.png")));
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -44,8 +51,10 @@ public class OrderListPanel extends JPanel {
 		add(txtSearch);
 		txtSearch.setColumns(10);
 		
-		JLabel lblNewLabel_1 = new JLabel("New Order 1 Minute ago");
-		lblNewLabel_1.setBounds(10, 52, 300, 19);
-		add(lblNewLabel_1);
+		lblNewlabel = new JLabel("New Order 1 Minute ago");
+		lblNewlabel.setBounds(10, 52, 300, 19);
+		add(lblNewlabel);
+		
+
 	}
 }
