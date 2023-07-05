@@ -34,6 +34,8 @@ import KBN.Module.Marketing.OrderingPanel;
 import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.RebrandingProd;
 import KBN.Module.Marketing.RightClick;
+import KBN.Module.Marketing.ClientProfile.ClientProfile;
+import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
@@ -67,6 +69,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private RightClick rightClick;
 	private ProductDetails prodDetails;
 	private OrderPanelPopupInstruction orderPanelInstruction;
+	private ClientProfile cp;
+	private ClientProfileScrollablePanel cpsp;
 	
 	// Object
 	private Statement st;
@@ -135,6 +139,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			this.add(rightClick);
 			rightClick.setVisible(false);
 		// End Right Click
+		
+		// Client Profile Tab
+		cp = new ClientProfile();
+		cpsp = new ClientProfileScrollablePanel();
 			
 		prodDetails = new ProductDetails();
 		orderPanelInstruction = new OrderPanelPopupInstruction();
@@ -369,6 +377,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		if(e.getSource() == rightClick.btnEdit)
 			prodDetailsFunc();
+		
+		// Client Profile
+		
+		if(e.getSource() == btnClientProfile)
+			clientProfileFunc();
 	}
 	
 	@Override
@@ -452,6 +465,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		auditTrail.setVisible(false);
 		delStatus.setVisible(false);
 		orderPanel.setVisible(false);
+		cp.setVisible(false);
 	}
 	
 	private void defaultPanel() {
@@ -462,6 +476,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.add(auditTrail);
 		panelTab.add(delStatus);
 		panelTab.add(orderPanel);
+		panelTab.add(cp);
+		cp.scrollOrderPanel.setViewportView(cpsp);
 		dashboard.setVisible(true);
 	}
 	
@@ -694,6 +710,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderCounter();
 		orderPanelMouseList();
 		orderPanel.setVisible(true);
+	}
+	
+	// Client Profile
+	private void clientProfileFunc() {
+		setVisiblePanel();
+		cp.setVisible(true);
 	}
 	
 	private void orderPanelBTNAPPROVED() {

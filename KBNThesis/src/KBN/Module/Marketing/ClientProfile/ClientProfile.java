@@ -9,7 +9,7 @@ import java.awt.Font;
 
 public class ClientProfile extends JPanel {
 	private JPanel panel_1_4;
-	private JPanel panel;
+	private JPanel panelClientProfile;
 	private JPanel panel_1;
 	private JPanel panel_1_1;
 	private JPanel panel_1_2;
@@ -20,6 +20,8 @@ public class ClientProfile extends JPanel {
 	private JSeparator separator_1;
 	private JLabel lblNewLabel_6;
 	private JSeparator separator_2;
+	public JScrollPane scrollOrderPanel;
+	
 
 	/**
 	 * Create the panel.
@@ -28,10 +30,10 @@ public class ClientProfile extends JPanel {
 		this.setBounds(0, 0, 989, 699);
 		setLayout(null);
 		
-		panel = new JPanel();
-		panel.setBounds(14, 11, 264, 677);
-		add(panel);
-		panel.setLayout(null);
+		panelClientProfile = new JPanel();
+		panelClientProfile.setBounds(14, 11, 264, 677);
+		add(panelClientProfile);
+		panelClientProfile.setLayout(null);
 		
 		panel_1 = new JPanel();
 		panel_1.setBounds(292, 11, 160, 109);
@@ -103,8 +105,8 @@ public class ClientProfile extends JPanel {
 		separator_2.setBounds(262, 37, 18, 25);
 		panel_1_4.add(separator_2);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(23, 82, 635, 452);
-		panel_1_4.add(scrollPane);
+		scrollOrderPanel = new JScrollPane();
+		scrollOrderPanel.setBounds(23, 82, 635, 452);
+		panel_1_4.add(scrollOrderPanel);
 	}
 }
