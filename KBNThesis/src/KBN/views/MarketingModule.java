@@ -743,9 +743,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-	private void tableOrderList() {
-		
-	}
 
 
 	@Override
