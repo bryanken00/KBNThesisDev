@@ -23,13 +23,14 @@ public class CustomerAccount extends JPanel {
 	public JButton btnCreate; 
 	public JLabel lblNewLabel;
 	public JLabel lblNotif;
+	public JButton btnClientProfile;
 	
 	public CustomerAccount() {
         this.setBounds(0, 0, 989, 699);
         setLayout(null);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(24, 113, 939, 556);
+		scrollPane.setBounds(24, 113, 939, 504);
 		this.add(scrollPane);
 		
 		table = new JTable();
@@ -58,6 +59,14 @@ public class CustomerAccount extends JPanel {
 		lblNewLabel.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
 		lblNewLabel.setBounds(0, 0, 989, 699);
 		add(lblNewLabel);
+		
+		btnClientProfile = new JButton("Client Profile");
+		btnClientProfile.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnClientProfile.setFocusable(false);
+		btnClientProfile.setBorderPainted(false);
+		btnClientProfile.setBackground(Color.WHITE);
+		btnClientProfile.setBounds(797, 640, 166, 28);
+		add(btnClientProfile);
 		
 
 		
