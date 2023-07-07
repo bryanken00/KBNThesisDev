@@ -26,11 +26,6 @@ public class ClientProfileScrollablePanel extends JPanel {
 	public ClientProfileScrollablePanel() {
 		setBounds(0, 0, 635, 452);
 		setLayout(null);
-
-		orderCountSetter(20);
-		
-		
-
 	}
 	
 	

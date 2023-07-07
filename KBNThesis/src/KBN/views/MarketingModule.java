@@ -77,6 +77,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private ResultSet rs;
 	
 	
+	//Client Profile
+	private String clientProfileChecker = "";
+	
+	
 	private String refNum;
 	public static String regID;
 	
@@ -104,6 +108,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private int OrderCount; // Order List
 	private int rowCount; // Pre - Registration
+	private int ClientProfileCounter; // Client Profile
 
 	public MarketingModule() {
 		setResizable(false);
@@ -331,6 +336,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
+		custAccount.btnClientProfile.addActionListener(this);
 		
 		//KBN ProdMouseList
 		kbnProd.table.addMouseListener(this);
@@ -371,6 +377,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//inside Panel 
 		if(e.getSource() == custAccount.btnCreate)
 			custAccountCreateAccount();
+		if(e.getSource() == custAccount.btnClientProfile)
+			custAccountClientProfileFunc();
 		
 		if(e.getSource() == orderPanel.btnApproved)
 			System.out.println("APPROVED");
@@ -714,6 +722,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	// Client Profile
 	private void clientProfileFunc() {
+		if("".equals(clientProfileChecker))
+			return;
 		setVisiblePanel();
 		cp.setVisible(true);
 	}
@@ -746,16 +756,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccountFunc() {
 		try {
             st = dbConn.getConnection().createStatement();
-			String sql = "SELECT Firstname, Lastname, Email, Number FROM tblcustomerinformation";
+			String sql = "SELECT userID,Firstname, Lastname, Email, Number, AccountType FROM tblcustomerinformation ORDER BY AccountType DESC";
 			st.execute(sql);
 			
 			rs = st.getResultSet();
 			ArrayList SQLResult = new ArrayList<>();
 			
 			while(rs.next()) {
-				SQLResult.add(rs.getString(1) + " " + rs.getString(2));
-				SQLResult.add(rs.getString(3));
+				SQLResult.add(rs.getString(1));
+				SQLResult.add(rs.getString(2) + " " + rs.getString(3));
 				SQLResult.add(rs.getString(4));
+				SQLResult.add(rs.getString(5));
+				SQLResult.add(rs.getString(6));
 				custAccount.main.addRow(SQLResult.toArray());
 				SQLResult.clear();
 			}
@@ -763,6 +775,50 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error CustAccFunc: " + e.getMessage());
 		}
+	}
+	
+	private void custAccountClientProfileFunc() {
+		String userID = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 0) + "";
+		String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
+		if("rebranding".equals(AccType)) {
+			clientProfileChecker = AccType;
+			try {
+				String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
+						+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
+						+ "WHERE b.UserID = '" + userID + "';";
+				
+				st.execute(RowCount);
+				rs = st.getResultSet();
+				
+				if(rs.next())
+					ClientProfileCounter = rs.getInt(1);
+				
+				cpsp.orderCountSetter(ClientProfileCounter);
+				
+				String SQL = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
+						+ "FROM tblorderstatus AS a "
+						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+						+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+						+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+						+ "WHERE c.UserID = '" + userID + "' AND a.Status != 'Completed' AND a.Status != 'Return' "
+						+ "GROUP BY b.OrderRefNumber";
+				
+				st.execute(SQL);
+				rs = st.getResultSet();
+				int i = 0;
+				while(rs.next()) {
+					cpsp.lblRefNumber[i].setText(rs.getString(1));
+					cpsp.lblProdName[i].setText(rs.getString(2));
+					cpsp.lblQuantity[i].setText(rs.getString(3));
+					cpsp.lblStatus[i].setText(rs.getString(4));
+					i++;
+				}
+				clientProfileFunc();
+			}catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
+			}
+		}else
+			return;
 	}
 	
 

@@ -55,11 +55,6 @@ public class CustomerAccount extends JPanel {
 		lblNotif.setBounds(917, 11, 32, 32);
 		add(lblNotif);
 		
-		lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
-		lblNewLabel.setBounds(0, 0, 989, 699);
-		add(lblNewLabel);
-		
 		btnClientProfile = new JButton("Client Profile");
 		btnClientProfile.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnClientProfile.setFocusable(false);
@@ -67,6 +62,12 @@ public class CustomerAccount extends JPanel {
 		btnClientProfile.setBackground(Color.WHITE);
 		btnClientProfile.setBounds(797, 640, 166, 28);
 		add(btnClientProfile);
+		
+		lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
+		lblNewLabel.setBounds(0, 0, 989, 699);
+		add(lblNewLabel);
+		
 		
 
 		
@@ -76,7 +77,7 @@ public class CustomerAccount extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		columnDefaultData = new String[] {"Account","Email", "Contact", "Status"};
+		columnDefaultData = new String[] {"User ID","Account","Email", "Contact", "Account Type"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 	}
