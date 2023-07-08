@@ -77,7 +77,7 @@ public class CustomerAccount extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		columnDefaultData = new String[] {"User ID","Account","Email", "Contact", "Account Type"};
+		columnDefaultData = new String[] {"User ID","Account","Email", "Contact", "Brand", "Account Type"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 	}

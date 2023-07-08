@@ -12,7 +12,9 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -756,7 +758,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccountFunc() {
 		try {
             st = dbConn.getConnection().createStatement();
-			String sql = "SELECT userID,Firstname, Lastname, Email, Number, AccountType FROM tblcustomerinformation ORDER BY AccountType DESC";
+			String sql = "SELECT userID,Firstname, Lastname, Email, Number, Description, AccountType FROM tblcustomerinformation ORDER BY AccountType DESC";
 			st.execute(sql);
 			
 			rs = st.getResultSet();
@@ -768,6 +770,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				SQLResult.add(rs.getString(4));
 				SQLResult.add(rs.getString(5));
 				SQLResult.add(rs.getString(6));
+				SQLResult.add(rs.getString(7));
 				custAccount.main.addRow(SQLResult.toArray());
 				SQLResult.clear();
 			}
@@ -778,8 +781,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void custAccountClientProfileFunc() {
+		
+		// {"User ID","Account","Email", "Contact", "Brand", "Account Type"}
 		String userID = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 0) + "";
-		String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
+		String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 5) + "";
+		String custName = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
+		String custBrand = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
 		if("rebranding".equals(AccType)) {
 			clientProfileChecker = AccType;
 			try {
@@ -814,6 +821,62 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					i++;
 				}
 				clientProfileFunc();
+				
+				//Setting Customer Profile
+				cp.lblClientName.setText(custName);
+				cp.lblBrand.setText(custBrand);
+				cp.lblNone.setText("");
+				
+				
+				//SQL Getting this week Quantity
+				double thisWeek = 0;
+				double lastWeek = 1;
+				
+		        LocalDate today = LocalDate.now();
+		        LocalDate mondayOfLastWeek = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		        LocalDate sundayOfLastWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+		        LocalDate mondaythisWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		        
+//				String thisWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
+//						+ "FROM tblordercheckout AS a "
+//						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+//						+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'"
+//						+ "GROUP BY b.OrderRefNumber";
+		        
+				String thisWeekCount = "SELECT SUM(b.Quantity) "
+						+ "FROM tblordercheckout AS a "
+						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+						+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'";
+				
+				
+				st.execute(thisWeekCount);
+				rs = st.getResultSet();
+				
+				if(rs.next())
+					thisWeek = rs.getInt(1);
+					
+//				String lastWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
+//						+ "FROM tblordercheckout AS a "
+//						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+//						+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "' "
+//						+ "GROUP BY b.OrderRefNumber";
+				
+				String lastWeekCount = "SELECT SUM(b.Quantity) "
+						+ "FROM tblordercheckout AS a "
+						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+						+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "'";
+				
+				
+				st.execute(lastWeekCount);
+				rs = st.getResultSet();
+				
+				if(rs.next())
+					lastWeek = rs.getInt(1);
+				
+				double formulaWeekly = (thisWeek / lastWeek) * 100;
+				
+				cp.lblPercent.setText((int)formulaWeekly + "");
+				
 			}catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
 			}
