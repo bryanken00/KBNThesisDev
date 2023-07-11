@@ -91,24 +91,25 @@ public class ClientProfile extends JPanel {
 		lblPercent = new JLabel("101");
 		lblPercent.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblPercent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPercent.setBounds(0, 31, 46, 27);
+		lblPercent.setBounds(0, 31, 64, 27);
 		panelWeekly.add(lblPercent);
 		
-		lblPercentIcon = new JLabel("%");
+		lblPercentIcon = new JLabel("");
 		lblPercentIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPercentIcon.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblPercentIcon.setBounds(45, 31, 33, 27);
+		lblPercentIcon.setBounds(59, 31, 32, 32);
 		panelWeekly.add(lblPercentIcon);
 		
 		lblIcon = new JLabel("");
+		lblIcon.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/chart.png")));
 		lblIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		lblIcon.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblIcon.setBounds(88, 38, 72, 60);
+		lblIcon.setBounds(88, 38, 64, 64);
 		panelWeekly.add(lblIcon);
 		
 		lblText = new JLabel("");
 		lblText.setHorizontalAlignment(SwingConstants.CENTER);
-		lblText.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblText.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblText.setBounds(0, 69, 72, 29);
 		panelWeekly.add(lblText);
 		

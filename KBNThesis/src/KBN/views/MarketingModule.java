@@ -873,10 +873,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				if(rs.next())
 					lastWeek = rs.getInt(1);
 				
-				double formulaWeekly = (thisWeek / lastWeek) * 100;
-				
-				cp.lblPercent.setText((int)formulaWeekly + "");
-				
+				double formulaWeekly = ((thisWeek / lastWeek) * 100) - 100;
+				cp.lblPercent.setText((int)formulaWeekly + "%");
+				System.out.println(formulaWeekly);
+				if(formulaWeekly < 0 || Double.isNaN(formulaWeekly)) {
+					cp.lblPercentIcon.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/low-price.png")));
+					cp.lblText.setText("<html><center>Lower Than<br> Last</center></html>");
+				}
+				else {
+					cp.lblPercentIcon.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/high-price.png")));
+					cp.lblText.setText("<html><center>Higher Than<br> Last</center></html>");
+				}
 			}catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
 			}
