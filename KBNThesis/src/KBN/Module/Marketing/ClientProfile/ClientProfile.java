@@ -12,6 +12,8 @@ import javax.swing.ImageIcon;
 import java.awt.SystemColor;
 
 public class ClientProfile extends JPanel {
+
+	public JScrollPane scrollOrderPanel;
 	
 	public JLabel lblUserIcon;
 	public JLabel lblClientName;
@@ -22,27 +24,27 @@ public class ClientProfile extends JPanel {
 	public JLabel lblOrders;
 	public JLabel lblOrderHistory;
 	
-	public JLabel lblPercent;
-	public JLabel lblPercentIcon;
-	public JLabel lblIcon;
-	public JLabel lblText;
+	public JLabel lblWeeklyPercent;
+	public JLabel lblPercentIconWeekly;
+	public JLabel lblTextWeekly;
 	
+	public JLabel lblMonthlyPercent;
+	public JLabel lblPercentIconMonthly;
+	public JLabel lblTextMonthly;
+	
+	public JLabel lblYearlyPercent;
+	public JLabel lblTextYearly;
+	public JLabel lblPercentIconYearly;
 
 	public JPanel panelClientProfile;
 	public JPanel panelProducts;
 	public JPanel panelWeekly;
-	public JPanel panelMonthly;
-	public JPanel panelYearly;
 	public JPanel panelRate;
-	private JLabel lblNewLabel_3;
+	private JPanel panelMonthly;
+	private JPanel panelMonthly_1;
 	private JSeparator separator_1;
 	private JSeparator separator_2;
-	public JScrollPane scrollOrderPanel;
 	
-
-	/**
-	 * Create the panel.
-	 */
 	public ClientProfile() {
 		this.setBounds(0, 0, 989, 699);
 		setLayout(null);
@@ -88,65 +90,112 @@ public class ClientProfile extends JPanel {
 		lblWeeklyTitle.setBounds(0, 0, 160, 27);
 		panelWeekly.add(lblWeeklyTitle);
 		
-		lblPercent = new JLabel("101");
-		lblPercent.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblPercent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPercent.setBounds(0, 31, 64, 27);
-		panelWeekly.add(lblPercent);
+		lblWeeklyPercent = new JLabel("101");
+		lblWeeklyPercent.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblWeeklyPercent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblWeeklyPercent.setBounds(0, 31, 64, 27);
+		panelWeekly.add(lblWeeklyPercent);
 		
-		lblPercentIcon = new JLabel("");
-		lblPercentIcon.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPercentIcon.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblPercentIcon.setBounds(59, 31, 32, 32);
-		panelWeekly.add(lblPercentIcon);
+		lblPercentIconWeekly = new JLabel("");
+		lblPercentIconWeekly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPercentIconWeekly.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblPercentIconWeekly.setBounds(59, 31, 32, 32);
+		panelWeekly.add(lblPercentIconWeekly);
 		
-		lblIcon = new JLabel("");
+		JLabel lblIcon = new JLabel("");
 		lblIcon.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/chart.png")));
 		lblIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		lblIcon.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblIcon.setBounds(88, 38, 64, 64);
 		panelWeekly.add(lblIcon);
 		
-		lblText = new JLabel("");
-		lblText.setHorizontalAlignment(SwingConstants.CENTER);
-		lblText.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblText.setBounds(0, 69, 72, 29);
-		panelWeekly.add(lblText);
+		lblTextWeekly = new JLabel("");
+		lblTextWeekly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTextWeekly.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblTextWeekly.setBounds(0, 69, 72, 29);
+		panelWeekly.add(lblTextWeekly);
 		
 		panelMonthly = new JPanel();
+		panelMonthly.setLayout(null);
 		panelMonthly.setBounds(466, 11, 160, 109);
 		add(panelMonthly);
-		panelMonthly.setLayout(null);
 		
 		JLabel lblMonthlyTitle = new JLabel("Monthly Orders");
-		lblMonthlyTitle.setForeground(new Color(255, 255, 255));
-		lblMonthlyTitle.setBackground(new Color(206, 124, 0));
 		lblMonthlyTitle.setOpaque(true);
+		lblMonthlyTitle.setHorizontalAlignment(SwingConstants.LEFT);
+		lblMonthlyTitle.setForeground(Color.WHITE);
 		lblMonthlyTitle.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblMonthlyTitle.setBackground(new Color(8, 104, 0));
 		lblMonthlyTitle.setBounds(0, 0, 160, 27);
 		panelMonthly.add(lblMonthlyTitle);
 		
-		panelYearly = new JPanel();
-		panelYearly.setBounds(640, 11, 160, 109);
-		add(panelYearly);
-		panelYearly.setLayout(null);
+		lblMonthlyPercent = new JLabel("101");
+		lblMonthlyPercent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMonthlyPercent.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblMonthlyPercent.setBounds(0, 31, 64, 27);
+		panelMonthly.add(lblMonthlyPercent);
+		
+		lblPercentIconMonthly = new JLabel("");
+		lblPercentIconMonthly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPercentIconMonthly.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblPercentIconMonthly.setBounds(59, 31, 32, 32);
+		panelMonthly.add(lblPercentIconMonthly);
+		
+		JLabel lblIcon_1 = new JLabel("");
+		lblIcon_1.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/chart.png")));
+		lblIcon_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblIcon_1.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblIcon_1.setBounds(88, 38, 64, 64);
+		panelMonthly.add(lblIcon_1);
+		
+		lblTextMonthly = new JLabel("");
+		lblTextMonthly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTextMonthly.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblTextMonthly.setBounds(0, 69, 72, 29);
+		panelMonthly.add(lblTextMonthly);
+		
+		panelMonthly_1 = new JPanel();
+		panelMonthly_1.setLayout(null);
+		panelMonthly_1.setBounds(640, 11, 160, 109);
+		add(panelMonthly_1);
 		
 		JLabel lblYearlyTitle = new JLabel("Yearly Orders");
-		lblYearlyTitle.setForeground(new Color(255, 255, 255));
-		lblYearlyTitle.setBackground(new Color(36, 0, 255));
 		lblYearlyTitle.setOpaque(true);
+		lblYearlyTitle.setHorizontalAlignment(SwingConstants.LEFT);
+		lblYearlyTitle.setForeground(Color.WHITE);
 		lblYearlyTitle.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblYearlyTitle.setBackground(new Color(8, 104, 0));
 		lblYearlyTitle.setBounds(0, 0, 160, 27);
-		panelYearly.add(lblYearlyTitle);
+		panelMonthly_1.add(lblYearlyTitle);
+		
+		lblYearlyPercent = new JLabel("101");
+		lblYearlyPercent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblYearlyPercent.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblYearlyPercent.setBounds(0, 31, 64, 27);
+		panelMonthly_1.add(lblYearlyPercent);
+		
+		lblPercentIconYearly = new JLabel("");
+		lblPercentIconYearly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPercentIconYearly.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblPercentIconYearly.setBounds(59, 31, 32, 32);
+		panelMonthly_1.add(lblPercentIconYearly);
+		
+		JLabel lblIcon_2 = new JLabel("");
+		lblIcon_2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblIcon_2.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblIcon_2.setBounds(88, 38, 64, 64);
+		panelMonthly_1.add(lblIcon_2);
+		
+		lblTextYearly = new JLabel("");
+		lblTextYearly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTextYearly.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblTextYearly.setBounds(0, 69, 72, 29);
+		panelMonthly_1.add(lblTextYearly);
 		
 		panelRate = new JPanel();
 		panelRate.setBounds(814, 11, 160, 109);
 		add(panelRate);
 		panelRate.setLayout(null);
-		
-		lblNewLabel_3 = new JLabel("New label");
-		lblNewLabel_3.setBounds(0, 0, 160, 27);
-		panelRate.add(lblNewLabel_3);
 		
 		panelProducts = new JPanel();
 		panelProducts.setBounds(292, 131, 682, 557);
@@ -185,5 +234,6 @@ public class ClientProfile extends JPanel {
 		scrollOrderPanel = new JScrollPane();
 		scrollOrderPanel.setBounds(23, 82, 635, 452);
 		panelProducts.add(scrollOrderPanel);
+		
 	}
 }

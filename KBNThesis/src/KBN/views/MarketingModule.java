@@ -85,6 +85,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private String refNum;
 	public static String regID;
+	private LocalDate today;
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -153,6 +154,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 		prodDetails = new ProductDetails();
 		orderPanelInstruction = new OrderPanelPopupInstruction();
+		
+		today = LocalDate.now();
 		
 		
         // DefaultSetup
@@ -787,109 +790,152 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 5) + "";
 		String custName = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
 		String custBrand = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
-		if("rebranding".equals(AccType)) {
-			clientProfileChecker = AccType;
-			try {
-				String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
-						+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
-						+ "WHERE b.UserID = '" + userID + "';";
-				
-				st.execute(RowCount);
-				rs = st.getResultSet();
-				
-				if(rs.next())
-					ClientProfileCounter = rs.getInt(1);
-				
-				cpsp.orderCountSetter(ClientProfileCounter);
-				
-				String SQL = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
-						+ "FROM tblorderstatus AS a "
-						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-						+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
-						+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
-						+ "WHERE c.UserID = '" + userID + "' AND a.Status != 'Completed' AND a.Status != 'Return' "
-						+ "GROUP BY b.OrderRefNumber";
-				
-				st.execute(SQL);
-				rs = st.getResultSet();
-				int i = 0;
-				while(rs.next()) {
-					cpsp.lblRefNumber[i].setText(rs.getString(1));
-					cpsp.lblProdName[i].setText(rs.getString(2));
-					cpsp.lblQuantity[i].setText(rs.getString(3));
-					cpsp.lblStatus[i].setText(rs.getString(4));
-					i++;
-				}
-				clientProfileFunc();
-				
-				//Setting Customer Profile
-				cp.lblClientName.setText(custName);
-				cp.lblBrand.setText(custBrand);
-				cp.lblNone.setText("");
-				
-				
-				//SQL Getting this week Quantity
-				double thisWeek = 0;
-				double lastWeek = 1;
-				
-		        LocalDate today = LocalDate.now();
-		        LocalDate mondayOfLastWeek = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-		        LocalDate sundayOfLastWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-		        LocalDate mondaythisWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-		        
-//				String thisWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
-//						+ "FROM tblordercheckout AS a "
-//						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-//						+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'"
-//						+ "GROUP BY b.OrderRefNumber";
-		        
-				String thisWeekCount = "SELECT SUM(b.Quantity) "
-						+ "FROM tblordercheckout AS a "
-						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-						+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'";
-				
-				
-				st.execute(thisWeekCount);
-				rs = st.getResultSet();
-				
-				if(rs.next())
-					thisWeek = rs.getInt(1);
-					
-//				String lastWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
-//						+ "FROM tblordercheckout AS a "
-//						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-//						+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "' "
-//						+ "GROUP BY b.OrderRefNumber";
-				
-				String lastWeekCount = "SELECT SUM(b.Quantity) "
-						+ "FROM tblordercheckout AS a "
-						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-						+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "'";
-				
-				
-				st.execute(lastWeekCount);
-				rs = st.getResultSet();
-				
-				if(rs.next())
-					lastWeek = rs.getInt(1);
-				
-				double formulaWeekly = ((thisWeek / lastWeek) * 100) - 100;
-				cp.lblPercent.setText((int)formulaWeekly + "%");
-				System.out.println(formulaWeekly);
-				if(formulaWeekly < 0 || Double.isNaN(formulaWeekly)) {
-					cp.lblPercentIcon.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/low-price.png")));
-					cp.lblText.setText("<html><center>Lower Than<br> Last</center></html>");
-				}
-				else {
-					cp.lblPercentIcon.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/high-price.png")));
-					cp.lblText.setText("<html><center>Higher Than<br> Last</center></html>");
-				}
-			}catch (Exception e) {
-				JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
-			}
-		}else
+		
+		if(!"rebranding".equals(AccType))
 			return;
+		
+		clientProfileChecker = AccType;
+		try {
+			String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE b.UserID = '" + userID + "';";
+			
+			st.execute(RowCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				ClientProfileCounter = rs.getInt(1);
+			
+			cpsp.orderCountSetter(ClientProfileCounter);
+			String arr[][] = new String[ClientProfileCounter][4];
+			
+			String SQLKBN = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
+					+ "FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+					+ "WHERE c.UserID = '" + userID + "' AND a.Status != 'Completed' AND a.Status != 'Return' "
+					+ "GROUP BY b.OrderRefNumber";
+			
+			String SQLRebranding = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
+					+ "FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblrebrandingproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+					+ "WHERE c.UserID = '" + userID + "' AND a.Status != 'Completed' AND a.Status != 'Return' "
+					+ "GROUP BY b.OrderRefNumber";
+			
+			st.execute(SQLKBN);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				arr[i][0] = rs.getString(1);
+				arr[i][1] = rs.getString(2);
+				arr[i][2] = rs.getString(3);
+				arr[i][3] = rs.getString(4);
+				i++;
+			}
+			
+			st.execute(SQLRebranding);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				arr[i][0] = rs.getString(1);
+				arr[i][1] = rs.getString(2);
+				arr[i][2] = rs.getString(3);
+				arr[i][3] = rs.getString(4);
+				i++;
+			}
+			System.out.println("arrCount: " + i);
+			System.out.println("ClientProfileCounter: " + ClientProfileCounter);
+			
+			for(int j = 0; j < i; j++) {
+				cpsp.lblRefNumber[j].setText(arr[j][0]);
+				cpsp.lblProdName[j].setText(arr[j][1]);
+				cpsp.lblQuantity[j].setText(arr[j][2]);
+				cpsp.lblStatus[j].setText(arr[j][3]);
+				System.out.println(j);
+			}
+			
+
+			clientProfileFunc();
+			
+			//Setting Customer Profile
+			cp.lblClientName.setText(custName);
+			cp.lblBrand.setText(custBrand);
+			cp.lblNone.setText("");
+			
+			
+			//SQL Getting this week Quantity
+
+	        ClientProfileWeekly(userID);
+	        
+
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
+		}
 	}
+	
+	private void ClientProfileWeekly(String userID) {
+		try {
+			
+			double thisWeek = 0;
+			double lastWeek = 1;
+	        LocalDate mondayOfLastWeek = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	        LocalDate sundayOfLastWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+	        LocalDate mondaythisWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+					
+			//			String thisWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
+			//			+ "FROM tblordercheckout AS a "
+			//			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+			//			+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'"
+			//			+ "GROUP BY b.OrderRefNumber";
+	        
+			//	String lastWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
+			//			+ "FROM tblordercheckout AS a "
+			//			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+			//			+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "' "
+			//			+ "GROUP BY b.OrderRefNumber";
+		    
+			String thisWeekCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'";
+			
+			String lastWeekCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "'";
+			
+			// This Week
+			st.execute(thisWeekCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisWeek = rs.getInt(1);
+			
+			// Last Week
+			st.execute(lastWeekCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastWeek = rs.getInt(1);
+			
+			// Formula
+			double formulaWeekly = ((thisWeek / lastWeek) * 100) - 100;
+			cp.lblWeeklyPercent.setText((int)formulaWeekly + "%");
+			if(formulaWeekly < 0 || Double.isNaN(formulaWeekly)) {
+				cp.lblPercentIconWeekly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/low-price.png")));
+				cp.lblTextWeekly.setText("<html><center>Lower Than<br> Last</center></html>");
+			}
+			else {
+				cp.lblPercentIconWeekly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/high-price.png")));
+				cp.lblTextWeekly.setText("<html><center>Higher Than<br> Last</center></html>");
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "CustAccountClientProfileWEEKLY ERROR:" + e.getMessage());
+		}// END OF TRY CATCH
+	}// END OF WEEKLY
 	
 
 
