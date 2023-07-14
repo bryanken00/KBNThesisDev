@@ -845,15 +845,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				arr[i][3] = rs.getString(4);
 				i++;
 			}
-			System.out.println("arrCount: " + i);
-			System.out.println("ClientProfileCounter: " + ClientProfileCounter);
 			
 			for(int j = 0; j < i; j++) {
 				cpsp.lblRefNumber[j].setText(arr[j][0]);
 				cpsp.lblProdName[j].setText(arr[j][1]);
 				cpsp.lblQuantity[j].setText(arr[j][2]);
 				cpsp.lblStatus[j].setText(arr[j][3]);
-				System.out.println(j);
 			}
 			
 
@@ -869,33 +866,38 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	        ClientProfileWeekly(userID);
 	        
+	        ClientProfileMonthly(userID);
+	        
+	        ClientProfileYearly(userID);
+	        
 
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
 		}
 	}
 	
-	private void ClientProfileWeekly(String userID) {
+	private int SQLDateCount(String SQL) {
+		int count = 0;
 		try {
-			
+			st.execute(SQL);
+			rs = st.getResultSet();
+			if(rs.next())
+				count = rs.getInt(1);
+			if(count == 0)
+				count = 1;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error SQLDATECOUNT: " + e.getMessage());
+		}
+		return count;
+	}
+	
+	private void ClientProfileWeekly(String userID) {
 			double thisWeek = 0;
 			double lastWeek = 1;
 	        LocalDate mondayOfLastWeek = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 	        LocalDate sundayOfLastWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
 	        LocalDate mondaythisWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-					
-			//			String thisWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
-			//			+ "FROM tblordercheckout AS a "
-			//			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-			//			+ "WHERE a.OrderDate >= '" + mondaythisWeek + "' AND a.userID = '" + userID + "'"
-			//			+ "GROUP BY b.OrderRefNumber";
 	        
-			//	String lastWeekCount = "SELECT b.OrderRefNumber, SUM(b.Quantity), a.OrderDate "
-			//			+ "FROM tblordercheckout AS a "
-			//			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
-			//			+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "' "
-			//			+ "GROUP BY b.OrderRefNumber";
-		    
 			String thisWeekCount = "SELECT SUM(b.Quantity) "
 					+ "FROM tblordercheckout AS a "
 					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
@@ -907,18 +909,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "' AND a.userID = '" + userID + "'";
 			
 			// This Week
-			st.execute(thisWeekCount);
-			rs = st.getResultSet();
-			
-			if(rs.next())
-				thisWeek = rs.getInt(1);
+			thisWeek = SQLDateCount(thisWeekCount);
 			
 			// Last Week
-			st.execute(lastWeekCount);
-			rs = st.getResultSet();
-			
-			if(rs.next())
-				lastWeek = rs.getInt(1);
+			lastWeek = SQLDateCount(lastWeekCount);
 			
 			// Formula
 			double formulaWeekly = ((thisWeek / lastWeek) * 100) - 100;
@@ -931,10 +925,78 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				cp.lblPercentIconWeekly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/high-price.png")));
 				cp.lblTextWeekly.setText("<html><center>Higher Than<br> Last</center></html>");
 			}
+	}// END OF WEEKLY
+	
+	private void ClientProfileMonthly(String userID) {
+			double thisMonth = 0;
+			double lastMonth = 1;
+			LocalDate firstDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+			LocalDate lastDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+			LocalDate firstDayOfThisMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+		    
+			String thisMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfThisMonth + "' AND a.userID = '" + userID + "'";
 			
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "CustAccountClientProfileWEEKLY ERROR:" + e.getMessage());
-		}// END OF TRY CATCH
+			String lastMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfLastMonth + "'  AND a.OrderDate <= '" + lastDayOfLastMonth + "' AND a.userID = '" + userID + "'";
+			
+			// This Month
+			thisMonth = SQLDateCount(thisMonthCount);
+			
+			// Last Month
+			lastMonth = SQLDateCount(lastMonthCount);
+			
+			// Formula
+			double formulaWeekly = ((thisMonth / lastMonth) * 100) - 100;
+			cp.lblMonthlyPercent.setText((int)formulaWeekly + "%");
+			if(formulaWeekly < 0 || Double.isNaN(formulaWeekly)) {
+				cp.lblPercentIconMonthly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/low-price.png")));
+				cp.lblTextMonthly.setText("<html><center>Lower Than<br> Last</center></html>");
+			}
+			else {
+				cp.lblPercentIconMonthly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/high-price.png")));
+				cp.lblTextMonthly.setText("<html><center>Higher Than<br> Last</center></html>");
+			}
+	}// END OF WEEKLY
+	
+	private void ClientProfileYearly(String userID) {
+			double thisYear = 0;
+			double lastYear = 1;
+			LocalDate firstDayOfLastYear = today.minusYears(1).with(TemporalAdjusters.firstDayOfYear());
+			LocalDate lastDayOfLastYear = today.minusYears(1).with(TemporalAdjusters.lastDayOfYear());
+			LocalDate firstDayOfThisYear = today.with(TemporalAdjusters.firstDayOfYear());
+		    
+			String thisMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfThisYear + "' AND a.userID = '" + userID + "'";
+			
+			String lastMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfLastYear + "'  AND a.OrderDate <= '" + lastDayOfLastYear + "' AND a.userID = '" + userID + "'";
+			
+			// This Year
+			thisYear = SQLDateCount(thisMonthCount);
+			
+			// Last Year
+			lastYear = SQLDateCount(lastMonthCount);
+			
+			// Formula
+			double formulaWeekly = ((thisYear / lastYear) * 100) - 100;
+			cp.lblYearlyPercent.setText((int)formulaWeekly + "%");
+			if(formulaWeekly < 0 || Double.isNaN(formulaWeekly)) {
+				cp.lblPercentIconYearly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/low-price.png")));
+				cp.lblTextYearly.setText("<html><center>Lower Than<br> Last</center></html>");
+			}
+			else {
+				cp.lblPercentIconYearly.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/ClientProfile/high-price.png")));
+				cp.lblTextYearly.setText("<html><center>Higher Than<br> Last</center></html>");
+			}
 	}// END OF WEEKLY
 	
 
