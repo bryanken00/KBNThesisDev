@@ -38,6 +38,7 @@ import KBN.Module.Marketing.RebrandingProd;
 import KBN.Module.Marketing.RightClick;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
+import KBN.Module.Marketing.ClientProfile.OrderHistory;
 import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
@@ -73,6 +74,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private OrderPanelPopupInstruction orderPanelInstruction;
 	private ClientProfile cp;
 	private ClientProfileScrollablePanel cpsp;
+	private OrderHistory orderHistory;
 	
 	// Object
 	private Statement st;
@@ -81,6 +83,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	//Client Profile
 	private String clientProfileChecker = "";
+	private String uID = ""; // User ID
+	private String custN = ""; // Name
+	private String custB = ""; // Brand
 	
 	
 	private String refNum;
@@ -111,7 +116,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private int OrderCount; // Order List
 	private int rowCount; // Pre - Registration
-	private int ClientProfileCounter; // Client Profile
+	private int ClientProfileCounter; // Client Profile OrderList
+	private int ClientProfileCounterHistory; // Client Profile HistoryList
 
 	public MarketingModule() {
 		setResizable(false);
@@ -151,6 +157,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// Client Profile Tab
 		cp = new ClientProfile();
 		cpsp = new ClientProfileScrollablePanel();
+		orderHistory = new OrderHistory();
 			
 		prodDetails = new ProductDetails();
 		orderPanelInstruction = new OrderPanelPopupInstruction();
@@ -347,15 +354,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		kbnProd.table.addMouseListener(this);
 		
 		//RightClick
-		
 		rightClick.btnAddItem.addActionListener(this);
 		rightClick.btnEdit.addActionListener(this);
 		rightClick.btnArchive.addActionListener(this);
 		rightClick.addKeyListener(this);
 		kbnProd.table.addKeyListener(this);
 		
-		
-
+		// Client Profile
+		cp.lblOrderHistory.addMouseListener(this);
+		cp.lblOrders.addMouseListener(this);
 	}
 	
 	@Override
@@ -408,6 +415,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rightClick.setVisible(true);
 				rightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
 			}
+		}
+		if(e.getSource() == cp.lblOrders) {
+			cp.scrollOrderPanel.setViewportView(cpsp);
+			clientProfileOrderListRefresher(uID, custN,custB);
+		}
+		if(e.getSource() == cp.lblOrderHistory) {
+			cp.scrollOrderPanel.setViewportView(orderHistory);
+			clientProfileOrderHistoryRefresher(uID, custN,custB);
 		}
 		
 	}
@@ -490,8 +505,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.add(delStatus);
 		panelTab.add(orderPanel);
 		panelTab.add(cp);
-		cp.scrollOrderPanel.setViewportView(cpsp);
 		dashboard.setVisible(true);
+		cp.scrollOrderPanel.setViewportView(cpsp);
 	}
 	
 	private void setUsername() {
@@ -629,7 +644,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-	
+	// chart
     private void chartdataSetter() {
     	try {
             List<Integer> scores = new ArrayList<Integer>();
@@ -786,15 +801,40 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccountClientProfileFunc() {
 		
 		// {"User ID","Account","Email", "Contact", "Brand", "Account Type"}
-		String userID = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 0) + "";
+		uID = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 0) + "";
 		String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 5) + "";
-		String custName = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
-		String custBrand = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
+		custN = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
+		custB = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
 		
 		if(!"rebranding".equals(AccType))
 			return;
 		
 		clientProfileChecker = AccType;
+		
+		clientProfileFunc();
+		
+		//Setting Customer Profile
+		cp.lblClientName.setText(custN);
+		cp.lblBrand.setText(custB);
+		cp.lblNone.setText("");
+		
+		
+		//SQL Getting this week Quantity
+
+        ClientProfileWeekly(uID);
+        
+        ClientProfileMonthly(uID);
+        
+        ClientProfileYearly(uID);
+        
+		// OrderList printing
+		clientProfileOrderListRefresher(uID, custN,custB);
+		
+
+
+	}
+	
+	private void clientProfileOrderListRefresher(String userID, String custBrand, String custName) {
 		try {
 			String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
 					+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
@@ -852,24 +892,71 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				cpsp.lblQuantity[j].setText(arr[j][2]);
 				cpsp.lblStatus[j].setText(arr[j][3]);
 			}
-			
 
-			clientProfileFunc();
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
+		}
+	}
+	
+	private void clientProfileOrderHistoryRefresher(String userID, String custBrand, String custName) {
+		try {
+			String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE b.UserID = '" + userID + "' AND a.Status = 'Completed';";
 			
-			//Setting Customer Profile
-			cp.lblClientName.setText(custName);
-			cp.lblBrand.setText(custBrand);
-			cp.lblNone.setText("");
+			st.execute(RowCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				ClientProfileCounterHistory = rs.getInt(1);
+			
+			orderHistory.orderCountSetter(ClientProfileCounterHistory);
+			String arr[][] = new String[ClientProfileCounterHistory][4];
+			
+			String SQLKBN = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
+					+ "FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+					+ "WHERE c.UserID = '" + userID + "' AND a.Status = 'Completed' "
+					+ "GROUP BY b.OrderRefNumber";
 			
 			
-			//SQL Getting this week Quantity
-
-	        ClientProfileWeekly(userID);
-	        
-	        ClientProfileMonthly(userID);
-	        
-	        ClientProfileYearly(userID);
-	        
+			String SQLRebranding = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
+					+ "FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblrebrandingproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+					+ "WHERE c.UserID = '" + userID + "' AND a.Status = 'Completed' "
+					+ "GROUP BY b.OrderRefNumber";
+			
+			st.execute(SQLKBN);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				arr[i][0] = rs.getString(1);
+				arr[i][1] = rs.getString(2);
+				arr[i][2] = rs.getString(3);
+				arr[i][3] = rs.getString(4);
+				i++;
+			}
+			
+			st.execute(SQLRebranding);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				arr[i][0] = rs.getString(1);
+				arr[i][1] = rs.getString(2);
+				arr[i][2] = rs.getString(3);
+				arr[i][3] = rs.getString(4);
+				i++;
+			}
+			
+			for(int j = 0; j < i; j++) {
+				orderHistory.lblRefNumber[j].setText(arr[j][0]);
+				orderHistory.lblProdName[j].setText(arr[j][1]);
+				orderHistory.lblQuantity[j].setText(arr[j][2]);
+				orderHistory.lblStatus[j].setText(arr[j][3]);
+			}
 
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());

@@ -1,17 +1,17 @@
 package KBN.Module.Marketing.ClientProfile;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.SwingConstants;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
-public class ClientProfileScrollablePanel extends JPanel {
+public class OrderHistory extends JPanel {
 	
 	public JPanel panel[];
 	public JButton btnProcessOrder[];
@@ -22,12 +22,11 @@ public class ClientProfileScrollablePanel extends JPanel {
 	public JSeparator separator[];
 	
 	private int oCount;
-
-	public ClientProfileScrollablePanel() {
+	
+	public OrderHistory() {
 		setBounds(0, 0, 635, 452);
 		setLayout(null);
 	}
-	
 	
 	public void orderCountSetter(int orderCount) {
 		oCount = orderCount;
@@ -40,11 +39,11 @@ public class ClientProfileScrollablePanel extends JPanel {
 		separator = new JSeparator[oCount];
 		this.setPreferredSize(new Dimension(2, 130*oCount));
 		for(int i = 0; i < oCount; i++) {
-			orderPanelMaker(i);
+			orderHistoryPanelMaker(i);
 		}
 	}
 	
-	private void orderPanelMaker(int i) {
+	public  void orderHistoryPanelMaker(int i) {
 		
 		int y = 10;
 		if(i > 0)
@@ -91,4 +90,5 @@ public class ClientProfileScrollablePanel extends JPanel {
 		separator[i].setBounds(10, 120+y, 582, 11);
 		add(separator[i]);
 	}
+
 }
