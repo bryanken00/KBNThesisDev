@@ -431,6 +431,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		if(e.getSource() == cp.lblProducts) {
 			cp.scrollOrderPanel.setViewportView(rp);
+//			rp.orderCountSetter(10); //temp
 		}
 		
 	}
