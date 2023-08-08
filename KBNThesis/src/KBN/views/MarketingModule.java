@@ -39,6 +39,7 @@ import KBN.Module.Marketing.RightClick;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
+import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
 import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
@@ -72,9 +73,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private RightClick rightClick;
 	private ProductDetails prodDetails;
 	private OrderPanelPopupInstruction orderPanelInstruction;
+	//Client Profile
 	private ClientProfile cp;
 	private ClientProfileScrollablePanel cpsp;
 	private OrderHistory orderHistory;
+	private rebrandingProductsList rp;
 	
 	// Object
 	private Statement st;
@@ -158,6 +161,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		cp = new ClientProfile();
 		cpsp = new ClientProfileScrollablePanel();
 		orderHistory = new OrderHistory();
+		rp = new rebrandingProductsList();
 			
 		prodDetails = new ProductDetails();
 		orderPanelInstruction = new OrderPanelPopupInstruction();
@@ -363,6 +367,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// Client Profile
 		cp.lblOrderHistory.addMouseListener(this);
 		cp.lblOrders.addMouseListener(this);
+		cp.lblProducts.addMouseListener(this);
 	}
 	
 	@Override
@@ -423,6 +428,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == cp.lblOrderHistory) {
 			cp.scrollOrderPanel.setViewportView(orderHistory);
 			clientProfileOrderHistoryRefresher(uID, custN,custB);
+		}
+		if(e.getSource() == cp.lblProducts) {
+			cp.scrollOrderPanel.setViewportView(rp);
 		}
 		
 	}
