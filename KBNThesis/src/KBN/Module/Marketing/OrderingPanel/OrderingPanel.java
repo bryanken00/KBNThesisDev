@@ -39,9 +39,7 @@ public class OrderingPanel extends JPanel {
 	public JPanel middlePanel;
 	public JSeparator separator_1;
 	public JLabel lblOrderStatus;
-	public JButton btnProcessComplete;
 	public JButton btnDelivery;
-	public JButton btnProductionComplete;
 	public JButton btnInvoice;
 	public JButton btnDeliveryComplete;
 	public JPanel tablePanel;
@@ -138,39 +136,23 @@ public class OrderingPanel extends JPanel {
         btnApproved.setFocusable(false);
         btnApproved.setBorderPainted(false);
         btnApproved.setBackground(Color.WHITE);
-        btnApproved.setBounds(13, 46, 86, 29);
+        btnApproved.setBounds(53, 46, 86, 29);
         middlePanel.add(btnApproved);
-        
-        btnProcessComplete = new JButton("<html>Processing<br>complete</html>");
-        btnProcessComplete.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnProcessComplete.setFocusable(false);
-        btnProcessComplete.setBorderPainted(false);
-        btnProcessComplete.setBackground(Color.WHITE);
-        btnProcessComplete.setBounds(112, 46, 86, 29);
-        middlePanel.add(btnProcessComplete);
         
         btnDelivery = new JButton("<html>On<br>Delivery</html>");
         btnDelivery.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
         btnDelivery.setFocusable(false);
         btnDelivery.setBorderPainted(false);
         btnDelivery.setBackground(Color.WHITE);
-        btnDelivery.setBounds(310, 46, 86, 29);
+        btnDelivery.setBounds(192, 46, 86, 29);
         middlePanel.add(btnDelivery);
-        
-        btnProductionComplete = new JButton("<html>Production<br>complete</html>");
-        btnProductionComplete.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-        btnProductionComplete.setFocusable(false);
-        btnProductionComplete.setBorderPainted(false);
-        btnProductionComplete.setBackground(Color.WHITE);
-        btnProductionComplete.setBounds(211, 46, 86, 29);
-        middlePanel.add(btnProductionComplete);
         
         btnInvoice = new JButton("Invoice");
         btnInvoice.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
         btnInvoice.setFocusable(false);
         btnInvoice.setBorderPainted(false);
         btnInvoice.setBackground(Color.WHITE);
-        btnInvoice.setBounds(508, 46, 86, 29);
+        btnInvoice.setBounds(470, 46, 86, 29);
         middlePanel.add(btnInvoice);
         
         btnDeliveryComplete = new JButton("<html>Deliver<br>Complete</html>");
@@ -178,7 +160,7 @@ public class OrderingPanel extends JPanel {
         btnDeliveryComplete.setFocusable(false);
         btnDeliveryComplete.setBorderPainted(false);
         btnDeliveryComplete.setBackground(Color.WHITE);
-        btnDeliveryComplete.setBounds(409, 46, 86, 29);
+        btnDeliveryComplete.setBounds(331, 46, 86, 29);
         middlePanel.add(btnDeliveryComplete);
         
         tablePanel = new JPanel();

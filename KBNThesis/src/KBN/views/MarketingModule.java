@@ -40,6 +40,7 @@ import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
+import KBN.Module.Marketing.OrderingPanel.onDelivery;
 import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
@@ -73,6 +74,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private RightClick rightClick;
 	private ProductDetails prodDetails;
 	private OrderPanelPopupInstruction orderPanelInstruction;
+	private onDelivery onDeliver;
 	//Client Profile
 	private ClientProfile cp;
 	private ClientProfileScrollablePanel cpsp;
@@ -150,7 +152,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		auditTrail = new AuditTrail();
 		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
+		
+		// orderingPanel
 		orderPanel = new OrderingPanel();
+		onDeliver = new onDelivery();
+		
 		preReg = new preRegister();
 		// Start Right Click
 		rightClick = new RightClick();
@@ -344,11 +350,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//OrderPanel
 		orderPanel.btnApproved.addActionListener(this);
-		orderPanel.btnDelivery.addActionListener(this);
+//		orderPanel.btnDelivery.addActionListener(this);
 		orderPanel.btnDeliveryComplete.addActionListener(this);
 		orderPanel.btnInvoice.addActionListener(this);
-		orderPanel.btnProcessComplete.addActionListener(this);
-		orderPanel.btnProductionComplete.addActionListener(this);
 		orderPanel.orderLPanel.lblInstruction.addMouseListener(this);
 		
 		//CustomerAccount Panel
@@ -389,7 +393,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanelFunc();
 		if(e.getSource() == orderPanel.btnApproved)
 			orderPanelBTNAPPROVED();
-//		if(e.getSource() == btnPro)
+		if(e.getSource() == orderPanel.btnDelivery)
+			orderPanelBTNDELIVERY();
 			
 		
 		//inside Panel 
@@ -397,9 +402,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			custAccountCreateAccount();
 		if(e.getSource() == custAccount.btnClientProfile)
 			custAccountClientProfileFunc();
-		
-		if(e.getSource() == orderPanel.btnApproved)
-			System.out.println("APPROVED");
 		
 		if(e.getSource() == rightClick.btnEdit)
 			prodDetailsFunc();
@@ -616,6 +618,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				OrderCount = rs.getInt(1);
 			
 			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
 		}
@@ -632,7 +635,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
 				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
 				//status indicator
-				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource("/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png")));
+				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].revalidate();
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].repaint();
 				i++;
 			}
 			
@@ -646,6 +652,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		for(int i = 0; i < rowCount; i++) {
 			this.preReg.preReg.panel[i].addMouseListener(this);
 		}
+	}
+	
+	private void clearOrderPanelMouseListeners() {
+	    for (int i = 0; i < OrderCount; i++) {
+	        this.orderPanel.orderLPanel.opd.orderList[i].removeMouseListener(this);
+	    }
 	}
 	
 	private void orderPanelMouseList() {
@@ -745,9 +757,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	private void orderPanelFunc() {
 		setVisiblePanel();
+		orderPanel.setVisible(true);
+		clearOrderPanelMouseListeners();
 		orderCounter();
 		orderPanelMouseList();
-		orderPanel.setVisible(true);
 	}
 	
 	// Client Profile
@@ -762,7 +775,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			orderPanel.main.setRowCount(0);
 	        orderPanel.table.setModel(orderPanel.main);
-			String sql = "UPDATE tblorderstatus SET Status = 'ProcessComplete' WHERE OrderRefNumber = '" + refNum + "';";
+			String sql = "UPDATE tblorderstatus SET Status = 'toship' WHERE OrderRefNumber = '" + refNum + "';";
 			int i = st.executeUpdate(sql);
 			if(i == 1)
 				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " has been Approved");
@@ -773,6 +786,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}catch (Exception e1) {
 			JOptionPane.showMessageDialog(null, "ERROR btnApproved: " + e1.getMessage());
 		}
+	}
+	
+	private void orderPanelBTNDELIVERY() {
+		onDeliver.setVisible(true);
 	}
 
 	
@@ -1226,12 +1243,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void orderStatusSetter() {
 		try {
+			orderPanel.btnDelivery.removeActionListener(this);
 			orderPanel.btnApproved.setBackground(Color.white);
 			orderPanel.btnDelivery.setBackground(Color.white);
 			orderPanel.btnDeliveryComplete.setBackground(Color.white);
 			orderPanel.btnInvoice.setBackground(Color.white);
-			orderPanel.btnProcessComplete.setBackground(Color.white);
-			orderPanel.btnProductionComplete.setBackground(Color.white);
 			
 			
 	        String sqlOrderStatus = "SELECT status FROM tblOrderStatus WHERE OrderRefNumber = '" + refNum + "'";
@@ -1245,31 +1261,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        if(status.equals("toPay")) {
 	        	
 	        }
-	        else if(status.equals("OrderApproved")) {
+	        else if(status.equalsIgnoreCase("toship")) {
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        }
-	        else if(status.equals("ProcessComplete")) {
+	        	orderPanel.btnDelivery.addActionListener(this);
+	        }else if(status.equalsIgnoreCase("Delivery")) {
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
-	        }else if(status.equals("ProductionComplete")) {
-	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
-	        }else if(status.equals("Delivery")) {
-	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
-	        }else if(status.equals("DeliveryComplete")) {
+	        }else if(status.equalsIgnoreCase("DeliveryComplete")) {
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
-	        }else if(status.equals("Invoice")) {
+	        }else if(status.equalsIgnoreCase("Invoice")) {
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProcessComplete.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnProductionComplete.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnInvoice.setBackground(new Color(13, 164, 0));
