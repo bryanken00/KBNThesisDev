@@ -24,8 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import KBN.Module.Marketing.OrderListPanel;
-import KBN.Module.Marketing.OrderListPanelData;
+import KBN.Module.Marketing.OrderingPanel.OrderListPanel;
+import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.commons.DbConnection;
 import KBN.views.MarketingModule;
 

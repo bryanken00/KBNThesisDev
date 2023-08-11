@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.OrderingPanel;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;

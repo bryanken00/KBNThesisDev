@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.OrderingPanel;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
