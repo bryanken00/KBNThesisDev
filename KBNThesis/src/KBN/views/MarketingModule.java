@@ -355,6 +355,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanel.btnDeliveryComplete.addActionListener(this);
 		orderPanel.btnInvoice.addActionListener(this);
 		orderPanel.orderLPanel.lblInstruction.addMouseListener(this);
+		onDeliver.btnConfirm.addActionListener(this);
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
@@ -390,12 +391,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			AuditPanelFunc();
 		if(e.getSource() == btnDeliveryStatus)
 			delStatusPanelFunc();
+		
+		//Ordering
 		if(e.getSource() == btnOrdering)
 			orderPanelFunc();
 		if(e.getSource() == orderPanel.btnApproved)
 			orderPanelBTNAPPROVED();
 		if(e.getSource() == orderPanel.btnDelivery)
 			orderPanelBTNDELIVERY(refNum);
+		if(e.getSource() == onDeliver.btnConfirm)
+			setDeliveryRider();
 			
 		
 		//inside Panel 
@@ -792,16 +797,44 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderPanelBTNDELIVERY(String refNumber) {
 		try {
 			ArrayList<String> riderName = new ArrayList<>();
-			String SQL = "SELECT Username FROM tblcourieraccount";
+			String SQL = "SELECT Username,CourierID FROM tblcourieraccount";
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next())
-				riderName.add(rs.getString(1));
+				riderName.add(rs.getString(1) + "-" + rs.getString(1));
 			onDeliver.cbRiderList.setModel(new DefaultComboBoxModel<String>(riderName.toArray(new String[0])));
 			onDeliver.lblRefNumber.setText(refNumber);
 			onDeliver.setVisible(true);
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error BTNDELIVERY: " + e.getMessage());
+		}
+	}
+	
+	private void setDeliveryRider() {
+		try {
+	        int choice = JOptionPane.showConfirmDialog(
+	                null, // Parent component (null for default)
+	                "The information is correct?", // Message
+	                "Confirmation", // Dialog title
+	                JOptionPane.YES_NO_OPTION // Option type
+	            );
+	        if (choice == JOptionPane.NO_OPTION) {
+	        	return;
+	        }
+	        
+			String courier = onDeliver.cbRiderList.getSelectedItem() + "";
+			String courierID[] = courier.split("-");
+			String ref = refNum;
+			String SQL = "INSERT INTO tblcourierdelivery VALUES('" + courierID[1] + "','" + ref + "')";
+			
+			//
+			st.execute(SQL);
+			onDeliver.dispose();
+			String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "'";
+			st.executeUpdate(SQLUpdate);
+			orderStatusSetter();
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error setDeliveryRider: " + e.getMessage());
 		}
 	}
 
@@ -1256,7 +1289,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void orderStatusSetter() {
 		try {
-			orderPanel.btnDelivery.removeActionListener(this);
+			
 			orderPanel.btnApproved.setBackground(Color.white);
 			orderPanel.btnDelivery.setBackground(Color.white);
 			orderPanel.btnDeliveryComplete.setBackground(Color.white);
@@ -1275,16 +1308,26 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        	
 	        }
 	        else if(status.equalsIgnoreCase("toship")) {
+	        	orderPanel.btnApproved.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.addActionListener(this);
 	        }else if(status.equalsIgnoreCase("Delivery")) {
+	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnDelivery.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        }else if(status.equalsIgnoreCase("DeliveryComplete")) {
+	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnDelivery.removeActionListener(this);
+	        	orderPanel.btnDeliveryComplete.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
 	        }else if(status.equalsIgnoreCase("Invoice")) {
+	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnDelivery.removeActionListener(this);
+	        	orderPanel.btnDeliveryComplete.removeActionListener(this);
+	        	orderPanel.btnInvoice.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
