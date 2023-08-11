@@ -48,6 +48,7 @@ import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
@@ -394,7 +395,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == orderPanel.btnApproved)
 			orderPanelBTNAPPROVED();
 		if(e.getSource() == orderPanel.btnDelivery)
-			orderPanelBTNDELIVERY();
+			orderPanelBTNDELIVERY(refNum);
 			
 		
 		//inside Panel 
@@ -788,8 +789,20 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-	private void orderPanelBTNDELIVERY() {
-		onDeliver.setVisible(true);
+	private void orderPanelBTNDELIVERY(String refNumber) {
+		try {
+			ArrayList<String> riderName = new ArrayList<>();
+			String SQL = "SELECT Username FROM tblcourieraccount";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			while(rs.next())
+				riderName.add(rs.getString(1));
+			onDeliver.cbRiderList.setModel(new DefaultComboBoxModel<String>(riderName.toArray(new String[0])));
+			onDeliver.lblRefNumber.setText(refNumber);
+			onDeliver.setVisible(true);
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error BTNDELIVERY: " + e.getMessage());
+		}
 	}
 
 	
