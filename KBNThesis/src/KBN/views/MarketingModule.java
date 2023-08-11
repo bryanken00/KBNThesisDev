@@ -121,6 +121,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private int rowCount; // Pre - Registration
 	private int ClientProfileCounter; // Client Profile OrderList
 	private int ClientProfileCounterHistory; // Client Profile HistoryList
+	private int OwnProdCount;
 
 	public MarketingModule() {
 		setResizable(false);
@@ -431,7 +432,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		if(e.getSource() == cp.lblProducts) {
 			cp.scrollOrderPanel.setViewportView(rp);
-//			rp.orderCountSetter(10); //temp
+			clientProfileOwnProductsRefresher(uID);
 		}
 		
 	}
@@ -969,6 +970,28 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
+		}
+	}
+	
+	private void clientProfileOwnProductsRefresher(String userID) {
+		try {
+			String OrderCount = "SELECT COUNT(prodID) FROM tblrebrandingproducts WHERE userID = '" + userID + "'";
+			st.execute(OrderCount);
+			rs = st.getResultSet();
+			if(rs.next())
+				OwnProdCount = rs.getInt(1);
+			rp.orderCountSetter(OwnProdCount);
+			
+			String SQLProdList = "SELECT prodName FROM tblrebrandingproducts WHERE userID = '" + userID + "'";
+			st.execute(SQLProdList);
+			rs = st.getResultSet();
+			int counter = 0;
+			while(rs.next()) {
+				rp.lblProd[counter].setText(rs.getString(1));
+				counter++;
+			}
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR: ClientProfile OwnProdList: " + e.getMessage());
 		}
 	}
 	
