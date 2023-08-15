@@ -825,12 +825,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String courier = onDeliver.cbRiderList.getSelectedItem() + "";
 			String courierID[] = courier.split("-");
 			String ref = refNum;
-			String SQL = "INSERT INTO tblcourierdelivery VALUES('" + courierID[1] + "','" + ref + "')";
+			String SQL = "INSERT INTO tblcourierdelivery(OrderRefNumber,courierID) VALUES('" + ref + "','" + courierID[1] + "')";
 			
 			//
 			st.execute(SQL);
 			onDeliver.dispose();
 			String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "'";
+			System.out.println(SQLUpdate);
 			st.executeUpdate(SQLUpdate);
 			orderStatusSetter();
 		}catch (Exception e) {
