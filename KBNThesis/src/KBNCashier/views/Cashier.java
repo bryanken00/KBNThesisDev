@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 
 import KBN.commons.DbConnection;
 import KBNCashier.panels.category.panelCategoryDefault;
+import KBNCashier.panels.orderList.orderListPanel;
 import KBNCashier.panels.productList.ProductList;
 
 import javax.swing.JLabel;
@@ -20,6 +21,7 @@ import java.awt.Font;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.awt.Color;
 
 public class Cashier extends JFrame {
 
@@ -27,6 +29,7 @@ public class Cashier extends JFrame {
 	private DbConnection dbCon;
 	private panelCategoryDefault panelCat;
 	private ProductList prodList;
+	private orderListPanel pOrderList;
 	
 	//
 	private int prodCount = 0;
@@ -48,7 +51,6 @@ public class Cashier extends JFrame {
 	private JLabel lblMenuIcon_2;
 	private JLabel lblNewLabel_1;
 	private JTextField txtCustomerName;
-	private JPanel panelTitleBarOrderList;
 	
 	public Cashier() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,6 +64,7 @@ public class Cashier extends JFrame {
 		dbCon = new DbConnection();
 		panelCat = new panelCategoryDefault();
 		prodList = new ProductList();
+		pOrderList = new orderListPanel();
 		
 		try {
 			st = dbCon.getConnection().createStatement();
@@ -81,6 +84,7 @@ public class Cashier extends JFrame {
 	private void defaultPanel() {
 		panelCategory.add(panelCat);
 		panelProductList.setViewportView(prodList);
+		panelOrderList.add(pOrderList);
 	}
 	
 	private void prodCounter() {
@@ -128,6 +132,7 @@ public class Cashier extends JFrame {
 		panelMenuList.setLayout(null);
 		
 		panelMenuListTop = new JPanel();
+		panelMenuListTop.setBackground(Color.WHITE);
 		panelMenuListTop.setBounds(10, 11, 821, 40);
 		panelMenuList.add(panelMenuListTop);
 		panelMenuListTop.setLayout(null);
@@ -185,11 +190,6 @@ public class Cashier extends JFrame {
 		panelOrderList.setBounds(10, 62, 373, 437);
 		panelPrice.add(panelOrderList);
 		panelOrderList.setLayout(null);
-		
-		panelTitleBarOrderList = new JPanel();
-		panelTitleBarOrderList.setBounds(0, 0, 373, 34);
-		panelOrderList.add(panelTitleBarOrderList);
-		panelTitleBarOrderList.setLayout(null);
 		
 		panelLow = new JPanel();
 		panelLow.setBounds(10, 510, 373, 178);
