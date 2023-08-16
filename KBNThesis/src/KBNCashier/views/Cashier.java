@@ -9,6 +9,8 @@ import javax.swing.border.EmptyBorder;
 
 import KBN.commons.DbConnection;
 import KBNCashier.panels.category.panelCategoryDefault;
+import KBNCashier.panels.low.lowerTotal;
+import KBNCashier.panels.menuBar.menuBarPanel;
 import KBNCashier.panels.orderList.orderListPanel;
 import KBNCashier.panels.productList.ProductList;
 
@@ -21,15 +23,22 @@ import java.awt.Font;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
 
 public class Cashier extends JFrame {
 
 	// Class
 	private DbConnection dbCon;
+	//Class Panel
 	private panelCategoryDefault panelCat;
 	private ProductList prodList;
 	private orderListPanel pOrderList;
+	private lowerTotal lower;
+	private menuBarPanel menu;
 	
 	//
 	private int prodCount = 0;
@@ -46,10 +55,6 @@ public class Cashier extends JFrame {
 	private JPanel panelLow;
 	private JPanel panelCategory;
 	private JScrollPane panelProductList;
-	private JLabel lblMenuIcon;
-	private JLabel lblNewLabel;
-	private JLabel lblMenuIcon_2;
-	private JLabel lblNewLabel_1;
 	private JTextField txtCustomerName;
 	
 	public Cashier() {
@@ -65,6 +70,8 @@ public class Cashier extends JFrame {
 		panelCat = new panelCategoryDefault();
 		prodList = new ProductList();
 		pOrderList = new orderListPanel();
+		lower = new lowerTotal();
+		menu = new menuBarPanel();
 		
 		try {
 			st = dbCon.getConnection().createStatement();
@@ -76,8 +83,7 @@ public class Cashier extends JFrame {
 		initialize();
 		defaultPanel();
 		prodCounter();
-		
-		
+		setDateNow();
 	}
 	
 	
@@ -85,6 +91,8 @@ public class Cashier extends JFrame {
 		panelCategory.add(panelCat);
 		panelProductList.setViewportView(prodList);
 		panelOrderList.add(pOrderList);
+		panelLow.add(lower);
+		panelMenuListTop.add(menu);
 	}
 	
 	private void prodCounter() {
@@ -124,6 +132,15 @@ public class Cashier extends JFrame {
 		}
 	}
 	
+	private void setDateNow() {
+		
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy, HH:mm");
+		String formattedDate = now.format(formatter);
+		menu.lblDate.setText(formattedDate);
+		 
+	}
+	
 	private void initialize() {
 		
 		panelMenuList = new JPanel();
@@ -136,31 +153,6 @@ public class Cashier extends JFrame {
 		panelMenuListTop.setBounds(10, 11, 821, 40);
 		panelMenuList.add(panelMenuListTop);
 		panelMenuListTop.setLayout(null);
-		
-		lblMenuIcon = new JLabel("");
-		lblMenuIcon.setIcon(new ImageIcon(Cashier.class.getResource("/KBNCashier/resources/menu.png")));
-		lblMenuIcon.setBounds(10, 4, 32, 32);
-		panelMenuListTop.add(lblMenuIcon);
-		
-		JLabel lblMenuIcon_1 = new JLabel("");
-		lblMenuIcon_1.setIcon(new ImageIcon(Cashier.class.getResource("/KBNCashier/resources/cal.png")));
-		lblMenuIcon_1.setBounds(779, 4, 32, 32);
-		panelMenuListTop.add(lblMenuIcon_1);
-		
-		lblNewLabel = new JLabel("Date Now");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel.setBounds(563, 4, 210, 32);
-		panelMenuListTop.add(lblNewLabel);
-		
-		lblMenuIcon_2 = new JLabel("");
-		lblMenuIcon_2.setIcon(new ImageIcon(Cashier.class.getResource("/KBNCashier/resources/clock.png")));
-		lblMenuIcon_2.setBounds(529, 8, 24, 24);
-		panelMenuListTop.add(lblMenuIcon_2);
-		
-		lblNewLabel_1 = new JLabel("KBN Cashier");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblNewLabel_1.setBounds(52, 4, 210, 32);
-		panelMenuListTop.add(lblNewLabel_1);
 		
 		panelCategory = new JPanel();
 		panelCategory.setBounds(10, 62, 821, 51);
