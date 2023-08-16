@@ -12,10 +12,14 @@ import KBNCashier.panels.category.panelCategoryDefault;
 import KBNCashier.panels.productList.ProductList;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import java.awt.Font;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Cashier extends JFrame {
 
@@ -23,6 +27,12 @@ public class Cashier extends JFrame {
 	private DbConnection dbCon;
 	private panelCategoryDefault panelCat;
 	private ProductList prodList;
+	
+	//
+	private int prodCount = 0;
+	
+	private Statement st;
+	private ResultSet rs;
 	
 	private JPanel contentPane;
 	private JPanel panelMenuList;
@@ -53,12 +63,17 @@ public class Cashier extends JFrame {
 		panelCat = new panelCategoryDefault();
 		prodList = new ProductList();
 		
-		
-		//KBN prodCount
-		prodList.setupProdCount(20);
+		try {
+			st = dbCon.getConnection().createStatement();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "SQL Connection");
+		}
+
 		
 		initialize();
 		defaultPanel();
+		prodCounter();
+		
 		
 	}
 	
@@ -66,7 +81,43 @@ public class Cashier extends JFrame {
 	private void defaultPanel() {
 		panelCategory.add(panelCat);
 		panelProductList.setViewportView(prodList);
+	}
+	
+	private void prodCounter() {
+		try {
+			String sql = "SELECT COUNT(prodName) from tblproducts";
+			st.execute(sql);
+			rs = st.getResultSet();
+			if(rs.next())
+				prodCount = rs.getInt(1);
+		}catch(Exception e) {
+			
+		}
 		
+		
+		//KBN prodCount
+		prodList.setupProdCount(prodCount);
+		productDetails();
+		
+	}
+	
+	private void productDetails() {
+		try {
+			String sql = "SELECT prodImg, prodName, prodPrice, prodVolume, Quantity from tblproducts";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				prodList.lblIcon[i].setText(rs.getString(1));
+				prodList.lblProdName[i].setText(rs.getString(2));
+				prodList.prodPrice[i] = rs.getString(3);
+				prodList.prodVolume[i] = rs.getString(4);
+				prodList.prodQuantity[i] = rs.getString(5);
+				i++;
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "productDetailsERROR: " + e.getMessage());
+		}
 	}
 	
 	private void initialize() {

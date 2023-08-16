@@ -13,8 +13,11 @@ public class ProductList extends JPanel {
 	private int KBN_PROD_COUNT = 0;
 	
 	private JPanel[] panel;
-	private JLabel[] lblIcon;
-	private JLabel[] lblProdName;
+	public JLabel[] lblIcon;
+	public JLabel[] lblProdName;
+	public String[] prodPrice;
+	public String[] prodVolume;
+	public String[] prodQuantity;
 
 	/**
 	 * Create the panel.
@@ -32,17 +35,21 @@ public class ProductList extends JPanel {
 	
 	private void settingUP() {
 		
-		this.setPreferredSize(new Dimension(2, 230*KBN_PROD_COUNT / 4));
+		
 		
 		panel = new JPanel[KBN_PROD_COUNT];
 		lblIcon = new JLabel[KBN_PROD_COUNT];
 		lblProdName = new JLabel[KBN_PROD_COUNT];
+		prodPrice = new String[KBN_PROD_COUNT];
+		prodVolume = new String[KBN_PROD_COUNT];
+		prodQuantity = new String[KBN_PROD_COUNT];
 		setupPanel();
 	}
 	
 	private void setupPanel() {
 		int y = 10;
 		int x = 10;
+		
 		for(int i = 0; i < KBN_PROD_COUNT; i++) {
 			if(i != 0) {
 				x += 196;
@@ -68,6 +75,11 @@ public class ProductList extends JPanel {
 			lblProdName[i].setBounds(0, 176, 180, 40);
 			panel[i].add(lblProdName[i]);
 		}
-
+		int yy = 225;
+		int mod_ = KBN_PROD_COUNT/4;
+		if(KBN_PROD_COUNT%4 != 0)
+			mod_ += 1;
+		this.setPreferredSize(new Dimension(2, (yy * mod_) + 10));
 	}
+	
 }
