@@ -39,19 +39,19 @@ public class lowerTotal extends JPanel {
 		btnPay.setBounds(43, 134, 286, 33);
 		add(btnPay);
 		
-		lblTotal = new JLabel("Total:");
+		lblTotal = new JLabel("0");
 		lblTotal.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblTotal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblTotal.setBounds(117, 93, 246, 30);
 		add(lblTotal);
 		
-		lblDiscount = new JLabel("Discount:");
+		lblDiscount = new JLabel("0");
 		lblDiscount.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblDiscount.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblDiscount.setBounds(117, 52, 246, 30);
 		add(lblDiscount);
 		
-		lblSubTotal = new JLabel("Sub Total:");
+		lblSubTotal = new JLabel("0");
 		lblSubTotal.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblSubTotal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblSubTotal.setBounds(117, 11, 246, 30);

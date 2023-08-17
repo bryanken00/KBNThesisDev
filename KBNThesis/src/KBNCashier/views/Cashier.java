@@ -4,11 +4,13 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import KBN.commons.DbConnection;
 import KBNCashier.panels.category.panelCategoryDefault;
+import KBNCashier.panels.category.panelCategoryList;
 import KBNCashier.panels.low.lowerTotal;
 import KBNCashier.panels.menuBar.menuBarPanel;
 import KBNCashier.panels.orderList.orderListPanel;
@@ -20,21 +22,36 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
-public class Cashier extends JFrame {
+public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 	// Class
 	private DbConnection dbCon;
+	
+	
 	//Class Panel
+		// Category
 	private panelCategoryDefault panelCat;
+	private panelCategoryList panelCatList;
+	private JScrollBar horizontalScrollBar;
+	
+	
 	private ProductList prodList;
 	private orderListPanel pOrderList;
 	private lowerTotal lower;
@@ -42,6 +59,7 @@ public class Cashier extends JFrame {
 	
 	//
 	private int prodCount = 0;
+	private int catListCount = 0;
 	
 	private Statement st;
 	private ResultSet rs;
@@ -53,11 +71,12 @@ public class Cashier extends JFrame {
 	private JPanel panelTop;
 	private JPanel panelOrderList;
 	private JPanel panelLow;
-	private JPanel panelCategory;
+	private JScrollPane panelCategory;
 	private JScrollPane panelProductList;
 	private JTextField txtCustomerName;
 	
 	public Cashier() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1280, 760);
 		contentPane = new JPanel();
@@ -72,6 +91,7 @@ public class Cashier extends JFrame {
 		pOrderList = new orderListPanel();
 		lower = new lowerTotal();
 		menu = new menuBarPanel();
+		panelCatList = new panelCategoryList();
 		
 		try {
 			st = dbCon.getConnection().createStatement();
@@ -83,12 +103,25 @@ public class Cashier extends JFrame {
 		initialize();
 		defaultPanel();
 		prodCounter();
+		catListCounter();
 		setDateNow();
+		//Listener
+		mouseList();
+
 	}
 	
+	private void mouseList() {
+		horizontalScrollBar.addMouseListener(this);
+		panelCat.addMouseListener(this);
+		panelCatList.addMouseListener(this);
+		
+		for(int i = 0; i < catListCount; i++) {
+			panelCatList.btnCategory[i].addMouseListener(this);
+		}
+	}
 	
 	private void defaultPanel() {
-		panelCategory.add(panelCat);
+		panelCategory.setViewportView(panelCat);
 		panelProductList.setViewportView(prodList);
 		panelOrderList.add(pOrderList);
 		panelLow.add(lower);
@@ -132,6 +165,35 @@ public class Cashier extends JFrame {
 		}
 	}
 	
+	private void catListCounter() {
+		try {
+			String sql = "SELECT COUNT(CategoryName) from tblproductcategories";
+			st.execute(sql);
+			rs = st.getResultSet();
+			if(rs.next())
+				catListCount = rs.getInt(1);
+		}catch(Exception e) {
+			
+		}
+		panelCatList.settingUpCount(catListCount);
+		catListDetails();
+	}
+	
+	private void catListDetails() {
+		try {
+			String sql = "SELECT CategoryName from tblproductcategories";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				panelCatList.btnCategory[i].setText(rs.getString(1));
+				i++;
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "catListDetailsERROR: " + e.getMessage());
+		}
+	}
+	
 	private void setDateNow() {
 		
 		LocalDateTime now = LocalDateTime.now();
@@ -154,14 +216,22 @@ public class Cashier extends JFrame {
 		panelMenuList.add(panelMenuListTop);
 		panelMenuListTop.setLayout(null);
 		
-		panelCategory = new JPanel();
-		panelCategory.setBounds(10, 62, 821, 51);
+		panelCategory = new JScrollPane();
+		panelCategory.setBounds(10, 62, 821, 56);
 		panelMenuList.add(panelCategory);
-		panelCategory.setLayout(null);
 		
 		panelProductList = new JScrollPane();
 		panelProductList.setBounds(10, 124, 821, 564);
 		panelMenuList.add(panelProductList);
+		
+		// Scroll Speed
+		int horizontalScrollUnitIncrement = 10;
+		horizontalScrollBar = panelCategory.getHorizontalScrollBar();
+		horizontalScrollBar.setUnitIncrement(horizontalScrollUnitIncrement);
+		
+		int veticalScrollUnitIncrement = 10;
+		JScrollBar verticalScrollBar = panelProductList.getVerticalScrollBar();
+		verticalScrollBar.setUnitIncrement(veticalScrollUnitIncrement);
 		
 		panelPrice = new JPanel();
 		panelPrice.setBounds(861, 11, 393, 699);
@@ -187,5 +257,49 @@ public class Cashier extends JFrame {
 		panelLow.setBounds(10, 510, 373, 178);
 		panelPrice.add(panelLow);
 		panelLow.setLayout(null);
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if(e.getSource() == panelCat) {
+			panelCategory.setViewportView(panelCatList);
+		}
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if(e.getSource() == panelCatList || e.getSource() == panelCatList.btnCategory || e.getSource() == horizontalScrollBar) {
+			panelCategory.setViewportView(panelCat);
+		}
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

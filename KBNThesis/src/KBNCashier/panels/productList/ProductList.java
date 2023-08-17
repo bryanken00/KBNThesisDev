@@ -47,8 +47,8 @@ public class ProductList extends JPanel {
 	}
 	
 	private void setupPanel() {
-		int y = 10;
 		int x = 10;
+		int y = 10;
 		
 		for(int i = 0; i < KBN_PROD_COUNT; i++) {
 			if(i != 0) {
