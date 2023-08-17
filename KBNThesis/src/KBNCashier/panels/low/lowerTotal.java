@@ -2,6 +2,8 @@ package KBNCashier.panels.low;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+
+import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -36,6 +38,9 @@ public class lowerTotal extends JPanel {
 		
 		btnPay = new JButton("Pay");
 		btnPay.setFont(new Font("Tahoma", Font.BOLD, 16));
+		btnPay.setFocusable(false);
+		btnPay.setBorderPainted(false);
+		btnPay.setBackground(Color.WHITE);
 		btnPay.setBounds(43, 134, 286, 33);
 		add(btnPay);
 		

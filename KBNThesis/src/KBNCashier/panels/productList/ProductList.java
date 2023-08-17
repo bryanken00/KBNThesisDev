@@ -12,7 +12,7 @@ public class ProductList extends JPanel {
 	
 	private int KBN_PROD_COUNT = 0;
 	
-	private JPanel[] panel;
+	public JPanel[] panel;
 	public JLabel[] lblIcon;
 	public JLabel[] lblProdName;
 	public String[] prodPrice;

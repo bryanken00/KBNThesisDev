@@ -14,7 +14,9 @@ import KBNCashier.panels.category.panelCategoryList;
 import KBNCashier.panels.low.lowerTotal;
 import KBNCashier.panels.menuBar.menuBarPanel;
 import KBNCashier.panels.orderList.orderListPanel;
+import KBNCashier.panels.orderList.prodDetails;
 import KBNCashier.panels.productList.ProductList;
+import KBNCashier.panels.productList.addCart;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -53,13 +55,18 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	
 	
 	private ProductList prodList;
-	private orderListPanel pOrderList;
+	private addCart cartButton;
 	private lowerTotal lower;
 	private menuBarPanel menu;
+	
+	//orderList
+	private orderListPanel pOrderList;
+	private prodDetails prodD;
 	
 	//
 	private int prodCount = 0;
 	private int catListCount = 0;
+	private int prodIndexClicked = 0;
 	
 	private Statement st;
 	private ResultSet rs;
@@ -69,7 +76,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	private JPanel panelPrice;
 	private JPanel panelMenuListTop;
 	private JPanel panelTop;
-	private JPanel panelOrderList;
+	private JScrollPane panelOrderList;
 	private JPanel panelLow;
 	private JScrollPane panelCategory;
 	private JScrollPane panelProductList;
@@ -89,9 +96,11 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		panelCat = new panelCategoryDefault();
 		prodList = new ProductList();
 		pOrderList = new orderListPanel();
+		prodD = new prodDetails();
 		lower = new lowerTotal();
 		menu = new menuBarPanel();
 		panelCatList = new panelCategoryList();
+		cartButton = new addCart();
 		
 		try {
 			st = dbCon.getConnection().createStatement();
@@ -110,6 +119,14 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 	}
 	
+	private void defaultPanel() {
+		panelCategory.setViewportView(panelCat);
+		panelProductList.setViewportView(prodList);
+		panelOrderList.setViewportView(pOrderList);
+		panelLow.add(lower);
+		panelMenuListTop.add(menu);
+	}
+	
 	private void mouseList() {
 		horizontalScrollBar.addMouseListener(this);
 		panelCat.addMouseListener(this);
@@ -118,14 +135,16 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		for(int i = 0; i < catListCount; i++) {
 			panelCatList.btnCategory[i].addMouseListener(this);
 		}
+		
+		for (int i = 0; i < prodCount; i++) {
+			prodList.panel[i].addMouseListener(this);
+		}
+		
+		//addToCart
+		cartButton.btnaddToCart.addMouseListener(this);
 	}
 	
-	private void defaultPanel() {
-		panelCategory.setViewportView(panelCat);
-		panelProductList.setViewportView(prodList);
-		panelOrderList.add(pOrderList);
-		panelLow.add(lower);
-		panelMenuListTop.add(menu);
+	private void actionList() {
 	}
 	
 	private void prodCounter() {
@@ -138,7 +157,6 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		}catch(Exception e) {
 			
 		}
-		
 		
 		//KBN prodCount
 		prodList.setupProdCount(prodCount);
@@ -171,7 +189,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 			st.execute(sql);
 			rs = st.getResultSet();
 			if(rs.next())
-				catListCount = rs.getInt(1);
+				catListCount = rs.getInt(1) + 1;
 		}catch(Exception e) {
 			
 		}
@@ -184,7 +202,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 			String sql = "SELECT CategoryName from tblproductcategories";
 			st.execute(sql);
 			rs = st.getResultSet();
-			int i = 0;
+			int i = 1;
+			panelCatList.btnCategory[0].setText("All");
 			while(rs.next()) {
 				panelCatList.btnCategory[i].setText(rs.getString(1));
 				i++;
@@ -248,10 +267,9 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		txtCustomerName.setBounds(10, 4, 353, 32);
 		panelTop.add(txtCustomerName);
 		
-		panelOrderList = new JPanel();
+		panelOrderList = new JScrollPane();
 		panelOrderList.setBounds(10, 62, 373, 437);
 		panelPrice.add(panelOrderList);
-		panelOrderList.setLayout(null);
 		
 		panelLow = new JPanel();
 		panelLow.setBounds(10, 510, 373, 178);
@@ -262,8 +280,26 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		Component clickedComponent = e.getComponent();
+		for (int i = 0; i < prodCount; i++) {
+			if (clickedComponent == prodList.panel[i]) {
+				prodIndexClicked = i;
+				
+				//panel addCart
+				prodList.panel[i].add(cartButton);
+				prodList.lblIcon[i].setVisible(false);
+				prodList.lblProdName[i].setVisible(false);
+				
+				//details panel
+				panelOrderList.setViewportView(prodD);
+				prodD.lblIcon.setText(prodList.lblIcon[i].getText());
+				prodD.lblProdName.setText("Product: " + prodList.lblProdName[i].getText());
+				prodD.lblPrice.setText("Price: " + prodList.prodPrice[i]);
+				prodD.lblVariant.setText("Variant: " + prodList.prodVolume[i]);
+				prodD.lblStock.setText("Stock: " + prodList.prodQuantity[i]);
+				break;
+			}
+		}
 	}
 
 
@@ -282,7 +318,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(MouseEvent e) {	
+		
 		if(e.getSource() == panelCat) {
 			panelCategory.setViewportView(panelCatList);
 		}
@@ -291,9 +328,23 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		if(e.getSource() == panelCatList || e.getSource() == panelCatList.btnCategory || e.getSource() == horizontalScrollBar) {
+		
+		for(int i = 0; i < catListCount; i++) {
+			if(e.getSource() == panelCatList.btnCategory) {
+				panelCategory.setViewportView(panelCatList);
+			}
+		}
+		if(e.getSource() == panelCatList || e.getSource() == horizontalScrollBar) {
 			panelCategory.setViewportView(panelCat);
 		}
+		
+		if(e.getSource() == cartButton.btnaddToCart) {
+			panelOrderList.setViewportView(pOrderList);
+			prodList.panel[prodIndexClicked].remove(cartButton);
+			prodList.lblIcon[prodIndexClicked].setVisible(true);
+			prodList.lblProdName[prodIndexClicked].setVisible(true);
+		}
+		
 	}
 
 
