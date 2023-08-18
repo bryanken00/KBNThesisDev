@@ -14,13 +14,13 @@ public class orderListPanel extends JPanel {
 	
 	public JPanel orderListView;
 	
-	
-	private JPanel[] orders;
-	private JLabel[] lblProdName;
-	private JLabel[] lblPrice;
-	private JLabel[] lblQuantity;
-	private JLabel[] lblTotal;
 	private JSeparator[] separator;
+	private JPanel[] orders;
+	
+	public JLabel[] lblProdName;
+	public JLabel[] lblPrice;
+	public JLabel[] lblQuantity;
+	public JLabel[] lblTotal;
 
 	public orderListPanel() {
 		setBounds(0, 0, 373, 437);
@@ -76,14 +76,23 @@ public class orderListPanel extends JPanel {
 		int totalHeight = 0;
 		
 		for(int i = 0; i < orderCount; i++) {
-			int yPos = i * 43;
+			int yPos = i * 41;
 			
 			orders[i] = new JPanel();
 			orders[i].setLayout(null);
 			orders[i].setBounds(0, yPos, 373, 41);
+			
+			Color alternateColor = new Color(200, 201, 210);
+			Color whiteColor = Color.WHITE;
+			
+			if(i%2 == 0) {
+				orders[i].setBackground(alternateColor);
+			}else {
+				orders[i].setBackground(whiteColor);
+			}
 			orderListView.add(orders[i]);
 			
-			lblProdName[i] = new JLabel("Name " + i);
+			lblProdName[i] = new JLabel();
 			lblProdName[i].setBounds(19, 0, 125, 41);
 			orders[i].add(lblProdName[i]);
 			
@@ -99,10 +108,11 @@ public class orderListPanel extends JPanel {
 			lblTotal[i].setBounds(300, 0, 63, 41);
 			orders[i].add(lblTotal[i]);
 			
-			separator[i] = new JSeparator();
-			separator[i].setForeground(Color.LIGHT_GRAY);
-			separator[i].setBounds(10, 45+yPos, 344, 2);
-			orderListView.add(separator[i]);
+//			separator[i] = new JSeparator();
+//			separator[i].setForeground(Color.LIGHT_GRAY);
+////			separator[i].setBounds(10, 45+yPos, 344, 2);
+//			separator[i].setBounds(0, 41+yPos, 373, 2);
+//			orderListView.add(separator[i]);
 			totalHeight = Math.max(totalHeight, yPos + 43);
 		}
 		this.setPreferredSize(new Dimension(2, (orderCount * 43) + 53));

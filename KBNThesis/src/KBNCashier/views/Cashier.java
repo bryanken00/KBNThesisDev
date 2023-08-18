@@ -33,13 +33,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Cashier extends JFrame implements ActionListener, MouseListener{
 
@@ -69,6 +74,10 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	private int prodIndexClicked = 0;
 	private int orderListClickCount = 0;
 	
+	private static final long UPDATE_INTERVAL_MS = 1000;
+	
+	private ArrayList<Integer> arr;
+	
 	private Statement st;
 	private ResultSet rs;
 	
@@ -88,9 +97,12 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1280, 760);
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(245, 245, 245));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		arr = new ArrayList<>();
 		
 		// Class
 		dbCon = new DbConnection();
@@ -115,6 +127,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		prodCounter();
 		catListCounter();
 		setDateNow();
+		this.startAutoUpdate();
 		//Listener
 		mouseList();
 
@@ -214,6 +227,14 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		}
 	}
 	
+    private void startAutoUpdate() {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        Runnable updateTask = this::setDateNow;
+
+        // Schedule the task to run at a fixed interval
+        executor.scheduleAtFixedRate(updateTask, 0, UPDATE_INTERVAL_MS, TimeUnit.MILLISECONDS);
+    }
+	
 	private void setDateNow() {
 		
 		LocalDateTime now = LocalDateTime.now();
@@ -226,6 +247,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	private void initialize() {
 		
 		panelMenuList = new JPanel();
+		panelMenuList.setBackground(Color.WHITE);
 		panelMenuList.setBounds(10, 11, 841, 699);
 		contentPane.add(panelMenuList);
 		panelMenuList.setLayout(null);
@@ -254,11 +276,13 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		verticalScrollBar.setUnitIncrement(veticalScrollUnitIncrement);
 		
 		panelPrice = new JPanel();
+		panelPrice.setBackground(Color.WHITE);
 		panelPrice.setBounds(861, 11, 393, 699);
 		contentPane.add(panelPrice);
 		panelPrice.setLayout(null);
 		
 		panelTop = new JPanel();
+		panelTop.setBackground(Color.WHITE);
 		panelTop.setBounds(10, 11, 373, 40);
 		panelPrice.add(panelTop);
 		panelTop.setLayout(null);
@@ -276,8 +300,34 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		panelLow.setBounds(10, 510, 373, 178);
 		panelPrice.add(panelLow);
 		panelLow.setLayout(null);
+		
+
 	}
 
+	private void setValueOrderList() {
+		int finalTotal = 0;
+		for(int i = 0; i < orderListClickCount; i++) {
+			int price = Integer.parseInt(prodList.prodPrice[Integer.parseInt(arr.get(i).toString())]);
+			int quantity = 1;
+			int total = quantity * price;
+			pOrderList.lblProdName[i].setText(prodList.lblProdName[Integer.parseInt(arr.get(i).toString())].getText());
+			pOrderList.lblPrice[i].setText(price + "");
+			pOrderList.lblQuantity[i].setText(quantity + "");
+			pOrderList.lblTotal[i].setText(total + "");
+
+			finalTotal += total;
+		}
+		setTotal(finalTotal);
+		finalTotal = 0;
+	}
+	
+	private void setTotal(int total) {
+		int subT = total;
+		int discount = Integer.parseInt(lower.lblDiscount.getText());
+		double finalTotal = total;
+		lower.lblSubTotal.setText("₱" + subT);
+		lower.lblTotal.setText("₱" + finalTotal);
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -308,8 +358,13 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	public void mousePressed(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if(e.getSource() == cartButton.btnaddToCart) {
-				orderListClickCount++;
-				pOrderList.settingUpCount(orderListClickCount);
+				if(!arr.contains(prodIndexClicked)) {
+					orderListClickCount++;
+					pOrderList.settingUpCount(orderListClickCount);
+					arr.add(prodIndexClicked);
+					setValueOrderList();
+				}
+//				System.out.println("Debug: " + arr.toString());
 				
 				panelOrderList.setViewportView(pOrderList);
 				prodList.panel[prodIndexClicked].remove(cartButton);

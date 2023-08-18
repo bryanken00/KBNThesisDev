@@ -9,10 +9,10 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
 public class lowerTotal extends JPanel {
-	private JLabel lblSubTotal;
-	private JLabel lblDiscount;
-	private JLabel lblTotal;
-	private JButton btnPay;
+	public JLabel lblSubTotal;
+	public JLabel lblDiscount;
+	public JLabel lblTotal;
+	public JButton btnPay;
 
 	/**
 	 * Create the panel.

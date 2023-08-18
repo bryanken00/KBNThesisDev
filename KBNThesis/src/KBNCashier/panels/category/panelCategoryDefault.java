@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import java.awt.Font;
+import java.awt.Color;
 
 public class panelCategoryDefault extends JPanel {
 	private JLabel lblIcon;
@@ -12,6 +13,7 @@ public class panelCategoryDefault extends JPanel {
 	 * Create the panel.
 	 */
 	public panelCategoryDefault() {
+		setBackground(Color.WHITE);
 		setBounds(0, 0, 821, 51);
 		setLayout(null);
 		
