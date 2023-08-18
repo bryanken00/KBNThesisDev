@@ -117,9 +117,6 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		setDateNow();
 		//Listener
 		mouseList();
-		
-
-//		pOrderList.settingUpCount(100);
 
 	}
 	
@@ -312,7 +309,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if(e.getSource() == cartButton.btnaddToCart) {
 				orderListClickCount++;
-//				pOrderList.settingUpCount(orderListClickCount);
+				pOrderList.settingUpCount(orderListClickCount);
 				
 				panelOrderList.setViewportView(pOrderList);
 				prodList.panel[prodIndexClicked].remove(cartButton);
