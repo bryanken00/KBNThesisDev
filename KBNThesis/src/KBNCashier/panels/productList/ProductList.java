@@ -19,9 +19,7 @@ public class ProductList extends JPanel {
 	public String[] prodVolume;
 	public String[] prodQuantity;
 
-	/**
-	 * Create the panel.
-	 */
+
 	public ProductList() {
 		setBounds(0, 0, 803, 564);
 		setLayout(null);

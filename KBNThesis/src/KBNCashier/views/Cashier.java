@@ -67,6 +67,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	private int prodCount = 0;
 	private int catListCount = 0;
 	private int prodIndexClicked = 0;
+	private int orderListClickCount = 0;
 	
 	private Statement st;
 	private ResultSet rs;
@@ -116,6 +117,9 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		setDateNow();
 		//Listener
 		mouseList();
+		
+
+//		pOrderList.settingUpCount(100);
 
 	}
 	
@@ -305,7 +309,21 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			if(e.getSource() == cartButton.btnaddToCart) {
+				orderListClickCount++;
+//				pOrderList.settingUpCount(orderListClickCount);
+				
+				panelOrderList.setViewportView(pOrderList);
+				prodList.panel[prodIndexClicked].remove(cartButton);
+				prodList.lblIcon[prodIndexClicked].setVisible(true);
+				prodList.lblProdName[prodIndexClicked].setVisible(true);
+
+				panelOrderList.repaint();
+				pOrderList.repaint();
+				pOrderList.orderListView.repaint();
+			}
+		}
 		
 	}
 
@@ -332,12 +350,13 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		for(int i = 0; i < catListCount; i++) {
 			if(e.getSource() == panelCatList.btnCategory) {
 				panelCategory.setViewportView(panelCatList);
-			}
+			} 
 		}
 		if(e.getSource() == panelCatList || e.getSource() == horizontalScrollBar) {
 			panelCategory.setViewportView(panelCat);
 		}
 		
+		// add Cart
 		if(e.getSource() == cartButton.btnaddToCart) {
 			panelOrderList.setViewportView(pOrderList);
 			prodList.panel[prodIndexClicked].remove(cartButton);
