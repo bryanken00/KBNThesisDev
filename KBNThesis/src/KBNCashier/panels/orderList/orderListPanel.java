@@ -7,6 +7,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JSeparator;
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
 
 public class orderListPanel extends JPanel {
 	
@@ -16,11 +19,23 @@ public class orderListPanel extends JPanel {
 	
 	private JSeparator[] separator;
 	private JPanel[] orders;
-	
+
+	public JLabel[] lblMinus;
+	public JLabel[] lblAdd;
+	public JLabel[] lblDelete;
 	public JLabel[] lblProdName;
 	public JLabel[] lblPrice;
 	public JLabel[] lblQuantity;
 	public JLabel[] lblTotal;
+	
+	private JPanel orders1;
+	public JLabel lblProdName1;
+	public JLabel lblPrice1;
+	public JLabel lblQuantity1;
+	public JLabel lblTotal1;
+	private JLabel lblMinus1;
+	private JLabel lblAdd1;
+	private JLabel lblDelete1;
 
 	public orderListPanel() {
 		setBounds(0, 0, 373, 437);
@@ -53,6 +68,48 @@ public class orderListPanel extends JPanel {
 		add(orderListView);
 		orderListView.setLayout(null);
 		
+//		testing();
+	}
+	
+	private void testing() {
+		orders1 = new JPanel();
+		orders1.setLayout(null);
+		orders1.setBounds(0, 0, 373, 41);
+		orderListView.add(orders1);
+		
+		lblProdName1 = new JLabel();
+		lblProdName1.setBounds(19, 0, 125, 41);
+		orders1.add(lblProdName1);
+		
+		lblPrice1 = new JLabel("Price");
+		lblPrice1.setBounds(154, 0, 54, 41);
+		orders1.add(lblPrice1);
+		
+		lblQuantity1 = new JLabel("1");
+		lblQuantity1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblQuantity1.setBounds(218, 0, 43, 41);
+		orders1.add(lblQuantity1);
+		
+		lblTotal1 = new JLabel("Total");
+		lblTotal1.setBounds(300, 0, 63, 41);
+		orders1.add(lblTotal1);
+		
+		lblMinus1 = new JLabel("-");
+		lblMinus1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblMinus1.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblMinus1.setBounds(179, 0, 43, 41);
+		orders1.add(lblMinus1);
+		
+		lblAdd1 = new JLabel("+");
+		lblAdd1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblAdd1.setHorizontalAlignment(SwingConstants.LEFT);
+		lblAdd1.setBounds(258, 0, 54, 41);
+		orders1.add(lblAdd1);
+		
+		lblDelete1 = new JLabel("");
+		lblDelete1.setIcon(new ImageIcon(orderListPanel.class.getResource("/KBNCashier/resources/delete.png")));
+		lblDelete1.setBounds(339, 8, 24, 24);
+		orders1.add(lblDelete1);
 	}
 	
 	public void settingUpCount(int count) {
@@ -67,7 +124,10 @@ public class orderListPanel extends JPanel {
 		lblProdName = new JLabel[orderCount];
 		lblPrice = new JLabel[orderCount];
 		lblQuantity = new JLabel[orderCount];
+		lblMinus = new JLabel[orderCount];
+		lblAdd = new JLabel[orderCount];
 		lblTotal = new JLabel[orderCount];
+		lblDelete = new JLabel[orderCount];
 		separator = new JSeparator[orderCount];
 		finalSetup();
 	}
@@ -100,13 +160,31 @@ public class orderListPanel extends JPanel {
 			lblPrice[i].setBounds(154, 0, 54, 41);
 			orders[i].add(lblPrice[i]);
 			
-			lblQuantity[i] = new JLabel("Quantity");
-			lblQuantity[i].setBounds(227, 0, 54, 41);
+			lblQuantity[i] = new JLabel("1");
+			lblQuantity[i].setBounds(218, 0, 43, 41);
+			lblQuantity[i].setHorizontalAlignment(SwingConstants.CENTER);
 			orders[i].add(lblQuantity[i]);
+			
+			lblMinus[i] = new JLabel("-");
+			lblMinus[i].setFont(new Font("Tahoma", Font.BOLD, 15));
+			lblMinus[i].setHorizontalAlignment(SwingConstants.RIGHT);
+			lblMinus[i].setBounds(179, 0, 43, 41);
+			orders[i].add(lblMinus[i]);
+			
+			lblAdd[i] = new JLabel("+");
+			lblAdd[i].setFont(new Font("Tahoma", Font.BOLD, 15));
+			lblAdd[i].setHorizontalAlignment(SwingConstants.LEFT);
+			lblAdd[i].setBounds(258, 0, 54, 41);
+			orders[i].add(lblAdd[i]);
 			
 			lblTotal[i] = new JLabel("Total");
 			lblTotal[i].setBounds(300, 0, 63, 41);
 			orders[i].add(lblTotal[i]);
+			
+			lblDelete[i] = new JLabel("");
+			lblDelete[i].setIcon(new ImageIcon(orderListPanel.class.getResource("/KBNCashier/resources/delete.png")));
+			lblDelete[i].setBounds(339, 8, 24, 24);
+			orders[i].add(lblDelete[i]);
 			
 //			separator[i] = new JSeparator();
 //			separator[i].setForeground(Color.LIGHT_GRAY);
