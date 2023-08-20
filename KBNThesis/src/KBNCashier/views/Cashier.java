@@ -31,9 +31,11 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.awt.Color;
 import java.awt.Component;
 
@@ -133,6 +135,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		this.startAutoUpdate();
 		//Listener
 		mouseList();
+		actionList();
 
 	}
 	
@@ -163,6 +166,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	}
 	
 	private void actionList() {
+		lower.btnPay.addActionListener(this);
 	}
 	
 	private void prodCounter() {
@@ -318,7 +322,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 			pOrderList.lblPrice[i].setText(price + "");
 			pOrderList.lblQuantity[i].setText(quantity + "");
 			pOrderList.lblTotal[i].setText(total + "");
-
+			pOrderList.prodVolume[i] = prodList.prodVolume[arr.get(i)] + "";
 			finalTotal += total;
 		}
 		setTotal(finalTotal);
@@ -462,7 +466,50 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(e.getSource() == lower.btnPay) {
+			try {
+				//Genarating RefNumber
+				String ref = "";
+				String sqlRefGen = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+				st.execute(sqlRefGen);
+				rs = st.getResultSet();
+				if(rs.next())
+					ref = "ref" + (rs.getInt(1) + 1);
+//				System.out.println(ref);
+				
+				for(int i = 0; i < arr.size(); i++) {
+					// Inserting products on tblordercheckoutdata,
+					String prodName = pOrderList.lblProdName[i].getText();
+					String prodVolume = pOrderList.prodVolume[i];
+					String prodQuantity = pOrderList.lblQuantity[i].getText();
+//					String prodPrice = pOrderList.lblPrice[i].getText();
+					
+		            String sqlKBN = "INSERT INTO tblordercheckoutdata(OrderRefNumber,ProductName, volume, Quantity, Price) " +
+	                        "SELECT " + ref + ", prodName, prodVolume, " + prodQuantity + ", prodPrice " +
+	                        "FROM tblproducts " +
+	                        "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
+		            
+//		            int rowCount = st.executeUpdate(sqlKBN);
+		            
+		            // setting up product stock on tblProducts
+		            String sqlUpdate = "UPDATE tblProducts"
+		            		+ "SET Quantity = Quantity - '" + prodQuantity + "',"
+		            		+ "Sold = Sold + '" + prodQuantity + "'"
+		            		+ "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
+		            
+				}
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				String date = dateFormat.format(new Date());
+//				System.out.println(date);
+				
+				String sql2 = "INSERT INTO tblordercheckout(OrderRefNumber, OrderDate, UserID, address, contact, email) VALUES ('" + ref + "','" + date + "','','Walk-IN','00000000000','Walk-IN@gmail.com')";
+				
+				String sqlFinal = "INSERT INTO tblorderstatus VALUES('" + ref + "','Completed')";
+				
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "btnPayERROR: " + e2.getMessage());
+			}
+		}	
 	}
 }

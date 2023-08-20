@@ -19,6 +19,8 @@ public class orderListPanel extends JPanel {
 	
 	private JSeparator[] separator;
 	public JPanel[] orders;
+	
+	public String[] prodVolume;
 
 	public JLabel[] lblMinus;
 	public JLabel[] lblAdd;
@@ -29,10 +31,10 @@ public class orderListPanel extends JPanel {
 	public JLabel[] lblTotal;
 	
 	private JPanel orders1;
-	public JLabel lblProdName1;
-	public JLabel lblPrice1;
-	public JLabel lblQuantity1;
-	public JLabel lblTotal1;
+	private JLabel lblProdName1;
+	private JLabel lblPrice1;
+	private JLabel lblQuantity1;
+	private JLabel lblTotal1;
 	private JLabel lblMinus1;
 	private JLabel lblAdd1;
 	private JLabel lblDelete1;
@@ -129,6 +131,7 @@ public class orderListPanel extends JPanel {
 		lblTotal = new JLabel[orderCount];
 		lblDelete = new JLabel[orderCount];
 		separator = new JSeparator[orderCount];
+		prodVolume = new String[orderCount];
 		finalSetup();
 	}
 	
