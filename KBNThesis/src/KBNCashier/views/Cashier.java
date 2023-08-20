@@ -327,12 +327,6 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		}
 		setTotal(finalTotal);
 		finalTotal = 0;
-		
-		for(int i = 0; i < arr.size(); i++) {
-			pOrderList.lblAdd[i].addMouseListener(this);
-			pOrderList.lblMinus[i].addMouseListener(this);
-			pOrderList.lblDelete[i].addMouseListener(this);
-		}
 	}
 	
 	private void setTotal(int total) {
@@ -366,6 +360,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 			}
 		}
 
+//		Component clickedComponent1 = e.getComponent();
 		for(int i = 0; i < arr.size(); i++) {
 			if(clickedComponent == pOrderList.lblAdd[i]) {
 //				System.out.println("add " + i);
@@ -375,6 +370,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				setValueOrderList();
 				break;
 			}
+			
 			if(clickedComponent == pOrderList.lblMinus[i]) {
 //				System.out.println("minus " + i);
 				int Quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
@@ -385,17 +381,24 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				}
 				break;
 			}
+			
 			if(clickedComponent == pOrderList.lblDelete[i]) {
-				
+
 				cartRemoveIndex = i;
 				pOrderList = new orderListPanel();
 				orderListClickCount--;
 				pOrderList.settingUpCount(orderListClickCount);
 				arr.remove(cartRemoveIndex);
 				setValueOrderList();
-				
+
 				panelOrderList.setViewportView(pOrderList);
 				
+				for(int ii = 0; ii < arr.size(); ii++) {
+					pOrderList.lblAdd[ii].addMouseListener(this);
+					pOrderList.lblMinus[ii].addMouseListener(this);
+					pOrderList.lblDelete[ii].addMouseListener(this);
+				}
+
 			}
 		}
 	}
@@ -413,11 +416,17 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 
 				}
 //				System.out.println("Debug: " + arr.toString());
-				
+
 				panelOrderList.setViewportView(pOrderList);
 				prodList.panel[prodIndexClicked].remove(cartButton);
 				prodList.lblIcon[prodIndexClicked].setVisible(true);
 				prodList.lblProdName[prodIndexClicked].setVisible(true);
+				
+				for(int i = 0; i < arr.size(); i++) {
+					pOrderList.lblAdd[i].addMouseListener(this);
+					pOrderList.lblMinus[i].addMouseListener(this);
+					pOrderList.lblDelete[i].addMouseListener(this);
+				}
 
 			}
 		}
@@ -475,7 +484,11 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				rs = st.getResultSet();
 				if(rs.next())
 					ref = "ref" + (rs.getInt(1) + 1);
-//				System.out.println(ref);
+				
+				int rowCount = 0;
+				int rowCount1 = 0;
+				int rowCount2 = 0;
+				int rowCount3 = 0;
 				
 				for(int i = 0; i < arr.size(); i++) {
 					// Inserting products on tblordercheckoutdata,
@@ -485,17 +498,20 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 //					String prodPrice = pOrderList.lblPrice[i].getText();
 					
 		            String sqlKBN = "INSERT INTO tblordercheckoutdata(OrderRefNumber,ProductName, volume, Quantity, Price) " +
-	                        "SELECT " + ref + ", prodName, prodVolume, " + prodQuantity + ", prodPrice " +
+	                        "SELECT '" + ref + "', prodName, prodVolume, " + prodQuantity + ", prodPrice " +
 	                        "FROM tblproducts " +
 	                        "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
-		            
-//		            int rowCount = st.executeUpdate(sqlKBN);
+		            System.out.println(sqlKBN);
+		            rowCount = st.executeUpdate(sqlKBN);
 		            
 		            // setting up product stock on tblProducts
-		            String sqlUpdate = "UPDATE tblProducts"
-		            		+ "SET Quantity = Quantity - '" + prodQuantity + "',"
-		            		+ "Sold = Sold + '" + prodQuantity + "'"
+		            String sqlUpdate = "UPDATE tblProducts "
+		            		+ "SET Quantity = Quantity - " + prodQuantity + ", "
+		            		+ "Sold = Sold + " + prodQuantity + " "
 		            		+ "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
+		            System.out.println(sqlUpdate);
+		            
+		            rowCount1 = st.executeUpdate(sqlUpdate);
 		            
 				}
 				
@@ -503,10 +519,18 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				String date = dateFormat.format(new Date());
 //				System.out.println(date);
 				
-				String sql2 = "INSERT INTO tblordercheckout(OrderRefNumber, OrderDate, UserID, address, contact, email) VALUES ('" + ref + "','" + date + "','','Walk-IN','00000000000','Walk-IN@gmail.com')";
-				
+				String sql2 = "INSERT INTO tblordercheckout(OrderRefNumber, OrderDate, UserID, address, contact, email) VALUES ('" + ref + "','" + date + "','Cashier Walk-In','Walk-IN','00000000000','Walk-IN@gmail.com')";
+				rowCount2 = st.executeUpdate(sql2);
 				String sqlFinal = "INSERT INTO tblorderstatus VALUES('" + ref + "','Completed')";
+				rowCount3 = st.executeUpdate(sqlFinal);
 				
+				if(rowCount != 0 && rowCount1 !=0 && rowCount2 !=0 && rowCount3 !=0) {
+					JOptionPane.showMessageDialog(null, "Order Completed");
+					pOrderList = new orderListPanel();
+					panelOrderList.setViewportView(pOrderList);
+					arr.clear();
+					orderListClickCount = 0;
+				}
 			} catch (Exception e2) {
 				JOptionPane.showMessageDialog(null, "btnPayERROR: " + e2.getMessage());
 			}
