@@ -18,7 +18,7 @@ public class orderListPanel extends JPanel {
 	public JPanel orderListView;
 	
 	private JSeparator[] separator;
-	private JPanel[] orders;
+	public JPanel[] orders;
 
 	public JLabel[] lblMinus;
 	public JLabel[] lblAdd;

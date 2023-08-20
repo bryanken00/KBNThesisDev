@@ -75,6 +75,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	private int prodIndexClicked = 0; // prod index
 	private int orderListClickCount = 0; //
 	
+	private int cartRemoveIndex = 0;
+	
 	private static final long UPDATE_INTERVAL_MS = 1000;
 	
 	private ArrayList<Integer> arr;
@@ -321,6 +323,12 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		}
 		setTotal(finalTotal);
 		finalTotal = 0;
+		
+		for(int i = 0; i < arr.size(); i++) {
+			pOrderList.lblAdd[i].addMouseListener(this);
+			pOrderList.lblMinus[i].addMouseListener(this);
+			pOrderList.lblDelete[i].addMouseListener(this);
+		}
 	}
 	
 	private void setTotal(int total) {
@@ -354,9 +362,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 			}
 		}
 
-		Component clickedComponent1 = e.getComponent();
 		for(int i = 0; i < arr.size(); i++) {
-			if(clickedComponent1 == pOrderList.lblAdd[i]) {
+			if(clickedComponent == pOrderList.lblAdd[i]) {
 //				System.out.println("add " + i);
 				int Quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
 				Quantity++;
@@ -364,7 +371,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				setValueOrderList();
 				break;
 			}
-			if(clickedComponent1 == pOrderList.lblMinus[i]) {
+			if(clickedComponent == pOrderList.lblMinus[i]) {
 //				System.out.println("minus " + i);
 				int Quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
 				if(Quantity > 1) {
@@ -373,6 +380,18 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 					setValueOrderList();
 				}
 				break;
+			}
+			if(clickedComponent == pOrderList.lblDelete[i]) {
+				
+				cartRemoveIndex = i;
+				pOrderList = new orderListPanel();
+				orderListClickCount--;
+				pOrderList.settingUpCount(orderListClickCount);
+				arr.remove(cartRemoveIndex);
+				setValueOrderList();
+				
+				panelOrderList.setViewportView(pOrderList);
+				
 			}
 		}
 	}
@@ -396,15 +415,6 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				prodList.lblIcon[prodIndexClicked].setVisible(true);
 				prodList.lblProdName[prodIndexClicked].setVisible(true);
 
-				panelOrderList.repaint();
-				pOrderList.repaint();
-				pOrderList.orderListView.repaint();
-				
-				for(int i = 0; i < arr.size(); i++) {
-					pOrderList.lblAdd[i].addMouseListener(this);
-					pOrderList.lblMinus[i].addMouseListener(this);
-					pOrderList.lblDelete[i].addMouseListener(this);
-				}
 			}
 		}
 		
