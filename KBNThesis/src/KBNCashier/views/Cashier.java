@@ -82,6 +82,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	private static final long UPDATE_INTERVAL_MS = 1000;
 	
 	private ArrayList<Integer> arr;
+	private ArrayList<Integer> arrQuantity;
 	
 	private Statement st;
 	private ResultSet rs;
@@ -108,6 +109,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		contentPane.setLayout(null);
 		
 		arr = new ArrayList<>();
+		arrQuantity = new ArrayList<>();
 		
 		// Class
 		dbCon = new DbConnection();
@@ -316,7 +318,9 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		int finalTotal = 0;
 		for(int i = 0; i < orderListClickCount; i++) {
 			int price = Integer.parseInt(prodList.prodPrice[Integer.parseInt(arr.get(i).toString())]);
-			int quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
+//			int quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
+			int quantity = arrQuantity.get(i);
+			System.out.println("index" + i + ": " + quantity);
 			int total = quantity * price;
 			pOrderList.lblProdName[i].setText(prodList.lblProdName[Integer.parseInt(arr.get(i).toString())].getText());
 			pOrderList.lblPrice[i].setText(price + "");
@@ -366,7 +370,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 //				System.out.println("add " + i);
 				int Quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
 				Quantity++;
-				pOrderList.lblQuantity[i].setText(Quantity + "");
+				arrQuantity.set(i, Quantity);
+				pOrderList.lblQuantity[i].setText(arrQuantity.get(i) + "");
 				setValueOrderList();
 				break;
 			}
@@ -376,7 +381,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				int Quantity = Integer.parseInt(pOrderList.lblQuantity[i].getText());
 				if(Quantity > 1) {
 					Quantity--;
-					pOrderList.lblQuantity[i].setText(Quantity + "");
+					arrQuantity.set(i, Quantity);
+					pOrderList.lblQuantity[i].setText(arrQuantity.get(i) + "");
 					setValueOrderList();
 				}
 				break;
@@ -389,6 +395,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 				orderListClickCount--;
 				pOrderList.settingUpCount(orderListClickCount);
 				arr.remove(cartRemoveIndex);
+				arrQuantity.remove(i);
 				setValueOrderList();
 
 				panelOrderList.setViewportView(pOrderList);
@@ -412,6 +419,8 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 					orderListClickCount++;
 					pOrderList.settingUpCount(orderListClickCount);
 					arr.add(prodIndexClicked);
+					arrQuantity.add(1);
+					System.out.println(arrQuantity.toString());
 					setValueOrderList();
 
 				}
@@ -501,7 +510,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 	                        "SELECT '" + ref + "', prodName, prodVolume, " + prodQuantity + ", prodPrice " +
 	                        "FROM tblproducts " +
 	                        "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
-		            System.out.println(sqlKBN);
+//		            System.out.println(sqlKBN);
 		            rowCount = st.executeUpdate(sqlKBN);
 		            
 		            // setting up product stock on tblProducts
@@ -509,7 +518,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		            		+ "SET Quantity = Quantity - " + prodQuantity + ", "
 		            		+ "Sold = Sold + " + prodQuantity + " "
 		            		+ "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
-		            System.out.println(sqlUpdate);
+//		            System.out.println(sqlUpdate);
 		            
 		            rowCount1 = st.executeUpdate(sqlUpdate);
 		            
