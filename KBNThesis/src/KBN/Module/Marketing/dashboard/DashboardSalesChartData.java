@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.dashboard;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

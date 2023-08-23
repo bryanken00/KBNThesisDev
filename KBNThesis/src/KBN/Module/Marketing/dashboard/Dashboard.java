@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.dashboard;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;

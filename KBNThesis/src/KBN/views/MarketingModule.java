@@ -26,8 +26,6 @@ import javax.swing.border.EmptyBorder;
 import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.CustomerCreateAccount;
-import KBN.Module.Marketing.Dashboard;
-import KBN.Module.Marketing.DashboardSalesChartData;
 import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.ProductDetails;
@@ -41,6 +39,9 @@ import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
 import KBN.Module.Marketing.OrderingPanel.onDelivery;
+import KBN.Module.Marketing.dashboard.Dashboard;
+import KBN.Module.Marketing.dashboard.Dashboard1;
+import KBN.Module.Marketing.dashboard.DashboardSalesChartData;
 import KBN.Module.Marketing.preRegis.Registration;
 import KBN.Module.Marketing.preRegis.preRegList;
 import KBN.Module.Marketing.preRegis.preRegister;
@@ -63,6 +64,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private DbConnection dbConn;
 	private dataSetter dataSet;
 	private Dashboard dashboard;
+	private Dashboard1 dashboard1;
+	private OrderListPanelData opdDashboard;
 	private KBNProducts kbnProd;
 	private RebrandingProd rebrandingProd;
 	private CustomerAccount custAccount;
@@ -147,6 +150,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         // Declaration
         dbConn = new DbConnection();
 		dashboard = new Dashboard();
+		dashboard1 = new Dashboard1();
+		opdDashboard = new OrderListPanelData();
+		dashboard1.orderList.setViewportView(opdDashboard);
 		kbnProd = new KBNProducts();
 		rebrandingProd = new RebrandingProd();
 		custAccount = new CustomerAccount();
@@ -188,6 +194,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         custAccountFunc();
         mostSoldProd();
 		chartdataSetter();
+		dashboard1();
 	}
 	
 	private void objComponent() {
@@ -505,6 +512,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void setVisiblePanel() {
 		dashboard.setVisible(false);
+		dashboard1.setVisible(false);
 		kbnProd.setVisible(false);
 		rebrandingProd.setVisible(false);
 		custAccount.setVisible(false);
@@ -516,6 +524,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void defaultPanel() {
 		panelTab.add(dashboard);
+		panelTab.add(dashboard1);
 		panelTab.add(kbnProd);
 		panelTab.add(rebrandingProd);
 		panelTab.add(custAccount);
@@ -523,7 +532,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.add(delStatus);
 		panelTab.add(orderPanel);
 		panelTab.add(cp);
-		dashboard.setVisible(true);
+		dashboard1.setVisible(true);
 		cp.scrollOrderPanel.setViewportView(cpsp);
 	}
 	
@@ -611,6 +620,50 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR preRegCounter: " + e.getMessage());
 		}
+	}
+	
+	private void orderCounterDashboard() {
+		try {
+			st = dbConn.getConnection().createStatement();
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				OrderCount = rs.getInt(1);
+			
+			opdDashboard.iOrderCount(OrderCount);
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
+		}
+	}
+	
+	private void setOrderListDataDashboard() {
+		try {
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				opdDashboard.lblRefNumber[i].setText(rs.getString(1));
+				opdDashboard.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				//status indicator
+				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
+				opdDashboard.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
+				opdDashboard.lblOrderStatusColor[i].revalidate();
+				opdDashboard.lblOrderStatusColor[i].repaint();
+				i++;
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
+		}
+	}
+	
+	private void dashboard1() {
+		orderCounterDashboard(); // get orderCount
+		setOrderListDataDashboard(); // set data in Dashboard
 	}
 	
 	private void orderCounter() {
@@ -709,8 +762,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
     		}
 
             dashChartData = new DashboardSalesChartData(scores, max, date);
-            dashChartData.setBounds(20, 25, 563, 383);
-            dashboard.chartPanel.add(dashChartData);
+//            dashChartData.setBounds(20, 25, 563, 383);
+            dashChartData.setBounds(0, 0, 381, 286);
+            dashboard1.panelGraph.add(dashChartData);
             
 
 		} catch (Exception e) {
