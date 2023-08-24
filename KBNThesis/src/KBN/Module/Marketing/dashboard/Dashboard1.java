@@ -11,11 +11,21 @@ import java.awt.Color;
 
 public class Dashboard1 extends JPanel {
 	
-	private JLabel lblDailyPercent;
 	private JLabel lblDaily;
+	public JScrollPane orderList;
+	private JLabel lblWeekly;
+	private JLabel lblMonthly;
+	private JLabel lblYearly;
+
 	public JPanel panelOrderList;
 	public JPanel panelGraph;
-	public JScrollPane orderList;
+	public JLabel lblDailyPercent;
+	public JLabel lblWeeklyPercent;
+	public JLabel lblMonthlyPercent;
+	public JLabel lblYearlyPercent;
+	public JPanel panelOutofStock;
+	public JPanel panelSufficentStock;
+	public JPanel panelCritLevel;
 
 	public Dashboard1() {
 		setBounds(0, 0, 989, 699);
@@ -26,7 +36,11 @@ public class Dashboard1 extends JPanel {
 		add(panelDaily);
 		panelDaily.setLayout(null);
 		
-		lblDaily = new JLabel("Title Bar");
+		lblDaily = new JLabel("Daily Sales");
+		lblDaily.setForeground(Color.WHITE);
+		lblDaily.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblDaily.setBackground(new Color(206,124,0,255));
+		lblDaily.setOpaque(true);
 		lblDaily.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDaily.setBounds(0, 0, 120, 33);
 		panelDaily.add(lblDaily);
@@ -45,57 +59,69 @@ public class Dashboard1 extends JPanel {
 		panelWeekly.setBounds(140, 11, 120, 140);
 		add(panelWeekly);
 		
-		JLabel lblDaily_1 = new JLabel("Title Bar");
-		lblDaily_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDaily_1.setBounds(0, 0, 120, 33);
-		panelWeekly.add(lblDaily_1);
+		lblWeekly = new JLabel("Weekly Sales");
+		lblWeekly.setForeground(Color.WHITE);
+		lblWeekly.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblWeekly.setBackground(new Color(193,46,0,255));
+		lblWeekly.setOpaque(true);
+		lblWeekly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblWeekly.setBounds(0, 0, 120, 33);
+		panelWeekly.add(lblWeekly);
 		
 		JLabel label_1 = new JLabel("New label");
 		label_1.setBounds(74, 126, -85, -79);
 		panelWeekly.add(label_1);
 		
-		JLabel lblDailyPercent_1 = new JLabel("percentage");
-		lblDailyPercent_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDailyPercent_1.setBounds(0, 44, 120, 96);
-		panelWeekly.add(lblDailyPercent_1);
+		lblWeeklyPercent = new JLabel("percentage");
+		lblWeeklyPercent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblWeeklyPercent.setBounds(0, 44, 120, 96);
+		panelWeekly.add(lblWeeklyPercent);
 		
 		JPanel panelMonthly = new JPanel();
 		panelMonthly.setLayout(null);
 		panelMonthly.setBounds(10, 157, 120, 140);
 		add(panelMonthly);
 		
-		JLabel lblDaily_2 = new JLabel("Title Bar");
-		lblDaily_2.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDaily_2.setBounds(0, 0, 120, 33);
-		panelMonthly.add(lblDaily_2);
+		lblMonthly = new JLabel("Monthly Sales");
+		lblMonthly.setForeground(Color.WHITE);
+		lblMonthly.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblMonthly.setBackground(new Color(36,0,255,255));
+		lblMonthly.setOpaque(true);
+		lblMonthly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMonthly.setBounds(0, 0, 120, 33);
+		panelMonthly.add(lblMonthly);
 		
 		JLabel label_2 = new JLabel("New label");
 		label_2.setBounds(74, 126, -85, -79);
 		panelMonthly.add(label_2);
 		
-		JLabel lblDailyPercent_2 = new JLabel("percentage");
-		lblDailyPercent_2.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDailyPercent_2.setBounds(0, 44, 120, 96);
-		panelMonthly.add(lblDailyPercent_2);
+		lblMonthlyPercent = new JLabel("percentage");
+		lblMonthlyPercent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMonthlyPercent.setBounds(0, 44, 120, 96);
+		panelMonthly.add(lblMonthlyPercent);
 		
 		JPanel panelYearly = new JPanel();
 		panelYearly.setLayout(null);
 		panelYearly.setBounds(140, 157, 120, 140);
 		add(panelYearly);
 		
-		JLabel lblDaily_3 = new JLabel("Title Bar");
-		lblDaily_3.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDaily_3.setBounds(0, 0, 120, 33);
-		panelYearly.add(lblDaily_3);
+		lblYearly = new JLabel("Yearly Sales");
+		lblYearly.setForeground(Color.WHITE);
+		lblYearly.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblYearly.setBackground(new Color(8,104,0,255));
+		lblYearly.setOpaque(true);
+		lblYearly.setHorizontalAlignment(SwingConstants.CENTER);
+		lblYearly.setBounds(0, 0, 120, 33);
+		panelYearly.add(lblYearly);
 		
 		JLabel label_3 = new JLabel("New label");
 		label_3.setBounds(74, 126, -85, -79);
 		panelYearly.add(label_3);
 		
-		JLabel lblDailyPercent_3 = new JLabel("percentage");
-		lblDailyPercent_3.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDailyPercent_3.setBounds(0, 44, 120, 96);
-		panelYearly.add(lblDailyPercent_3);
+		lblYearlyPercent = new JLabel("percentage");
+		lblYearlyPercent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblYearlyPercent.setBounds(0, 44, 120, 96);
+		panelYearly.add(lblYearlyPercent);
 		
 		panelGraph = new JPanel();
 		panelGraph.setLayout(null);
@@ -125,9 +151,54 @@ public class Dashboard1 extends JPanel {
 		orderList.setBounds(0, 83, 318, 595);
 		panelOrderList.add(orderList);
 		
-		JPanel panel_4_2 = new JPanel();
-		panel_4_2.setLayout(null);
-		panel_4_2.setBounds(10, 308, 641, 380);
-		add(panel_4_2);
+		JPanel panelStocks = new JPanel();
+		panelStocks.setBounds(10, 308, 641, 380);
+		add(panelStocks);
+		panelStocks.setLayout(null);
+		
+		JPanel paneOutofStock = new JPanel();
+		paneOutofStock.setBounds(13, 11, 196, 358);
+		panelStocks.add(paneOutofStock);
+		paneOutofStock.setLayout(null);
+		
+		JLabel lblNewLabel_1 = new JLabel("Out of Stock");
+		lblNewLabel_1.setBounds(0, 0, 196, 42);
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		paneOutofStock.add(lblNewLabel_1);
+		
+		panelOutofStock = new JPanel();
+		panelOutofStock.setBounds(0, 42, 196, 316);
+		paneOutofStock.add(panelOutofStock);
+		
+		JPanel panelSufficient = new JPanel();
+		panelSufficient.setBounds(222, 11, 196, 358);
+		panelStocks.add(panelSufficient);
+		panelSufficient.setLayout(null);
+		
+		JLabel lblNewLabel_1_1 = new JLabel("Sufficient Stock");
+		lblNewLabel_1_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblNewLabel_1_1.setBounds(0, 0, 196, 42);
+		panelSufficient.add(lblNewLabel_1_1);
+		
+		panelSufficentStock = new JPanel();
+		panelSufficentStock.setBounds(0, 42, 196, 316);
+		panelSufficient.add(panelSufficentStock);
+		
+		JPanel panelCriticalLevel = new JPanel();
+		panelCriticalLevel.setBounds(431, 11, 196, 358);
+		panelStocks.add(panelCriticalLevel);
+		panelCriticalLevel.setLayout(null);
+		
+		JLabel lblNewLabel_1_2 = new JLabel("Critical Level");
+		lblNewLabel_1_2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1_2.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblNewLabel_1_2.setBounds(0, 0, 196, 42);
+		panelCriticalLevel.add(lblNewLabel_1_2);
+		
+		panelCritLevel = new JPanel();
+		panelCritLevel.setBounds(0, 42, 196, 316);
+		panelCriticalLevel.add(panelCritLevel);
 	}
 }

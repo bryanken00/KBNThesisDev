@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.Delivery;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,7 +44,7 @@ public class DeliveryStatus extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		columnDefaultData = new String[] {"BASTA ITO DELIVERY STATUS TO (MARKETING)"};
+		columnDefaultData = new String[] {"Order Date","Reference Number","Delivery ID","Delivery Date","Location","Status"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 	}

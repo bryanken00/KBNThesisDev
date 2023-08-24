@@ -26,7 +26,6 @@ import javax.swing.border.EmptyBorder;
 import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.CustomerCreateAccount;
-import KBN.Module.Marketing.DeliveryStatus;
 import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.RebrandingProd;
@@ -35,6 +34,7 @@ import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
 import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
+import KBN.Module.Marketing.Delivery.DeliveryStatus;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
@@ -396,7 +396,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == btnAuditTrail)
 			AuditPanelFunc();
 		if(e.getSource() == btnDeliveryStatus)
-			delStatusPanelFunc();
+			DeliveryFunc();
 		
 		//Ordering
 		if(e.getSource() == btnOrdering)
@@ -808,11 +808,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void AuditPanelFunc() {
 		setVisiblePanel();
 		auditTrail.setVisible(true);
-	}
-
-	private void delStatusPanelFunc() {
-		setVisiblePanel();
-		delStatus.setVisible(true);
 	}
 
 	private void orderPanelFunc() {
@@ -1390,6 +1385,35 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        }
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR ORDER STATUS: " + e.getMessage());
+		}
+	}
+	
+	private void DeliveryFunc() {
+		setVisiblePanel();
+		delStatus.setVisible(true);
+		try {
+			ArrayList arrDelList = new ArrayList<>();
+			String SQL = "SELECT a.OrderDate, a.OrderNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
+					+ "FROM tblordercheckout AS a\r\n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber";
+//			System.out.println(SQL);
+			st.execute(SQL);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				arrDelList.add(rs.getString(1));
+				arrDelList.add(rs.getString(2));
+				arrDelList.add(rs.getString(3));
+				arrDelList.add(rs.getString(4));
+				arrDelList.add(rs.getString(5));
+				arrDelList.add(rs.getString(6));
+				delStatus.main.addRow(arrDelList.toArray());
+				arrDelList.clear();
+			}
+			delStatus.table.setModel(delStatus.main);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "DeliveryFuncERROR: " + e.getMessage());
 		}
 	}
 
