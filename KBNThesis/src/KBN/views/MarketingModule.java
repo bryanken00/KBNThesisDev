@@ -124,6 +124,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private int OrderListIndexClicked;
 	
 	private int OrderCount; // Order List
+	private int orderBTNClickCount = 0;
 	private int rowCount; // Pre - Registration
 	private int ClientProfileCounter; // Client Profile OrderList
 	private int ClientProfileCounterHistory; // Client Profile HistoryList
@@ -546,7 +547,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		setVisiblePanel();
 		mostSoldProd();
 		chartdataSetter();
-		dashboard.setVisible(true);
+		dashboard1.setVisible(true);
 	}
 	
 	private void prodDetailsFunc() {
@@ -668,6 +669,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void orderCounter() {
 		try {
+			orderBTNClickCount++;
 			st = dbConn.getConnection().createStatement();
 			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
 			st.execute(sql);
@@ -714,9 +716,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void clearOrderPanelMouseListeners() {
-	    for (int i = 0; i < OrderCount; i++) {
-	        this.orderPanel.orderLPanel.opd.orderList[i].removeMouseListener(this);
-	    }
+		if(orderBTNClickCount > 0) {
+		    for (int i = 0; i < OrderCount; i++) {
+		    	this.orderPanel.orderLPanel.opd.orderList[i].removeMouseListener(this);
+		    }
+		}
 	}
 	
 	private void orderPanelMouseList() {
