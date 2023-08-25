@@ -8,6 +8,7 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
 import java.awt.Color;
+import javax.swing.ImageIcon;
 
 public class Dashboard1 extends JPanel {
 	
@@ -49,9 +50,12 @@ public class Dashboard1 extends JPanel {
 		label.setBounds(74, 126, -85, -79);
 		panelDaily.add(label);
 		
-		lblDailyPercent = new JLabel("percentage");
+		lblDailyPercent = new JLabel("");
+		lblDailyPercent.setBackground(Color.WHITE);
+		lblDailyPercent.setOpaque(true);
+		lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/0.png")));
 		lblDailyPercent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDailyPercent.setBounds(0, 44, 120, 96);
+		lblDailyPercent.setBounds(0, 33, 120, 107);
 		panelDaily.add(lblDailyPercent);
 		
 		JPanel panelWeekly = new JPanel();
@@ -74,7 +78,7 @@ public class Dashboard1 extends JPanel {
 		
 		lblWeeklyPercent = new JLabel("percentage");
 		lblWeeklyPercent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblWeeklyPercent.setBounds(0, 44, 120, 96);
+		lblWeeklyPercent.setBounds(0, 32, 120, 108);
 		panelWeekly.add(lblWeeklyPercent);
 		
 		JPanel panelMonthly = new JPanel();
@@ -97,7 +101,7 @@ public class Dashboard1 extends JPanel {
 		
 		lblMonthlyPercent = new JLabel("percentage");
 		lblMonthlyPercent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMonthlyPercent.setBounds(0, 44, 120, 96);
+		lblMonthlyPercent.setBounds(0, 33, 120, 107);
 		panelMonthly.add(lblMonthlyPercent);
 		
 		JPanel panelYearly = new JPanel();
@@ -120,7 +124,7 @@ public class Dashboard1 extends JPanel {
 		
 		lblYearlyPercent = new JLabel("percentage");
 		lblYearlyPercent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblYearlyPercent.setBounds(0, 44, 120, 96);
+		lblYearlyPercent.setBounds(0, 33, 120, 100);
 		panelYearly.add(lblYearlyPercent);
 		
 		panelGraph = new JPanel();

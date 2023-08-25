@@ -35,6 +35,8 @@ import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
 import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
 import KBN.Module.Marketing.Delivery.DeliveryStatus;
+import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
+import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
@@ -83,6 +85,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private ClientProfileScrollablePanel cpsp;
 	private OrderHistory orderHistory;
 	private rebrandingProductsList rp;
+	//deliveries
+	private DeliveryStatusTable1 dTB1;
+	private DeliveryStatusTable2 dTB2;
 	
 	// Object
 	private Statement st;
@@ -158,6 +163,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		auditTrail = new AuditTrail();
 		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
+		
+		//Deliveries
+		dTB1 = new DeliveryStatusTable1();
+		dTB2 = new DeliveryStatusTable2();
 		
 		// orderingPanel
 		orderPanel = new OrderingPanel();
@@ -357,6 +366,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//OrderPanel
 		orderPanel.btnApproved.addActionListener(this);
+		orderPanel.btnToShip.addActionListener(this);
 //		orderPanel.btnDelivery.addActionListener(this);
 		orderPanel.btnDeliveryComplete.addActionListener(this);
 		orderPanel.btnInvoice.addActionListener(this);
@@ -381,6 +391,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		cp.lblOrderHistory.addMouseListener(this);
 		cp.lblOrders.addMouseListener(this);
 		cp.lblProducts.addMouseListener(this);
+		
+		//Delivery
+		delStatus.btnListOfDelivery.addActionListener(this);
+		delStatus.btnCompleted.addActionListener(this);
 	}
 	
 	@Override
@@ -395,14 +409,22 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			custAccPanelFunc();
 		if(e.getSource() == btnAuditTrail)
 			AuditPanelFunc();
+		
+		//Delivery
 		if(e.getSource() == btnDeliveryStatus)
-			DeliveryFunc();
+			DeliveryFuncDefault();
+		if(e.getSource() == delStatus.btnListOfDelivery)
+			DeliveryFuncDefault();
+		if(e.getSource() == delStatus.btnCompleted)
+			DeliveryFuncCompleted();
 		
 		//Ordering
 		if(e.getSource() == btnOrdering)
 			orderPanelFunc();
 		if(e.getSource() == orderPanel.btnApproved)
 			orderPanelBTNAPPROVED();
+		if(e.getSource() == orderPanel.btnToShip)
+			orderpanelBTNTOSHIP();
 		if(e.getSource() == orderPanel.btnDelivery)
 			orderPanelBTNDELIVERY(refNum);
 		if(e.getSource() == onDeliver.btnConfirm)
@@ -830,7 +852,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			orderPanel.main.setRowCount(0);
 	        orderPanel.table.setModel(orderPanel.main);
-			String sql = "UPDATE tblorderstatus SET Status = 'toship' WHERE OrderRefNumber = '" + refNum + "';";
+			String sql = "UPDATE tblorderstatus SET Status = 'Approved' WHERE OrderRefNumber = '" + refNum + "';";
 			int i = st.executeUpdate(sql);
 			if(i == 1)
 				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " has been Approved");
@@ -840,6 +862,23 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 		}catch (Exception e1) {
 			JOptionPane.showMessageDialog(null, "ERROR btnApproved: " + e1.getMessage());
+		}
+	}
+	
+	private void orderpanelBTNTOSHIP() {
+		try {
+			orderPanel.main.setRowCount(0);
+	        orderPanel.table.setModel(orderPanel.main);
+			String sql = "UPDATE tblorderstatus SET Status = 'toship' WHERE OrderRefNumber = '" + refNum + "';";
+			int i = st.executeUpdate(sql);
+			if(i == 1)
+				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " is ready to Ship");
+			else
+				JOptionPane.showMessageDialog(null, "Something wrong");
+			panelDataSetter();
+			orderPanel.btnToShip.setBackground(new Color(13, 164, 0));
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "orderpanelBTNTOSHIP ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -1342,6 +1381,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 			orderPanel.btnApproved.setBackground(Color.white);
 			orderPanel.btnDelivery.setBackground(Color.white);
+			orderPanel.btnToShip.setBackground(Color.white);
 			orderPanel.btnDeliveryComplete.setBackground(Color.white);
 			orderPanel.btnInvoice.setBackground(Color.white);
 			
@@ -1354,31 +1394,41 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        	status = rs.getString(1);
 	        }
 	        
-	        if(status.equals("toPay")) {
-	        	
-	        }
-	        else if(status.equalsIgnoreCase("toship")) {
+	        if(status.equals("Approved")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.addActionListener(this);
+	        }
+	        else if(status.equalsIgnoreCase("toship")) {
+	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnToShip.removeActionListener(this);
+	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnToShip.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnDelivery.addActionListener(this);
 	        }else if(status.equalsIgnoreCase("Delivery")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnToShip.removeActionListener(this);
 	        	orderPanel.btnDelivery.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnToShip.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
-	        }else if(status.equalsIgnoreCase("DeliveryComplete")) {
+	        }else if(status.equalsIgnoreCase("Completed")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnToShip.removeActionListener(this);
 	        	orderPanel.btnDelivery.removeActionListener(this);
 	        	orderPanel.btnDeliveryComplete.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnToShip.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
 	        }else if(status.equalsIgnoreCase("Invoice")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
+	        	orderPanel.btnToShip.removeActionListener(this);
 	        	orderPanel.btnDelivery.removeActionListener(this);
 	        	orderPanel.btnDeliveryComplete.removeActionListener(this);
 	        	orderPanel.btnInvoice.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
+	        	orderPanel.btnToShip.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDelivery.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnDeliveryComplete.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnInvoice.setBackground(new Color(13, 164, 0));
@@ -1388,16 +1438,22 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-	private void DeliveryFunc() {
+	private void DeliveryFuncDefault() {
 		setVisiblePanel();
 		delStatus.setVisible(true);
+		delStatus.panel1.add(dTB1);
+		delStatus.panel1.remove(dTB2);
+		delStatus.btnListOfDelivery.setBackground(new Color(8,104,0,255));
+		delStatus.btnCompleted.setBackground(new Color(255,255,255,255));
 		try {
+			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
 			String SQL = "SELECT a.OrderDate, a.OrderNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
 					+ "FROM tblordercheckout AS a\r\n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
-					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber";
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "WHERE d.Status = 'Delivery'";
 //			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
@@ -1408,10 +1464,45 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				arrDelList.add(rs.getString(4));
 				arrDelList.add(rs.getString(5));
 				arrDelList.add(rs.getString(6));
-				delStatus.main.addRow(arrDelList.toArray());
+				dTB1.main.addRow(arrDelList.toArray());
 				arrDelList.clear();
 			}
-			delStatus.table.setModel(delStatus.main);
+			dTB1.table.setModel(dTB1.main);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "DeliveryFuncERROR: " + e.getMessage());
+		}
+	}
+	
+	private void DeliveryFuncCompleted() {
+		
+		delStatus.panel1.add(dTB2);
+		delStatus.panel1.remove(dTB1);
+		delStatus.btnListOfDelivery.setBackground(new Color(255,255,255,255));
+		delStatus.btnCompleted.setBackground(new Color(8,104,0,255));
+		
+		try {
+			dTB2.main.setRowCount(0);
+			ArrayList arrDelList = new ArrayList<>();
+			String SQL = "SELECT a.OrderDate, a.OrderNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
+					+ "FROM tblordercheckout AS a\r\n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "WHERE d.Status = 'Completed'";
+//			System.out.println(SQL);
+			st.execute(SQL);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				arrDelList.add(rs.getString(1));
+				arrDelList.add(rs.getString(2));
+				arrDelList.add(rs.getString(3));
+				arrDelList.add(rs.getString(4));
+				arrDelList.add(rs.getString(5));
+				arrDelList.add(rs.getString(6));
+				dTB2.main.addRow(arrDelList.toArray());
+				arrDelList.clear();
+			}
+			dTB2.table.setModel(dTB2.main);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "DeliveryFuncERROR: " + e.getMessage());
 		}

@@ -48,6 +48,7 @@ public class OrderingPanel extends JPanel {
 	public JLabel lblDiscount;
 	public JLabel lblTotalAmount;
 	public JButton btnApproved;
+	public JButton btnToShip;
 
     public OrderingPanel() {
         setBounds(0, 0, 989, 699);
@@ -136,7 +137,7 @@ public class OrderingPanel extends JPanel {
         btnApproved.setFocusable(false);
         btnApproved.setBorderPainted(false);
         btnApproved.setBackground(Color.WHITE);
-        btnApproved.setBounds(53, 46, 86, 29);
+        btnApproved.setBounds(30, 46, 86, 29);
         middlePanel.add(btnApproved);
         
         btnDelivery = new JButton("<html>On<br>Delivery</html>");
@@ -144,7 +145,7 @@ public class OrderingPanel extends JPanel {
         btnDelivery.setFocusable(false);
         btnDelivery.setBorderPainted(false);
         btnDelivery.setBackground(Color.WHITE);
-        btnDelivery.setBounds(192, 46, 86, 29);
+        btnDelivery.setBounds(262, 46, 86, 29);
         middlePanel.add(btnDelivery);
         
         btnInvoice = new JButton("Invoice");
@@ -152,7 +153,7 @@ public class OrderingPanel extends JPanel {
         btnInvoice.setFocusable(false);
         btnInvoice.setBorderPainted(false);
         btnInvoice.setBackground(Color.WHITE);
-        btnInvoice.setBounds(470, 46, 86, 29);
+        btnInvoice.setBounds(494, 46, 86, 29);
         middlePanel.add(btnInvoice);
         
         btnDeliveryComplete = new JButton("<html>Deliver<br>Complete</html>");
@@ -160,8 +161,16 @@ public class OrderingPanel extends JPanel {
         btnDeliveryComplete.setFocusable(false);
         btnDeliveryComplete.setBorderPainted(false);
         btnDeliveryComplete.setBackground(Color.WHITE);
-        btnDeliveryComplete.setBounds(331, 46, 86, 29);
+        btnDeliveryComplete.setBounds(378, 46, 86, 29);
         middlePanel.add(btnDeliveryComplete);
+        
+        btnToShip = new JButton("<html>To<br>Ship</html>");
+        btnToShip.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnToShip.setFocusable(false);
+        btnToShip.setBorderPainted(false);
+        btnToShip.setBackground(Color.WHITE);
+        btnToShip.setBounds(146, 46, 86, 29);
+        middlePanel.add(btnToShip);
         
         tablePanel = new JPanel();
         tablePanel.setBounds(10, 224, 613, 442);
