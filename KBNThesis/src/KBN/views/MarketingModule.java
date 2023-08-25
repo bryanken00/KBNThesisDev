@@ -127,7 +127,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private int OrderListIndexClicked;
 	
-	private int OrderCount; // Order List
+	private int OrderCount = 0; // Order List
 	private int orderBTNClickCount = 0;
 	private int rowCount; // Pre - Registration
 	private int ClientProfileCounter; // Client Profile OrderList
@@ -1276,18 +1276,31 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public void mouseClicked(MouseEvent e) {
 		
         Component clickedComponent = e.getComponent();
-        for (int i = 0; i < OrderCount; i++) {
-            if (clickedComponent == this.orderPanel.orderLPanel.opd.orderList[i]) {
-            	OrderListIndexClicked = i;
-                orderPanel.main.setRowCount(0);
-                orderPanel.table.setModel(orderPanel.main);
-                panelDataSetter();
-                break;
+        
+        //checking if the mouseClick if JPanel
+        if (clickedComponent instanceof JPanel) {
+            for (int i = 0; i < OrderCount; i++) {
+                if ((JPanel)clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
+                	OrderListIndexClicked = i;
+                    orderPanel.main.setRowCount(0);
+                    orderPanel.table.setModel(orderPanel.main);
+                    panelDataSetter();
+                    break;
+                }
             }
         }
-        
+//        for (int i = 0; i < OrderCount; i++) {
+//            if ((JPanel)clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
+//            	OrderListIndexClicked = i;
+//                orderPanel.main.setRowCount(0);
+//                orderPanel.table.setModel(orderPanel.main);
+//                panelDataSetter();
+//                break;
+//            }
+//        }
+//        
         for(int i = 0; i < rowCount; i++) {
-        	if(clickedComponent == this.preReg.preReg.panel[i]) {
+        	if(clickedComponent == preReg.preReg.panel[i]) {
         		preRegDataSetter(i);
         	}
         }
