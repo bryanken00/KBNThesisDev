@@ -914,12 +914,34 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String courierID[] = courier.split("-");
 			String ref = refNum;
 			String SQL = "INSERT INTO tblcourierdelivery(OrderRefNumber,courierID) VALUES('" + ref + "','" + courierID[1] + "')";
+			st.execute(SQL);
+	        Date currentDate = new Date();
+	        
+	        String SQLSelectDelID = "SELECT DeliveryID FROM tblcourierdelivery WHERE OrderRefNumber = '" + ref + "' AND courierID = '" + courierID[1] + "'";
+	        
+	        st.execute(SQLSelectDelID);
+	        rs = st.getResultSet();
+	        
+	        int dID = 0;
+	        
+	        if(rs.next()) {
+	        	dID = rs.getInt(1);
+	        }
+
+	        // Format the date and time
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        String formattedDate = dateFormat.format(currentDate);
+			
+			String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(DeliveryID, DeliveryDate) VALUES('" + dID + "','" + formattedDate + "');";
+			
+//			System.out.println(SQLDeliveryDate);
 			
 			//
-			st.execute(SQL);
+			
+			st.execute(SQLDeliveryDate);
 			onDeliver.dispose();
 			String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "'";
-			System.out.println(SQLUpdate);
+//			System.out.println(SQLUpdate);
 			st.executeUpdate(SQLUpdate);
 			orderStatusSetter();
 		}catch (Exception e) {
@@ -1461,7 +1483,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT a.OrderDate, a.OrderNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
+			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
 					+ "FROM tblordercheckout AS a\r\n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
@@ -1496,11 +1518,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB2.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT a.OrderDate, a.OrderNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
+			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, e.DeliveryDate, a.address, CONCAT(f.Firstname, ' ', f.Lastname) AS Fullname\r\n"
 					+ "FROM tblordercheckout AS a\r\n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
 					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "JOIN tblcourierdeliverycompleted AS e ON e.deliveryID = b.deliveryID\r\n"
+					+ "JOIN tblcourierinformation AS f ON f.courierID = b.courierID\r\n"
 					+ "WHERE d.Status = 'Completed'";
 //			System.out.println(SQL);
 			st.execute(SQL);
@@ -1512,6 +1536,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				arrDelList.add(rs.getString(4));
 				arrDelList.add(rs.getString(5));
 				arrDelList.add(rs.getString(6));
+				arrDelList.add(rs.getString(7));
 				dTB2.main.addRow(arrDelList.toArray());
 				arrDelList.clear();
 			}

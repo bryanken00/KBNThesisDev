@@ -26,7 +26,7 @@ public class DeliveryStatusTable2 extends JPanel {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		columnDefaultData = new String[] {"Order Date","Reference Number","Delivery ID","Delivery Date","Location","Status"};
+		columnDefaultData = new String[] {"Order Date","Reference Number","Delivery ID","Delivery Date","Date Delivered","Location","Delivered By"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 	}
