@@ -94,6 +94,11 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private DateFormat df;
 	private JFileChooser fc;
 	
+	// Date
+	
+	private SimpleDateFormat inputFormat;
+	private SimpleDateFormat outputFormat;
+	
 	private JPanel contentPane;
 	private JButton btnRawMats;
 	private JButton btnPackMats;
@@ -148,6 +153,11 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		exportT = new exportTable();
 		archiveRC = new ArchiveRightClick();
 		restoreRC = new RestoreRightClick();
+		
+		
+		// Date formatter
+        inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 
         //Component
@@ -630,6 +640,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		revalidate();
 		arrSQLResult = new ArrayList<>();
 		try {
+
 			st = dbConn.getConnection().createStatement();
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -638,7 +649,13 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 				arrSQLResult.add(rs.getString(2));
 				arrSQLResult.add(rs.getString(3));
 				arrSQLResult.add(rs.getString(4));
-				arrSQLResult.add(rs.getString(5));
+				
+				//Date
+	            Date date = inputFormat.parse(rs.getString(5));
+	            String outputDate = outputFormat.format(date);
+				arrSQLResult.add(outputDate);
+				// END OF DATE
+				
 				arrSQLResult.add(rs.getString(6));
 				arrSQLResult.add(rs.getString(7));
 				arrSQLResult.add(rs.getString(8));
@@ -683,7 +700,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 						+ "SELECT * \n"
 						+ "FROM tblcurrentmonth \n"
 						+ "WHERE itemID = '" + itemID + "';";
-				String sqlInsert2 =  "INSERT INTO tblArchiveUser VALUES('" + itemID + "','" + userName + "','" + dateToday + "');";
+				String sqlInsert2 =  "INSERT INTO tblArchiveUser VALUES('" + itemID + "','" + userName + "',NOW());";
 				
 				
 				String sqlUpdate = "UPDATE tblcurrentmonth"
@@ -773,8 +790,19 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 				arrSQLResult.add(rs.getString(3));
 				arrSQLResult.add(rs.getString(4));
 				arrSQLResult.add(rs.getString(5));
-				arrSQLResult.add(rs.getString(6));
+				
+				//Date
+	            Date date = inputFormat.parse(rs.getString(6));
+	            String outputDate = outputFormat.format(date);
+				arrSQLResult.add(outputDate);
+				
 				arrSQLResult.add(rs.getString(7));
+				
+//				//Date
+				date = inputFormat.parse(rs.getString(8));
+				outputDate = outputFormat.format(date);
+				arrSQLResult.add(outputDate);
+				
 				arc.main.addRow(arrSQLResult.toArray());
 				arrSQLResult.clear();
 			}

@@ -93,6 +93,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private Statement st;
 	private ResultSet rs;
 	
+	// Date Formatter
+	private SimpleDateFormat inputFormat;
+	private SimpleDateFormat outputFormat;
+	
 	
 	//Client Profile
 	private String clientProfileChecker = "";
@@ -150,6 +154,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         int x = (dim.width-w)/2;
         int y = (dim.height-h)/2;
         this.setLocation(x, y);
+        
+        // Date Formatter
+        inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         
         
         // Declaration
@@ -669,6 +677,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				opdDashboard.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
 				//status indicator
 				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
+//				System.out.println(rs.getString(1) + ", " + rs.getString(5));
 				opdDashboard.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
 				opdDashboard.lblOrderStatusColor[i].revalidate();
 				opdDashboard.lblOrderStatusColor[i].repaint();
@@ -1382,7 +1391,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        int TotalDiscount = 0;
 	        int TotalAmount = 0;
 	        while(rs.next()) {
-	        	orderPanel.lblOrderD.setText(rs.getString(2));
+	            Date date = inputFormat.parse(rs.getString(2));
+	            String outputDate = outputFormat.format(date);
+	        	orderPanel.lblOrderD.setText(outputDate);
 	        	orderPanel.lblAdd.setText(rs.getString(7));
 	        	tableData.add(rs.getString(3));
 	        	tableData.add(rs.getString(4));
@@ -1493,10 +1504,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
-				arrDelList.add(rs.getString(1));
+				//Date
+	            Date date = inputFormat.parse(rs.getString(1));
+	            String outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
 				arrDelList.add(rs.getString(2));
 				arrDelList.add(rs.getString(3));
-				arrDelList.add(rs.getString(4));
+				
+				// Date
+				date = inputFormat.parse(rs.getString(4));
+				outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
+				// End of Date
 				arrDelList.add(rs.getString(5));
 				arrDelList.add(rs.getString(6));
 				dTB1.main.addRow(arrDelList.toArray());
@@ -1530,11 +1549,24 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
-				arrDelList.add(rs.getString(1));
+				//Date
+	            Date date = inputFormat.parse(rs.getString(1));
+	            String outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
+				//End of Date
+				
 				arrDelList.add(rs.getString(2));
 				arrDelList.add(rs.getString(3));
-				arrDelList.add(rs.getString(4));
-				arrDelList.add(rs.getString(5));
+				// Date
+				date = inputFormat.parse(rs.getString(4));
+				outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
+				
+				date = inputFormat.parse(rs.getString(5));
+				outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
+				//End of Date
+				
 				arrDelList.add(rs.getString(6));
 				arrDelList.add(rs.getString(7));
 				dTB2.main.addRow(arrDelList.toArray());
