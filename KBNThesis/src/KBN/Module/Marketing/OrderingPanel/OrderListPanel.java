@@ -20,7 +20,7 @@ public class OrderListPanel extends JPanel {
 	
 	public JTextField txtSearch;
 	public JLabel lblInstruction;
-	private JLabel lblNewlabel;
+	public JLabel lblTimeDiff;
 	
 	public OrderListPanel() {
 		setBounds(0, 0, 320, 677);
@@ -51,9 +51,9 @@ public class OrderListPanel extends JPanel {
 		add(txtSearch);
 		txtSearch.setColumns(10);
 		
-		lblNewlabel = new JLabel("New Order 1 Minute ago");
-		lblNewlabel.setBounds(10, 52, 300, 19);
-		add(lblNewlabel);
+		lblTimeDiff = new JLabel("New Order 1 Minute ago");
+		lblTimeDiff.setBounds(10, 52, 300, 19);
+		add(lblTimeDiff);
 		
 
 	}

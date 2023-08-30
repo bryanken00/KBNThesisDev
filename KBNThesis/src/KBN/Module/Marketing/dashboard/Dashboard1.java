@@ -27,6 +27,7 @@ public class Dashboard1 extends JPanel {
 	public JPanel panelOutofStock;
 	public JPanel panelSufficentStock;
 	public JPanel panelCritLevel;
+	public JLabel lblTimeDiff;
 
 	public Dashboard1() {
 		setBounds(0, 0, 989, 699);
@@ -137,9 +138,9 @@ public class Dashboard1 extends JPanel {
 		add(panelOrderList);
 		panelOrderList.setLayout(null);
 		
-		JLabel lblNewlabel = new JLabel("New Order 1 Minute ago");
-		lblNewlabel.setBounds(10, 53, 300, 19);
-		panelOrderList.add(lblNewlabel);
+		lblTimeDiff = new JLabel("New Order 1 Minute ago");
+		lblTimeDiff.setBounds(10, 53, 300, 19);
+		panelOrderList.add(lblTimeDiff);
 		
 		JLabel lblNewLabel = new JLabel("Order List");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));

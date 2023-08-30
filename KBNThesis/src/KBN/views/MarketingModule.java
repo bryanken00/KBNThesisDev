@@ -109,6 +109,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public static String regID;
 	private LocalDate today;
 	
+	//Time diff
+	String sqlTimeDiff;
+	
 	private JPanel contentPane;
 	private JPanel panelButton;
 	private JButton btnDashboard;
@@ -158,6 +161,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         // Date Formatter
         inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        sqlTimeDiff = "SELECT TIMESTAMPDIFF(HOUR, NOW(), OrderDate) AS HoursDifference, TIMESTAMPDIFF(MINUTE, OrderDate, NOW()) AS MinutesDifference FROM tblordercheckout ORDER BY OrderDate DESC LIMIT 1";
         
         
         // Declaration
@@ -684,14 +688,37 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				i++;
 			}
 			
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
+		}
+	}
+	
+	private void timeDiff() {
+		try {
+			st.execute(sqlTimeDiff);
+			rs = st.getResultSet();
+			int hourDiff = 0;
+			int minDiff = 0;
+			if(rs.next()) {
+				hourDiff = rs.getInt(1);
+				minDiff = rs.getInt(2);
+			}
+			
+			if(hourDiff == 0) {
+				dashboard1.lblTimeDiff.setText("New Order " + minDiff + " Minute ago");
+			}else {
+				dashboard1.lblTimeDiff.setText("New Order " + hourDiff + "hr and " + minDiff + " Minute ago");
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "timeDiff ERROR: " + e.getMessage());
 		}
 	}
 	
 	private void dashboard1() {
 		orderCounterDashboard(); // get orderCount
 		setOrderListDataDashboard(); // set data in Dashboard
+		timeDiff();
 	}
 	
 	private void orderCounter() {
