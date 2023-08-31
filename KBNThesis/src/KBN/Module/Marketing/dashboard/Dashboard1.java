@@ -54,7 +54,7 @@ public class Dashboard1 extends JPanel {
 		lblDailyPercent = new JLabel("");
 		lblDailyPercent.setBackground(Color.WHITE);
 		lblDailyPercent.setOpaque(true);
-		lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/0.png")));
+		lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/52.png")));
 		lblDailyPercent.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDailyPercent.setBounds(0, 33, 120, 107);
 		panelDaily.add(lblDailyPercent);
@@ -77,7 +77,10 @@ public class Dashboard1 extends JPanel {
 		label_1.setBounds(74, 126, -85, -79);
 		panelWeekly.add(label_1);
 		
-		lblWeeklyPercent = new JLabel("percentage");
+		lblWeeklyPercent = new JLabel("");
+		lblWeeklyPercent.setBackground(Color.WHITE);
+		lblWeeklyPercent.setOpaque(true);
+		lblWeeklyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/100.png")));
 		lblWeeklyPercent.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWeeklyPercent.setBounds(0, 32, 120, 108);
 		panelWeekly.add(lblWeeklyPercent);
