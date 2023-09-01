@@ -772,7 +772,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblordercheckout AS a "
 					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
 					+ "WHERE a.OrderDate >= '" + mondaythisWeek + "'";
-			System.out.println("Present: " + thisWeekCount);
+//			System.out.println("Present: " + thisWeekCount);
 			
 			st.execute(thisWeekCount);
 			rs = st.getResultSet();
@@ -784,7 +784,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblordercheckout AS a "
 					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
 					+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "'";
-			System.out.println("Last: " + lastWeekCount);
+//			System.out.println("Last: " + lastWeekCount);
 
 			st.execute(lastWeekCount);
 			rs = st.getResultSet();
@@ -802,9 +802,113 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(randOFF > 100)
 				randOFF = 100;
 			
-			System.out.println(randOFF);
+//			System.out.println(randOFF);
 			
 			dashboard1.lblWeeklyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "weeklyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void monthlyDashboard() {
+		try {
+			double thisMonth = 0;
+			double lastMonth = 1;
+			
+			LocalDate firstDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+			LocalDate lastDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+			LocalDate firstDayOfThisMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+	        
+			String thisMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfThisMonth + "'";
+//			System.out.println(thisMonthCount);
+			
+			st.execute(thisMonthCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisMonth = rs.getInt(1);
+			
+			String lastMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfLastMonth + "'  AND a.OrderDate <= '" + lastDayOfLastMonth + "'";
+//			System.out.println("Last: " + lastMonthCount);
+
+			st.execute(lastMonthCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastMonth = rs.getInt(1);
+			
+			
+			double percentage = (thisMonth / lastMonth) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+//			System.out.println(randOFF);
+			
+			dashboard1.lblMonthlyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void yearlyDashboard() {
+		try {
+			double thisYear = 0;
+			double lastYear = 1;
+			
+			LocalDate firstDayOfLastYear = today.minusYears(1).with(TemporalAdjusters.firstDayOfYear());
+			LocalDate lastDayOfLastYear = today.minusYears(1).with(TemporalAdjusters.lastDayOfYear());
+			LocalDate firstDayOfThisYear = today.with(TemporalAdjusters.firstDayOfYear());
+		    
+			String thisYearCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfThisYear + "'";
+//			System.out.println(thisYearCount);
+			
+			st.execute(thisYearCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisYear = rs.getInt(1);
+			
+			String lastYearCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfLastYear + "'  AND a.OrderDate <= '" + lastDayOfLastYear + "'";
+//			System.out.println("Last: " + lastYearCount);
+
+			st.execute(lastYearCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastYear = rs.getInt(1);
+			
+			
+			double percentage = (thisYear / lastYear) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+//			System.out.println(randOFF);
+			
+			dashboard1.lblYearlyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
@@ -817,6 +921,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		timeDiff();
 		dailyDashboard();
 		weeklyDashboard();
+		monthlyDashboard();
+		yearlyDashboard();
 	}
 	
 	private void orderCounter() {
