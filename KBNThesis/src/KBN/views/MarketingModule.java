@@ -743,11 +743,68 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(rs.next())
 				lastDay = rs.getInt(1);
 			
-			
 			double percentage = (today / lastDay) * 100;
 			int randOFF = (int)Math.round(percentage);
 			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
 			dashboard1.lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void weeklyDashboard() {
+		try {
+			double thisWeek = 0;
+			double lastWeek = 1;
+			
+	        LocalDate mondayOfLastWeek = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	        LocalDate sundayOfLastWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+	        LocalDate mondaythisWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	        
+			String thisWeekCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + mondaythisWeek + "'";
+			System.out.println("Present: " + thisWeekCount);
+			
+			st.execute(thisWeekCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisWeek = rs.getInt(1);
+			
+			String lastWeekCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "'";
+			System.out.println("Last: " + lastWeekCount);
+
+			st.execute(lastWeekCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastWeek = rs.getInt(1);
+			
+			
+			double percentage = (thisWeek / lastWeek) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+			System.out.println(randOFF);
+			
+			dashboard1.lblWeeklyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
@@ -759,6 +816,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		setOrderListDataDashboard(); // set data in Dashboard
 		timeDiff();
 		dailyDashboard();
+		weeklyDashboard();
 	}
 	
 	private void orderCounter() {
