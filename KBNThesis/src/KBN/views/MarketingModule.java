@@ -715,10 +715,50 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	private void dailyDashboard() {
+		try {
+			double today = 0;
+			double lastDay = 1;
+			
+			String thisDayCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= CURDATE()";
+//			System.out.println("Today: " + thisDayCount);
+			
+			st.execute(thisDayCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				today = rs.getInt(1);
+			
+			String lastDayCount = "SELECT SUM(b.Quantity) FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= SUBDATE(CURDATE(),1) AND a.OrderDate <= CURDATE();";
+//			System.out.println("LastDay: " + lastDayCount);
+
+			st.execute(lastDayCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastDay = rs.getInt(1);
+			
+			
+			double percentage = (today / lastDay) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			dashboard1.lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
 	private void dashboard1() {
 		orderCounterDashboard(); // get orderCount
 		setOrderListDataDashboard(); // set data in Dashboard
 		timeDiff();
+		dailyDashboard();
 	}
 	
 	private void orderCounter() {
