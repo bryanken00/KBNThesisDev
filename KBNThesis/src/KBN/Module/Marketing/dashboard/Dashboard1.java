@@ -4,11 +4,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
 import java.awt.Color;
 import javax.swing.ImageIcon;
+import javax.swing.JTable;
+import javax.swing.border.LineBorder;
 
 public class Dashboard1 extends JPanel {
 	
@@ -24,10 +28,16 @@ public class Dashboard1 extends JPanel {
 	public JLabel lblWeeklyPercent;
 	public JLabel lblMonthlyPercent;
 	public JLabel lblYearlyPercent;
-	public JPanel panelOutofStock;
-	public JPanel panelSufficentStock;
-	public JPanel panelCritLevel;
+	public JScrollPane panelOutofStock;
+	public JScrollPane panelSufficentStock;
+	public JScrollPane panelCritLevel;
 	public JLabel lblTimeDiff;
+	public JTable tableLow;
+	public JTable tableMid;
+	public JTable tableHigh;
+	public DefaultTableModel tLow;
+	public DefaultTableModel tMid;
+	public DefaultTableModel tHigh;
 
 	public Dashboard1() {
 		setBounds(0, 0, 989, 699);
@@ -37,6 +47,8 @@ public class Dashboard1 extends JPanel {
 		panelDaily.setBounds(10, 11, 120, 140);
 		add(panelDaily);
 		panelDaily.setLayout(null);
+		
+		LineBorder border = new LineBorder(new Color(0, 0, 0), 1, true);
 		
 		lblDaily = new JLabel("Daily Sales");
 		lblDaily.setForeground(Color.WHITE);
@@ -160,11 +172,13 @@ public class Dashboard1 extends JPanel {
 		panelOrderList.add(orderList);
 		
 		JPanel panelStocks = new JPanel();
+		panelStocks.setBorder(border);
 		panelStocks.setBounds(10, 308, 641, 380);
 		add(panelStocks);
 		panelStocks.setLayout(null);
 		
 		JPanel paneOutofStock = new JPanel();
+		paneOutofStock.setBorder(border);
 		paneOutofStock.setBounds(13, 11, 196, 358);
 		panelStocks.add(paneOutofStock);
 		paneOutofStock.setLayout(null);
@@ -175,11 +189,16 @@ public class Dashboard1 extends JPanel {
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 15));
 		paneOutofStock.add(lblNewLabel_1);
 		
-		panelOutofStock = new JPanel();
+		panelOutofStock = new JScrollPane();
+		panelOutofStock.setBorder(border);
 		panelOutofStock.setBounds(0, 42, 196, 316);
 		paneOutofStock.add(panelOutofStock);
 		
+		tableLow = new JTable();
+		panelOutofStock.setViewportView(tableLow);
+		
 		JPanel panelSufficient = new JPanel();
+		panelSufficient.setBorder(border);
 		panelSufficient.setBounds(222, 11, 196, 358);
 		panelStocks.add(panelSufficient);
 		panelSufficient.setLayout(null);
@@ -190,11 +209,16 @@ public class Dashboard1 extends JPanel {
 		lblNewLabel_1_1.setBounds(0, 0, 196, 42);
 		panelSufficient.add(lblNewLabel_1_1);
 		
-		panelSufficentStock = new JPanel();
+		panelSufficentStock = new JScrollPane();
+		panelSufficentStock.setBorder(border);
 		panelSufficentStock.setBounds(0, 42, 196, 316);
 		panelSufficient.add(panelSufficentStock);
 		
+		tableMid = new JTable();
+		panelSufficentStock.setViewportView(tableMid);
+		
 		JPanel panelCriticalLevel = new JPanel();
+		panelCriticalLevel.setBorder(border);
 		panelCriticalLevel.setBounds(431, 11, 196, 358);
 		panelStocks.add(panelCriticalLevel);
 		panelCriticalLevel.setLayout(null);
@@ -205,8 +229,28 @@ public class Dashboard1 extends JPanel {
 		lblNewLabel_1_2.setBounds(0, 0, 196, 42);
 		panelCriticalLevel.add(lblNewLabel_1_2);
 		
-		panelCritLevel = new JPanel();
+		panelCritLevel = new JScrollPane();
+		panelCritLevel.setBorder(border);
 		panelCritLevel.setBounds(0, 42, 196, 316);
 		panelCriticalLevel.add(panelCritLevel);
+		
+		tableHigh = new JTable();
+		panelCritLevel.setViewportView(tableHigh);
+		
+		tLow = new DefaultTableModel();
+		tMid = new DefaultTableModel();
+		tHigh = new DefaultTableModel();
+		
+		table();
+	}
+	
+	private void table() {
+		String[] column = {" "};
+		tLow.setColumnIdentifiers(column);
+		tableLow.setModel(tLow);
+		tMid.setColumnIdentifiers(column);
+		tableMid.setModel(tMid);
+		tHigh.setColumnIdentifiers(column);
+		tableHigh.setModel(tHigh);
 	}
 }

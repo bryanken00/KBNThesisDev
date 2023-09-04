@@ -698,17 +698,32 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			st.execute(sqlTimeDiff);
 			rs = st.getResultSet();
-			int hourDiff = 0;
-			int minDiff = 0;
+			double min = 0;
 			if(rs.next()) {
-				hourDiff = rs.getInt(1);
-				minDiff = rs.getInt(2);
+				min = rs.getDouble(2);
 			}
 			
-			if(hourDiff == 0) {
-				dashboard1.lblTimeDiff.setText("New Order " + minDiff + " Minute ago");
-			}else {
-				dashboard1.lblTimeDiff.setText("New Order " + hourDiff + "hr and " + minDiff + " Minute ago");
+			double hour = min / 60;
+			
+			double day;
+			
+			
+			if(hour > 0) {
+				day = hour / 24;
+				double remainingHours = day - (int)day; // get hours in decimal
+				double getHour = 24 * remainingHours; // to get hours
+				double remainingMinutes = getHour - (int) getHour; // get mins in decimal
+				double getMin = 60 * remainingMinutes; // to get mins
+				
+				String hr_ = (getHour > 1)? "Hours" : "Hour"; // check if the getHour value if more than 1
+				String min_ = (getMin > 1)? "Minutes" : "Minute"; // same with hr_
+				
+				String label = "New Order " + (int)day + " days, " + (int)getHour + " " + hr_ + ", and " + (int)getMin + " " + min_ + " ago";
+				dashboard1.lblTimeDiff.setText(label);
+			} else {
+			    String min_ = (min > 1) ? "Minutes" : "Minute";
+			    String label = "New Order " + min + " " + min_ + " ago";
+			    dashboard1.lblTimeDiff.setText(label);
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "timeDiff ERROR: " + e.getMessage());
