@@ -57,6 +57,7 @@ public class OrderListPanelData extends JPanel {
 			y = 100*i;
 		
 		orderList[i] = new JPanel();
+		orderList[i].setBackground(Color.WHITE);
 		orderList[i].setBounds(0, y, 302, 100);
 		orderList[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		orderList[i].setLayout(null);

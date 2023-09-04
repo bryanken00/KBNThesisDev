@@ -58,6 +58,7 @@ import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import javax.swing.border.LineBorder;
 
 
 public class MarketingModule extends JFrame implements ActionListener, MouseListener, KeyListener{
@@ -146,6 +147,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1280, 760);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -187,7 +189,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		preReg = new preRegister();
 		// Start Right Click
 		rightClick = new RightClick();
-			this.add(rightClick);
+			getContentPane().add(rightClick);
 			rightClick.setVisible(false);
 		// End Right Click
 		
@@ -219,6 +221,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void objComponent() {
 		panelButton = new JPanel();
+		panelButton.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panelButton.setBackground(Color.WHITE);
 		panelButton.setLayout(null);
 		panelButton.setBounds(0, 0, 255, 721);
 		contentPane.add(panelButton);

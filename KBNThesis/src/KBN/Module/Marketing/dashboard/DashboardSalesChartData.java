@@ -29,10 +29,13 @@ public class DashboardSalesChartData extends JPanel {
       this.scores = scores;
       this.MAX_SCORE = max;
       this.date = date;
+      
+      setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
    }
 
    public void paintComponent(Graphics g) {
 	    super.paintComponent(g);
+	    setBackground(Color.WHITE);
 	    Graphics2D g2 = (Graphics2D) g;
 	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
