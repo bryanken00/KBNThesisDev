@@ -240,12 +240,15 @@ public class Dashboard1 extends JPanel {
 		tLow = new DefaultTableModel();
 		tMid = new DefaultTableModel();
 		tHigh = new DefaultTableModel();
+		tableLow.setTableHeader(null);
+		tableMid.setTableHeader(null);
+		tableHigh.setTableHeader(null);
 		
 		table();
 	}
 	
 	private void table() {
-		String[] column = {" "};
+		String[] column = {"Materials"};
 		tLow.setColumnIdentifiers(column);
 		tableLow.setModel(tLow);
 		tMid.setColumnIdentifiers(column);

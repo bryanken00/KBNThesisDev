@@ -978,12 +978,12 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		}
 		
 		if(e.getSource() == arc.table) {
-			System.out.println("test");
 			if(e.getButton() == MouseEvent.BUTTON3) {
+				System.out.println("test");
 				restoreRC.setVisible(true);
-//				restoreRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
-				restoreRC.setAlignmentX(e.getX());
-				restoreRC.setAlignmentY(e.getY());
+				restoreRC.setBounds(e.getX() + 266, e.getY() + 176, 120, 30);
+//				restoreRC.setAlignmentX(e.getX());
+//				restoreRC.setAlignmentY(e.getY());
 			}
 		}
 		

@@ -407,6 +407,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//Delivery
 		delStatus.btnListOfDelivery.addActionListener(this);
 		delStatus.btnCompleted.addActionListener(this);
+		
 	}
 	
 	@Override
@@ -469,6 +470,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rightClick.setVisible(true);
 				rightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
 			}
+			if(e.getButton() == MouseEvent.BUTTON1) {
+				System.out.println(kbnProd.table.getSelectedRow());
+			}
 		}
 		if(e.getSource() == cp.lblOrders) {
 			cp.scrollOrderPanel.setViewportView(cpsp);
@@ -497,6 +501,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanelInstruction.setBounds(e.getX() + 910, e.getY() + 250, 174, 144);
 			orderPanelInstruction.setVisible(true);
 		}
+
 	}
 
 
@@ -507,15 +512,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		
 	}
-	
-	/*
-	 * 
-	 * 
-	 *	KEY 
-	 * 
-	 * 
-	 * 
-	 */
 	
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -930,6 +926,60 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	private void outStock() {
+		try {
+			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
+			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume < 1";
+			
+			st.execute(sql);
+			rs = st.getResultSet();
+			ArrayList lowStock = new ArrayList<>();
+			while(rs.next()) {
+				lowStock.add(rs.getString(1));
+				dashboard1.tLow.addRow(lowStock.toArray());
+				lowStock.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "lowStock ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void lowStock() {
+		try {
+			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
+			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume > 0 AND todayCurrentVolume < 20000";
+			
+			st.execute(sql);
+			rs = st.getResultSet();
+			ArrayList lowStock = new ArrayList<>();
+			while(rs.next()) {
+				lowStock.add(rs.getString(1));
+				dashboard1.tMid.addRow(lowStock.toArray());
+				lowStock.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "lowStock ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void normalStock() {
+		try {
+			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
+			+ "FROM tblcurrentmonth AS a WHERE todayCurrentVolume > 20000";
+			
+			st.execute(sql);
+			rs = st.getResultSet();
+			ArrayList lowStock = new ArrayList<>();
+			while(rs.next()) {
+				lowStock.add(rs.getString(1));
+				dashboard1.tHigh.addRow(lowStock.toArray());
+				lowStock.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "lowStock ERROR: " + e.getMessage());
+		}
+	}
+	
 	private void dashboard1() {
 		orderCounterDashboard(); // get orderCount
 		setOrderListDataDashboard(); // set data in Dashboard
@@ -938,6 +988,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		weeklyDashboard();
 		monthlyDashboard();
 		yearlyDashboard();
+		outStock();
+		lowStock();
+		normalStock();
 	}
 	
 	private void orderCounter() {
