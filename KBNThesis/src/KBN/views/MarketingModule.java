@@ -105,6 +105,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private String custN = ""; // Name
 	private String custB = ""; // Brand
 	
+	private JButton btnChecker;
+	
 	
 	private String refNum;
 	public static String regID;
@@ -217,6 +219,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //        mostSoldProd();
 		chartdataSetter();
 		dashboard1();
+		
+		btnChecker = btnDashboard;
 	}
 	
 	private void objComponent() {
@@ -238,6 +242,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(separator);
 		
 		btnDashboard = new JButton("Dashboard");
+		btnDashboard.setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+		btnDashboard.setHorizontalTextPosition(JLabel.CENTER);
+		btnDashboard.setVerticalTextPosition(JLabel.CENTER);
 		btnDashboard.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnDashboard.setFocusable(false);
 		btnDashboard.setBorderPainted(false);
@@ -364,7 +371,20 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.setLayout(null);
 		
 	}
-	
+
+	private void buttonColors() {
+		btnDashboard.setBackground(Color.WHITE);
+		btnKbn.setBackground(Color.WHITE);
+		btnRebranding.setBackground(Color.WHITE);
+		btnRawMaterials.setBackground(Color.WHITE);
+		btnPackingMaterials.setBackground(Color.WHITE);
+		btnCustomerAccount.setBackground(Color.WHITE);
+		btnClientProfile.setBackground(Color.WHITE);
+		btnOrdering.setBackground(Color.WHITE);
+		btnDeliveryStatus.setBackground(Color.WHITE);
+		btnReturnProducts.setBackground(Color.WHITE);
+		btnAuditTrail.setBackground(Color.WHITE);
+	}
 	
 	private void setActionList() {
 		btnDashboard.addActionListener(this);
@@ -378,6 +398,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDeliveryStatus.addActionListener(this);
 		btnReturnProducts.addActionListener(this);
 		btnAuditTrail.addActionListener(this);
+		
+		btnDashboard.addMouseListener(this);
+		btnKbn.addMouseListener(this);
+		btnRebranding.addMouseListener(this);
+		btnRawMaterials.addMouseListener(this);
+		btnPackingMaterials.addMouseListener(this);
+		btnCustomerAccount.addMouseListener(this);
+		btnClientProfile.addMouseListener(this);
+		btnOrdering.addMouseListener(this);
+		btnDeliveryStatus.addMouseListener(this);
+		btnReturnProducts.addMouseListener(this);
+		btnAuditTrail.addMouseListener(this);
 		
 		
 		//OrderPanel
@@ -491,6 +523,28 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			clientProfileOwnProductsRefresher(uID);
 		}
 		
+		if(e.getComponent() instanceof JButton) {
+			
+			btnDashboard.setIcon(null);
+			btnKbn.setIcon(null);
+			btnRebranding.setIcon(null);
+			btnRawMaterials.setIcon(null);
+			btnPackingMaterials.setIcon(null);
+			btnCustomerAccount.setIcon(null);
+			btnClientProfile.setIcon(null);
+			btnOrdering.setIcon(null);
+			btnDeliveryStatus.setIcon(null);
+			btnReturnProducts.setIcon(null);
+			btnAuditTrail.setIcon(null);
+			
+			Component c = e.getComponent();
+			btnChecker = (JButton) e.getComponent();
+			if(btnChecker == c)
+				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+			
+		}else
+			return;
+		
 	}
 
 
@@ -505,6 +559,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanelInstruction.setBounds(e.getX() + 910, e.getY() + 250, 174, 144);
 			orderPanelInstruction.setVisible(true);
 		}
+		
+		if(e.getComponent() instanceof JButton) {
+			Component c = e.getComponent();
+			((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+			((JButton)c).setHorizontalTextPosition(JLabel.CENTER);
+			((JButton)c).setVerticalTextPosition(JLabel.CENTER);
+		}else
+			return;
 
 	}
 
@@ -515,6 +577,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanelInstruction.setVisible(false);
 		}
 		
+		if(e.getComponent() instanceof JButton) {
+			Component c = e.getComponent();
+
+			if(btnChecker == c) {
+				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+			}else {
+				((JButton)c).setIcon(null);
+				((JButton)c).setBackground(Color.white);
+			}
+		}else
+			return;
 	}
 	
 	@Override

@@ -156,6 +156,7 @@ public class Dashboard1 extends JPanel {
 		add(panelGraph);
 		
 		panelOrderList = new JPanel();
+		panelOrderList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panelOrderList.setBackground(Color.WHITE);
 		panelOrderList.setBounds(661, 11, 318, 677);
 		add(panelOrderList);
@@ -176,7 +177,7 @@ public class Dashboard1 extends JPanel {
 		
 		orderList = new JScrollPane();
 		orderList.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		orderList.setBounds(0, 83, 318, 595);
+		orderList.setBounds(0, 82, 318, 594);
 		verticalScrollbar = orderList.getVerticalScrollBar();
         verticalScrollbar.setUI(new CustomScrollBarUI());
 		panelOrderList.add(orderList);
