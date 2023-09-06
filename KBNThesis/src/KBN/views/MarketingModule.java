@@ -26,7 +26,6 @@ import javax.swing.border.EmptyBorder;
 import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.CustomerCreateAccount;
-import KBN.Module.Marketing.KBNProducts;
 import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.RebrandingProd;
 import KBN.Module.Marketing.RightClick;
@@ -37,6 +36,8 @@ import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
 import KBN.Module.Marketing.Delivery.DeliveryStatus;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
+import KBN.Module.Marketing.KBNProducts.KBNProducts;
+import KBN.Module.Marketing.KBNProducts.PopUpPRODIMG;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
@@ -68,7 +69,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private dataSetter dataSet;
 	private Dashboard1 dashboard1;
 	private OrderListPanelData opdDashboard;
+
+	//KBN Products
 	private KBNProducts kbnProd;
+	private PopUpPRODIMG popupKBNProd;
+	
 	private RebrandingProd rebrandingProd;
 	private CustomerAccount custAccount;
 	private AuditTrail auditTrail;
@@ -173,7 +178,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dashboard1 = new Dashboard1();
 		opdDashboard = new OrderListPanelData();
 		dashboard1.orderList.setViewportView(opdDashboard);
+		// KBNProducts
 		kbnProd = new KBNProducts();
+		popupKBNProd = new PopUpPRODIMG();
+		
 		rebrandingProd = new RebrandingProd();
 		custAccount = new CustomerAccount();
 		auditTrail = new AuditTrail();
@@ -450,8 +458,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnDashboard)
 			dashboardPanelFunc();
+		
 		if(e.getSource() == btnKbn)
 			KBNPanelFunc();
+		
 		if(e.getSource() == btnRebranding)
 			rebrandProdPanelFunc();
 		if(e.getSource() == btnCustomerAccount)
@@ -507,7 +517,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
 			}
 			if(e.getButton() == MouseEvent.BUTTON1) {
-				System.out.println(kbnProd.table.getSelectedRow());
+				int row = kbnProd.table.getSelectedRow();
+				String prodID = (String) kbnProd.table.getValueAt(row, 0);
+				kbnProdClickFunc(prodID);
 			}
 		}
 		if(e.getSource() == cp.lblOrders) {
@@ -555,6 +567,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		
 		if(e.getSource() == orderPanel.orderLPanel.lblInstruction) {
 			orderPanelInstruction.setBounds(e.getX() + 910, e.getY() + 250, 174, 144);
 			orderPanelInstruction.setVisible(true);
@@ -651,6 +664,24 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //		mostSoldProd();
 		chartdataSetter();
 		dashboard1.setVisible(true);
+	}
+	
+	private void kbnProdClickFunc(String prodID) {
+		try {
+			String SQL = "SELECT prodIMG FROM tblproducts WHERE prodID = '" + prodID + "'";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			String link = "http://localhost/webdevelopment/thesis1_website/Products/resources/";
+			if(rs.next())
+				link += rs.getString(1);
+			
+			if(!popupKBNProd.isVisible())
+				popupKBNProd.setVisible(true);
+			
+			popupKBNProd.setLink(link);
+		}catch(Exception e1) {
+			JOptionPane.showMessageDialog(null, "KBNProd TableClick ERROR: " + e1.getMessage());
+		}
 	}
 	
 	private void prodDetailsFunc() {
@@ -1188,11 +1219,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //        kbnProd
         
         try {
-        	String sql = "SELECT prodID, prodName, Quantity, Sold FROM tblproducts";
+        	String sql = "SELECT prodID, prodName, prodVolume, Quantity, Sold FROM tblproducts";
         	st.execute(sql);
         	rs = st.getResultSet();
         	while(rs.next()) {
-            	Object[] data = {rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)};
+            	Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5)};
             	kbnProd.main.addRow(data);
 //            	System.out.println(rs.getString(1));
         	}

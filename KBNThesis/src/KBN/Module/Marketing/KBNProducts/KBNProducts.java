@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.KBNProducts;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
