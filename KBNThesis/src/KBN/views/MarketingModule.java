@@ -136,11 +136,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private JButton btnAuditTrail;
 	private JPanel panelTab;
 	
+	//Client profile
+	private int orderCountClickIndex = 0;
+	private int orderhistoryClickIndex = 0;
+	private int ownProductClickIndex = 0;
+	
 
 	private DashboardSalesChartData dashChartData;
 	
 	
 	private int OrderListIndexClicked;
+	private String orderClickIdentifier = "";
 	
 	private int OrderCount = 0; // Order List
 	private int orderBTNClickCount = 0;
@@ -503,6 +509,24 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		if(e.getSource() == btnClientProfile)
 			clientProfileFunc();
+		
+		if(cpsp.btnProcessOrder != null) {
+			orderPanel.table.removeAll();
+			for (int i = 0; i < cpsp.btnProcessOrder.length; i++) {
+				if (e.getSource() == cpsp.btnProcessOrder[i]) {
+					refNum = cpsp.lblRefNumber[i].getText();
+					orderPanelFunc();
+                    orderPanel.main.setRowCount(0);
+                    orderPanel.table.setModel(orderPanel.main);
+                    orderClickIdentifier = "cust";
+                    panelDataSetter();
+                    orderClickIdentifier = "";
+			        break;
+			    }
+			}
+		}else {
+			orderPanel.table.removeAll();
+		}
 	}
 	
 	@Override
@@ -1149,6 +1173,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	private void clientProfileOrderListActionList() {
+		for(int i = 0; i < ClientProfileCounter; i++) {
+			cpsp.btnProcessOrder[i].addActionListener(this);
+		}
+	}
+	
+	private void clientProfileOrderListRemoveActionlist() {
+		for(int i = 0; i < ClientProfileCounter; i++) {
+			cpsp.btnProcessOrder[i].removeActionListener(this);
+		}
+	}
+	
 	private void clearOrderPanelMouseListeners() {
 		if(orderBTNClickCount > 0) {
 		    for (int i = 0; i < OrderCount; i++) {
@@ -1431,23 +1467,25 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		clientProfileOrderListRefresher(uID, custN,custB);
 		
 
-
+		clientProfileOrderListRemoveActionlist();
+		
+		clientProfileOrderListActionList();
+		
 	}
 	
 	private void clientProfileOrderListRefresher(String userID, String custBrand, String custName) {
 		try {
 			String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
 					+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
-					+ "WHERE b.UserID = '" + userID + "';";
+					+ "WHERE b.UserID = '" + userID + "' AND a.Status != 'Completed';";
 			
 			st.execute(RowCount);
 			rs = st.getResultSet();
 			
 			if(rs.next())
 				ClientProfileCounter = rs.getInt(1);
-			
 			cpsp.orderCountSetter(ClientProfileCounter);
-			String arr[][] = new String[ClientProfileCounter][4];
+			String arr[][] = new String[ClientProfileCounter+1][4];
 			
 			String SQLKBN = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
 					+ "FROM tblorderstatus AS a "
@@ -1456,6 +1494,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
 					+ "WHERE c.UserID = '" + userID + "' AND a.Status != 'Completed' AND a.Status != 'Return' "
 					+ "GROUP BY b.OrderRefNumber";
+			
 			
 			String SQLRebranding = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
 					+ "FROM tblorderstatus AS a "
@@ -1483,7 +1522,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				arr[i][1] = rs.getString(2);
 				arr[i][2] = rs.getString(3);
 				arr[i][3] = rs.getString(4);
-				i++;
+				if(i != ClientProfileCounter)
+					i++;
 			}
 			
 			for(int j = 0; j < i; j++) {
@@ -1492,7 +1532,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				cpsp.lblQuantity[j].setText(arr[j][2]);
 				cpsp.lblStatus[j].setText(arr[j][3]);
 			}
-
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "CustAccountClientProfile ERROR:" + e.getMessage());
 		}
@@ -1786,7 +1825,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void panelDataSetter() {
 		try {
-			refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
+			if(!orderClickIdentifier.equals("cust"))
+				refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
+			System.out.println(refNum);
 	        orderPanel.lblRefNum.setText(refNum);
 	        orderPanel.lblCustName.setText(this.orderPanel.orderLPanel.opd.lblName[OrderListIndexClicked].getText());
 	        String sql = "SELECT a.OrderRefNumber, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, a.Address, c.Discount FROM tblordercheckout AS a JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber JOIN tblcustomerinformation AS c ON a.UserID = c.UserID WHERE a.OrderRefNumber = '" + refNum + "'";
