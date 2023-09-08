@@ -120,6 +120,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	//Time diff
 	String sqlTimeDiff;
 	
+	// Account Level
+	private String AccountLevel = "";
+	
 	private JPanel contentPane;
 	private JPanel panelButton;
 	private JButton btnDashboard;
@@ -680,6 +683,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void setUsername() {
 		dataSet = new dataSetter();
 		lblUsername.setText(dataSet.getUsername());
+		AccountLevel = dataSet.getAccLevel();
 	}
 
 	

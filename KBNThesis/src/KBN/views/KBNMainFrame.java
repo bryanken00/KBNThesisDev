@@ -47,6 +47,8 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 	private ResultSet rs;
 	private int logSuccess = 0;
 	
+	private String accLevel;
+	
 	private JPanel contentPane;
 	private JTextField txtUsername;
 	private JPasswordField txtPassword;
@@ -175,6 +177,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 			rs = st.getResultSet();
 			while(rs.next()) {
 				logSuccess += 1;
+				accLevel = rs.getString(4);
 			}
 		}catch (Exception e) {
 			// TODO: handle exception
@@ -188,6 +191,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 		loginChecker();
 		if(logSuccess == 1) {
 			dataSet.setUsername(txtUsername.getText());
+			dataSet.setAccLevel(accLevel);
 			modules.setVisible(true);
 			this.dispose();
 		}else {
