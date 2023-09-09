@@ -40,7 +40,6 @@ public class Modules extends JFrame implements ActionListener{
 	public Modules() {
 		setResizable(false);
 		
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 900, 550);
 		contentPane = new JPanel();
@@ -98,6 +97,7 @@ public class Modules extends JFrame implements ActionListener{
 		contentPane.add(lblWarehouseLogo);
 		
 		btnWarehouse = new JButton("Warehouse");
+		btnWarehouse.setEnabled(false);
 		btnWarehouse.addActionListener(this);
 		btnWarehouse.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnWarehouse.setFocusable(false);
@@ -107,6 +107,7 @@ public class Modules extends JFrame implements ActionListener{
 		contentPane.add(btnWarehouse);
 		
 		btnProduction = new JButton("Production");
+		btnProduction.setEnabled(false);
 		btnProduction.addActionListener(this);
 		btnProduction.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnProduction.setFocusable(false);
@@ -116,6 +117,7 @@ public class Modules extends JFrame implements ActionListener{
 		contentPane.add(btnProduction);
 		
 		btnMarketing = new JButton("Marketing and Sales");
+		btnMarketing.setEnabled(false);
 		btnMarketing.addActionListener(this);
 		btnMarketing.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnMarketing.setFocusable(false);
@@ -126,9 +128,25 @@ public class Modules extends JFrame implements ActionListener{
 		setUsername();
 	}
 	
+	
 	private void setUsername() {
 		dataSet = new dataSetter();
 		lblUsername.setText(dataSet.getUsername());
+	}
+	
+	public void accLevelIdentifier(String accLevel, String name) {
+		lblUsername.setText(name);
+		if(accLevel.equals("Admin-MSO"))
+			btnMarketing.setEnabled(true);
+		else if(accLevel.equals("Admin-PAO"))
+			btnWarehouse.setEnabled(true);
+		else if(accLevel.equals("Admin-PO"))
+			btnProduction.setEnabled(true);
+		else if(accLevel.equals("Admin")) {
+			btnMarketing.setEnabled(true);
+			btnWarehouse.setEnabled(true);
+			btnProduction.setEnabled(true);
+		}
 	}
 
 	@Override

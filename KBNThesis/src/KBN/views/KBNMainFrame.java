@@ -192,6 +192,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 		if(logSuccess == 1) {
 			dataSet.setUsername(txtUsername.getText());
 			dataSet.setAccLevel(accLevel);
+			modules.accLevelIdentifier(accLevel,txtUsername.getText());
 			modules.setVisible(true);
 			this.dispose();
 		}else {

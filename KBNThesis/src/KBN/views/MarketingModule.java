@@ -684,6 +684,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dataSet = new dataSetter();
 		lblUsername.setText(dataSet.getUsername());
 		AccountLevel = dataSet.getAccLevel();
+		System.out.println(dataSet.getAccLevel());
 	}
 
 	
