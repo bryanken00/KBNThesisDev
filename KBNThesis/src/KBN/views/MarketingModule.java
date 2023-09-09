@@ -238,6 +238,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dashboard1();
 		
 		btnChecker = btnDashboard;
+		
+		marketingButtons();
 	}
 	
 	private void objComponent() {
@@ -279,6 +281,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(lblNewLabel);
 		
 		btnKbn = new JButton("KBN");
+		btnKbn.setEnabled(false);
 		btnKbn.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnKbn.setFocusable(false);
 		btnKbn.setBorderPainted(false);
@@ -287,6 +290,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnKbn);
 		
 		btnRebranding = new JButton("Rebranding");
+		btnRebranding.setEnabled(false);
 		btnRebranding.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnRebranding.setFocusable(false);
 		btnRebranding.setBorderPainted(false);
@@ -295,6 +299,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnRebranding);
 		
 		btnRawMaterials = new JButton("Raw Materials");
+		btnRawMaterials.setEnabled(false);
 		btnRawMaterials.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnRawMaterials.setFocusable(false);
 		btnRawMaterials.setBorderPainted(false);
@@ -303,6 +308,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnRawMaterials);
 		
 		btnPackingMaterials = new JButton("Packing Materials");
+		btnPackingMaterials.setEnabled(false);
 		btnPackingMaterials.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnPackingMaterials.setFocusable(false);
 		btnPackingMaterials.setBorderPainted(false);
@@ -326,6 +332,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		
 		btnCustomerAccount = new JButton("Customer Account");
+		btnCustomerAccount.setEnabled(false);
 		btnCustomerAccount.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnCustomerAccount.setFocusable(false);
 		btnCustomerAccount.setBorderPainted(false);
@@ -334,6 +341,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnCustomerAccount);
 		
 		btnClientProfile = new JButton("Client Profile");
+		btnClientProfile.setEnabled(false);
 		btnClientProfile.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnClientProfile.setFocusable(false);
 		btnClientProfile.setBorderPainted(false);
@@ -342,6 +350,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnClientProfile);
 		
 		btnOrdering = new JButton("Ordering");
+		btnOrdering.setEnabled(false);
 		btnOrdering.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnOrdering.setFocusable(false);
 		btnOrdering.setBorderPainted(false);
@@ -350,6 +359,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnOrdering);
 		
 		btnDeliveryStatus = new JButton("Delivery Status");
+		btnDeliveryStatus.setEnabled(false);
 		btnDeliveryStatus.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnDeliveryStatus.setFocusable(false);
 		btnDeliveryStatus.setBorderPainted(false);
@@ -358,6 +368,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnDeliveryStatus);
 		
 		btnReturnProducts = new JButton("Return Products");
+		btnReturnProducts.setEnabled(false);
 		btnReturnProducts.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnReturnProducts.setFocusable(false);
 		btnReturnProducts.setBorderPainted(false);
@@ -366,6 +377,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(btnReturnProducts);
 		
 		btnAuditTrail = new JButton("Audit Trail");
+		btnAuditTrail.setEnabled(false);
 		btnAuditTrail.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnAuditTrail.setFocusable(false);
 		btnAuditTrail.setBorderPainted(false);
@@ -387,6 +399,32 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		contentPane.add(panelTab);
 		panelTab.setLayout(null);
 		
+	}
+	
+	private void marketingButtons() {
+		
+		if(AccountLevel.equals("Staff-MSS")) {
+			btnKbn.setEnabled(true);
+			btnRebranding.setEnabled(true);
+			
+			btnPackingMaterials.setEnabled(true);
+			btnRawMaterials.setEnabled(true);
+			btnOrdering.setEnabled(true);
+			
+		}else if(AccountLevel.equals("Admin") || AccountLevel.equals("Admin-MSO")) {
+			btnKbn.setEnabled(true);
+			btnRebranding.setEnabled(true);
+			
+			btnPackingMaterials.setEnabled(true);
+			btnRawMaterials.setEnabled(true);
+			
+			btnCustomerAccount.setEnabled(true);
+			btnClientProfile.setEnabled(true);
+			btnOrdering.setEnabled(true);
+			btnDeliveryStatus.setEnabled(true);
+			btnReturnProducts.setEnabled(true);
+			btnAuditTrail.setEnabled(true);
+		}
 	}
 
 	private void buttonColors() {
@@ -684,7 +722,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dataSet = new dataSetter();
 		lblUsername.setText(dataSet.getUsername());
 		AccountLevel = dataSet.getAccLevel();
-		System.out.println(dataSet.getAccLevel());
 	}
 
 	
