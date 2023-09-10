@@ -1,12 +1,16 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.RebrandingProducts;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+
+import java.awt.Color;
+
 import javax.swing.ImageIcon;
 
 public class RebrandingProd extends JPanel {
@@ -19,9 +23,9 @@ public class RebrandingProd extends JPanel {
 	private JComboBox cbSoldProd;
 	private JComboBox cbCategories;
 	private JComboBox cbSort;
-	private JLabel lblNewLabel_1;
 	
 	public RebrandingProd() {
+		setBackground(new Color(255, 255, 255));
         this.setBounds(0, 0, 989, 699);
         setLayout(null);
         
@@ -31,6 +35,7 @@ public class RebrandingProd extends JPanel {
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
+		scrollPane.getViewport().setBackground(Color.WHITE);
 		
 		
 		String [] soldProd = {"Sold Products"};
@@ -59,12 +64,11 @@ public class RebrandingProd extends JPanel {
 		lblNewLabel.setBounds(26, 38, 933, 78);
 		add(lblNewLabel);
 		
-		lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon(RebrandingProd.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
-		lblNewLabel_1.setBounds(0, 0, 989, 699);
-		add(lblNewLabel_1);
-		
 		tableSetup();
+		
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE);
+        header.setForeground(Color.BLACK);   
 	}
 	
 	private void tableSetup() {

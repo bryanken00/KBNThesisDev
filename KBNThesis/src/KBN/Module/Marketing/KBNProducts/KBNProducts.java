@@ -5,11 +5,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -27,9 +29,9 @@ public class KBNProducts extends JPanel {
 	public JComboBox cbSoldProd;
 	public JComboBox cbCategories;
 	public JComboBox cbSort;
-	public JLabel lblNewLabel_1;
 	
 	public KBNProducts() {
+		setBackground(new Color(255, 255, 255));
         this.setBounds(0, 0, 989, 699);
         setLayout(null);
         
@@ -44,7 +46,7 @@ public class KBNProducts extends JPanel {
 		};
 		table.setDefaultEditor(getClass(), null);
 		scrollPane.setViewportView(table);
-		
+		scrollPane.getViewport().setBackground(Color.WHITE);
 		
 		String [] soldProd = {"Sold Products"};
 		cbSoldProd = new JComboBox(soldProd);
@@ -72,12 +74,11 @@ public class KBNProducts extends JPanel {
 		lblNewLabel.setBounds(26, 38, 933, 78);
 		add(lblNewLabel);
 		
-		lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon(KBNProducts.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
-		lblNewLabel_1.setBounds(0, 0, 989, 699);
-		add(lblNewLabel_1);
-		
 		tableSetup();
+		
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE); // Background
+        header.setForeground(Color.BLACK); // Text
 	}
 	
 	private void tableSetup() {
