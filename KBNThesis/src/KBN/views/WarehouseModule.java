@@ -69,7 +69,11 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 
 	//class
 	private DbConnection dbConn;
+	
+	//
 	private dataSetter dataSet;
+	private String accLevel = "";
+	
 	private AddItemWarehouse addWarehouse;
 	private AddDataWarehouse adw;
 	private FinishProductTable fpt;
@@ -195,6 +199,58 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
         
 		tableData();
 		categoriesSetup();
+		
+		warehouseButtonsDefault();
+		warehouseButtons();
+	}
+	
+	private void warehouseButtonsDefault() {
+		btnAddItem.setEnabled(false);
+		btnArchive.setEnabled(false);
+		btnQRCode.setEnabled(false);
+		
+		btnRawMats.setEnabled(false);
+		btnPackMats.setEnabled(false);
+		btnFinishProduct.setEnabled(false);
+		btnfirstinFirstout.setEnabled(false);
+		btnArchiveList.setEnabled(false);
+		btnSummary.setEnabled(false);
+		
+//		table.addMouseListener(this);
+		archiveRC.btnArchive.setEnabled(false);
+		archiveRC.btnAddItem.setEnabled(false);
+		archiveRC.btnQRGen.setEnabled(false);
+	}
+	
+	private void warehouseButtons() {
+		if(accLevel.equals("Admin") || accLevel.equals("Admin-PAO")) {
+			
+			btnAddItem.setEnabled(true);
+			btnArchive.setEnabled(true);
+			btnQRCode.setEnabled(true);
+			
+			btnRawMats.setEnabled(true);
+			btnPackMats.setEnabled(true);
+			btnFinishProduct.setEnabled(true);
+			btnfirstinFirstout.setEnabled(true);
+			btnArchiveList.setEnabled(true);
+			btnSummary.setEnabled(true);
+			
+			table.addMouseListener(this);
+			archiveRC.btnArchive.setEnabled(true);
+			archiveRC.btnAddItem.setEnabled(true);
+			archiveRC.btnQRGen.setEnabled(true);
+
+		} else if(accLevel.equals("Staff-RMS")) {
+			btnQRCode.setEnabled(true);
+			
+			table.addMouseListener(this);
+			archiveRC.btnQRGen.setEnabled(true);
+		} else if(accLevel.equals("Staff-PMS")) {
+			btnfirstinFirstout.setEnabled(true);
+		} else {
+			warehouseButtonsDefault();
+		}
 	}
 	
 	private void objComponents() {
@@ -436,7 +492,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		tablePanel.add(scrollPane);
 		
 		table = new JTable();
-		table.addMouseListener(this);
+//		table.addMouseListener(this);
 		table.addKeyListener(this);
 		scrollPane.setViewportView(table);
 	}
@@ -482,6 +538,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	
 	private void setUsername() {
 		dataSet = new dataSetter();
+		accLevel = dataSet.getAccLevel();
 		lblUsername.setText(dataSet.getUsername());
 	}
 	
@@ -971,7 +1028,12 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource() == table) {
-			if(e.getButton() == MouseEvent.BUTTON3) {
+			if(e.getButton() == MouseEvent.BUTTON1) {
+				if(archiveRC.isVisible()) {
+					archiveRC.setVisible(false);
+				}
+			}
+			else if(e.getButton() == MouseEvent.BUTTON3) {
 				archiveRC.setVisible(true);
 				archiveRC.setBounds(e.getX() + 266, e.getY() + 176, 200, 90);
 			}
