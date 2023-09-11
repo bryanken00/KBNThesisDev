@@ -44,8 +44,8 @@ public class barGenerator extends JPanel {
 	}
 	
 	public void setProductCount(int count) {
-		this.setPreferredSize(new Dimension(2, 86*count));
 		this.count = count;
+		this.setPreferredSize(new Dimension(2, 86*this.count));
 		panelContainer = new JPanel[count];
 		lblProdNameQuantity = new JLabel[count];
 		bar = new JPanel[count];
