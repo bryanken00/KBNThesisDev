@@ -1,4 +1,4 @@
-package KBNAdminPanel.panels;
+package KBNAdminPanel.panels.Forecast;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -13,11 +13,16 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 
 public class ForecastingPanel extends JPanel {
-	private JDateChooser dateChooser;
-	private JButton btnCompareToDate;
-	private JPanel color1;
-	private JComboBox product1;
-	private JPanel graph;
+	
+	public JDateChooser dateChooser;
+	public JButton btnCompareToDate;
+	public JPanel color1;
+	public JComboBox product1;
+	public JPanel graph;
+	public JComboBox product2;
+	public JComboBox product3;
+	public JComboBox product4;
+	public JComboBox product5;
 
 	public ForecastingPanel() {
 		setBounds(0, 0, 1009, 721);
@@ -67,7 +72,9 @@ public class ForecastingPanel extends JPanel {
 		container.add(products);
 		products.setLayout(null);
 		
-		product1 = new JComboBox();
+		String [] test = {"None","1","2","3","4","5"};
+		
+		product1 = new JComboBox(test);
 		product1.setBounds(10, 102, 155, 30);
 		products.add(product1);
 		
@@ -77,7 +84,7 @@ public class ForecastingPanel extends JPanel {
 		color1.setBounds(175, 102, 30, 30);
 		products.add(color1);
 		
-		JComboBox product2 = new JComboBox();
+		product2 = new JComboBox(test);
 		product2.setBounds(10, 143, 155, 30);
 		products.add(product2);
 		
@@ -87,7 +94,7 @@ public class ForecastingPanel extends JPanel {
 		color2.setBounds(175, 143, 30, 30);
 		products.add(color2);
 		
-		JComboBox product3 = new JComboBox();
+		product3 = new JComboBox(test);
 		product3.setBounds(10, 184, 155, 30);
 		products.add(product3);
 		
@@ -97,7 +104,7 @@ public class ForecastingPanel extends JPanel {
 		color3.setBounds(175, 184, 30, 30);
 		products.add(color3);
 		
-		JComboBox product4 = new JComboBox();
+		product4 = new JComboBox(test);
 		product4.setBounds(10, 225, 155, 30);
 		products.add(product4);
 		
@@ -107,7 +114,7 @@ public class ForecastingPanel extends JPanel {
 		color4.setBounds(175, 225, 30, 30);
 		products.add(color4);
 		
-		JComboBox product5 = new JComboBox();
+		product5 = new JComboBox(test);
 		product5.setBounds(10, 266, 155, 30);
 		products.add(product5);
 		
@@ -118,7 +125,7 @@ public class ForecastingPanel extends JPanel {
 		products.add(color5);
 		
 		graph = new JPanel();
-		graph.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		graph.setBorder(new LineBorder(new Color(0, 0, 0)));
 		graph.setBounds(235, 11, 724, 591);
 		container.add(graph);
 		graph.setLayout(null);

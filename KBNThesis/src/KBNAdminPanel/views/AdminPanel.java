@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -15,18 +17,25 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import KBN.views.MarketingModule;
-import KBNAdminPanel.panels.ForecastingPanel;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
+import KBNAdminPanel.panels.Forecast.ForecastGraphs;
+import KBNAdminPanel.panels.Forecast.ForecastingPanel;
+import KBNAdminPanel.panels.Forecast.barGen;
 
 import javax.swing.JLabel;
 
-public class AdminPanel extends JFrame implements ActionListener, MouseListener{
+public class AdminPanel extends JFrame implements ActionListener, MouseListener, ItemListener{
 	
 	//Class
 	private Navs navs;
 	private SalesReportPanel salesPanel;
+	
+	//Forecast Class
 	private ForecastingPanel forecast;
+	private ForecastGraphs forecastgraph;
+	private barGen bar1;
+	private barGen bar2;
 	
 	private JButton btnChecker;
 
@@ -55,7 +64,12 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
         // Class
         navs = new Navs();
         salesPanel = new SalesReportPanel();
+        
+        //Forecast
         forecast = new ForecastingPanel();
+        forecastgraph = new ForecastGraphs();
+        bar1 = new barGen();
+        bar2 = new barGen();
         
         // Components
 		components();
@@ -68,6 +82,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
 		salesPanel.setVisible(true);
 		container.add(salesPanel);
 		container.add(forecast);
+		forecast.graph.add(forecastgraph);
+		forecastgraph.graph1.add(bar1);
+		forecastgraph.graph2.add(bar2);
 		
 		btnChecker = navs.btnSalesReport;
 	}
@@ -88,6 +105,14 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
 		navs.btnAudit.addMouseListener(this);
 		navs.btnForecasting.addMouseListener(this);
 		navs.btnEmployeeList.addMouseListener(this);
+		
+		
+		//Forecast
+		forecast.product1.addItemListener(this);
+		forecast.product2.addItemListener(this);
+		forecast.product3.addItemListener(this);
+		forecast.product4.addItemListener(this);
+		forecast.product5.addItemListener(this);
 	}
 	
 	
@@ -156,5 +181,61 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+	    if (e.getStateChange() == ItemEvent.SELECTED) {
+	    	
+	        if (e.getSource() == forecast.product1) {
+	        	if(forecast.product1.getSelectedItem().equals("None")) {
+	        		bar1.bar1.setVisible(false);
+	        		bar2.bar1.setVisible(false);
+	        	}else {
+	        		bar1.bar1.setVisible(true);
+	        		bar2.bar1.setVisible(true);
+	        	}
+	        }
+	        
+	        if (e.getSource() == forecast.product2) {
+	        	if(forecast.product2.getSelectedItem().equals("None")) {
+	        		bar1.bar2.setVisible(false);
+	        		bar2.bar2.setVisible(false);
+	        	}else {
+	        		bar1.bar2.setVisible(true);
+	        		bar2.bar2.setVisible(true);
+	        	}
+	        }
+	        
+	        if (e.getSource() == forecast.product3) {
+	        	if(forecast.product3.getSelectedItem().equals("None")) {
+	        		bar1.bar3.setVisible(false);
+	        		bar2.bar3.setVisible(false);
+	        	}else {
+	        		bar1.bar3.setVisible(true);
+	        		bar2.bar3.setVisible(true);
+	        	}
+	        }
+	        
+	        if (e.getSource() == forecast.product4) {
+	        	if(forecast.product4.getSelectedItem().equals("None")) {
+	        		bar1.bar4.setVisible(false);
+	        		bar2.bar4.setVisible(false);
+	        	}else {
+	        		bar1.bar4.setVisible(true);
+	        		bar2.bar4.setVisible(true);
+	        	}
+	        }
+	        
+	        if (e.getSource() == forecast.product5) {
+	        	if(forecast.product5.getSelectedItem().equals("None")) {
+	        		bar1.bar5.setVisible(false);
+	        		bar2.bar5.setVisible(false);
+	        	}else {
+	        		bar1.bar5.setVisible(true);
+	        		bar2.bar5.setVisible(true);
+	        	}
+	        }
+	    }
 	}
 }
