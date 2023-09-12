@@ -23,7 +23,9 @@ public class barGenerator extends JPanel {
 
 	public barGenerator() {
 		setLayout(null);
-//		
+		
+//		For Testing
+		
 //		panelContainer = new JPanel();
 //		panelContainer.setBounds(10, 10, 617, 86);
 //		add(panelContainer);

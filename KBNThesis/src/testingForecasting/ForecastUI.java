@@ -122,7 +122,7 @@ public class ForecastUI extends JFrame {
 						+ "JOIN tblorderstatus AS c ON c.OrderRefNumber = b.OrderRefNumber\r\n"
 						+ "JOIN tblordercheckout AS d ON d.OrderRefNumber = b.OrderRefNumber\r\n"
 						+ "WHERE c.Status = 'Completed' AND d.OrderDate >= '" + startedDate.get(i) + "' AND d.OrderDate <= '" + endedDate.get(i) + "')";
-//				System.out.println(sqlCount);
+				System.out.println(sqlCount);
 				st.execute(sqlCount);
 				rs = st.getResultSet();
 				while(rs.next()) {
