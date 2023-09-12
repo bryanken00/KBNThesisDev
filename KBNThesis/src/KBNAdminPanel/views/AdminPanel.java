@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import KBN.views.MarketingModule;
+import KBNAdminPanel.panels.ForecastingPanel;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
 
@@ -25,6 +26,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
 	//Class
 	private Navs navs;
 	private SalesReportPanel salesPanel;
+	private ForecastingPanel forecast;
 	
 	private JButton btnChecker;
 
@@ -53,7 +55,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
         // Class
         navs = new Navs();
         salesPanel = new SalesReportPanel();
-        
+        forecast = new ForecastingPanel();
         
         // Components
 		components();
@@ -61,13 +63,18 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
         actList();
         
 		panel.add(navs);
+		
+		panelVisible();
+		salesPanel.setVisible(true);
 		container.add(salesPanel);
+		container.add(forecast);
 		
 		btnChecker = navs.btnSalesReport;
 	}
 	
 	private void panelVisible() {
 		salesPanel.setVisible(false);
+		forecast.setVisible(false);
 	}
 	
 	private void actList() {
@@ -102,6 +109,10 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener{
 		if(e.getSource() == navs.btnSalesReport) {
 			panelVisible();
 			salesPanel.setVisible(true);
+		}
+		if(e.getSource() == navs.btnForecasting) {
+			panelVisible();
+			forecast.setVisible(true);
 		}
 	}
 
