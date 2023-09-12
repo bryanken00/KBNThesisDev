@@ -14,6 +14,8 @@ public class ForecastGraphs extends JPanel {
 	public JPanel graph2;
 
 	public ForecastGraphs() {
+		setBackground(new Color(255, 255, 255));
+		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBounds(1, 1, 722, 589);
 		setLayout(null);
 		
@@ -24,7 +26,7 @@ public class ForecastGraphs extends JPanel {
 		add(lblNewLabel);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(43, 11, 658, 509);
+		panel.setBounds(54, 11, 658, 509);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -41,13 +43,13 @@ public class ForecastGraphs extends JPanel {
 		JLabel lblNewLabel_1_1 = new JLabel("02");
 		lblNewLabel_1_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		lblNewLabel_1_1.setBounds(428, 531, 162, 27);
+		lblNewLabel_1_1.setBounds(426, 531, 162, 27);
 		add(lblNewLabel_1_1);
 		
 		JLabel lblNewLabel_1 = new JLabel("01");
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		lblNewLabel_1.setBounds(133, 531, 162, 27);
+		lblNewLabel_1.setBounds(132, 531, 162, 27);
 		add(lblNewLabel_1);
 	}
 }

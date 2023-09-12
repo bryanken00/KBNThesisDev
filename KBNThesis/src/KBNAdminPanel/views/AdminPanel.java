@@ -9,6 +9,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import KBN.views.MarketingModule;
+import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
 import KBNAdminPanel.panels.Forecast.ForecastGraphs;
@@ -24,6 +29,7 @@ import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class AdminPanel extends JFrame implements ActionListener, MouseListener, ItemListener{
 	
@@ -38,10 +44,17 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private barGen bar2;
 	
 	private JButton btnChecker;
+	
+	//Database
+	private DbConnection dbConn;
+	private ResultSet rs;
+	private Statement st;
+	
+	//Array
+	private ArrayList products;
 
 	private JPanel contentPane;
 	private JPanel panel;
-	private JLabel lblNewLabel;
 	private JPanel container;
 
 	public AdminPanel() {
@@ -52,7 +65,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		//set UI to center of screen
+		// set UI to center of screen
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         int w = this.getSize().width;
         int h = this.getSize().height;
@@ -65,11 +78,22 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         navs = new Navs();
         salesPanel = new SalesReportPanel();
         
-        //Forecast
+        // Forecast
         forecast = new ForecastingPanel();
         forecastgraph = new ForecastGraphs();
         bar1 = new barGen();
         bar2 = new barGen();
+        
+        // Database
+        dbConn = new DbConnection();
+        try {
+			st = dbConn.getConnection().createStatement();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(navs, "ERROR Statement: " + e.getMessage());
+		}
+        
+        // Array
+        products = new ArrayList<>();
         
         // Components
 		components();
@@ -115,8 +139,6 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		forecast.product5.addItemListener(this);
 	}
 	
-	
-	
 	private void components() {
 		panel = new JPanel();
 		panel.setBounds(0, 0, 255, 721);
@@ -128,6 +150,72 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		contentPane.add(container);
 		container.setLayout(null);
 	}
+	
+	private void renderingKBNProducts() {
+		try {
+			forecast.product1.addItem("None");
+			forecast.product2.addItem("None");
+			forecast.product3.addItem("None");
+			forecast.product4.addItem("None");
+			forecast.product5.addItem("None");
+			
+			String SQL = "SELECT prodName, prodVolume FROM tblproducts";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			while(rs.next())
+				products.add(rs.getString(1) + "-" + rs.getString(2));
+			
+			for(int i = 0; i < products.size(); i++) {
+				forecast.product1.addItem(products.get(i));
+				forecast.product2.addItem(products.get(i));
+				forecast.product3.addItem(products.get(i));
+				forecast.product4.addItem(products.get(i));
+				forecast.product5.addItem(products.get(i));
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(navs, "Error ProductsRendering: " + e.getMessage());
+		}
+	}
+	
+	private void getSoldQuantityPresent(String itemName) {
+		try {
+			int quantity = 0;
+			String prodName = itemName.split("-")[0];
+			String prodVariant = itemName.split("-")[1];
+			int barNumber = Integer.parseInt(itemName.split("-")[2]);
+			String gettingTotalQuantity = "SELECT a.ProductName, a.volume, SUM(a.Quantity) As total "
+					+ "FROM tblordercheckoutdata AS a "
+					+ "JOIN tblorderstatus AS b ON b.OrderRefNumber = a.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = a.OrderRefNumber "
+					+ "WHERE a.ProductName = '" + prodName +"' AND a.volume = '" + prodVariant + "' AND b.Status = 'Completed';";
+			
+			st.execute(gettingTotalQuantity);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				if(rs.getString(3) == null)
+					quantity = 0;
+				else
+					quantity = rs.getInt(3);
+			}
+			
+			if(barNumber == 1) {
+				bar1.bar1.setBounds(18, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 2) {
+				bar1.bar2.setBounds(80, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 3) {
+				bar1.bar3.setBounds(142, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 4) {
+				bar1.bar4.setBounds(204, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 5) {
+				bar1.bar5.setBounds(266, 508 - quantity, 44, 0 + quantity);
+			}else {
+				return;
+			}
+			quantity = 0;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -138,6 +226,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
 			forecast.setVisible(true);
+			renderingKBNProducts();
 		}
 	}
 
@@ -194,6 +283,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	}else {
 	        		bar1.bar1.setVisible(true);
 	        		bar2.bar1.setVisible(true);
+	        		getSoldQuantityPresent(forecast.product1.getSelectedItem() + "-1");
 	        	}
 	        }
 	        
@@ -204,6 +294,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	}else {
 	        		bar1.bar2.setVisible(true);
 	        		bar2.bar2.setVisible(true);
+	        		getSoldQuantityPresent(forecast.product2.getSelectedItem() + "-2");
 	        	}
 	        }
 	        
@@ -214,6 +305,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	}else {
 	        		bar1.bar3.setVisible(true);
 	        		bar2.bar3.setVisible(true);
+	        		getSoldQuantityPresent(forecast.product3.getSelectedItem() + "-3");
 	        	}
 	        }
 	        
@@ -224,6 +316,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	}else {
 	        		bar1.bar4.setVisible(true);
 	        		bar2.bar4.setVisible(true);
+	        		getSoldQuantityPresent(forecast.product4.getSelectedItem() + "-4");
 	        	}
 	        }
 	        
@@ -234,6 +327,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	}else {
 	        		bar1.bar5.setVisible(true);
 	        		bar2.bar5.setVisible(true);
+	        		getSoldQuantityPresent(forecast.product5.getSelectedItem() + "-5");
 	        	}
 	        }
 	    }

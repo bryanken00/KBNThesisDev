@@ -11,18 +11,24 @@ import javax.swing.JComboBox;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
+import com.toedter.calendar.JMonthChooser;
+import com.toedter.calendar.JYearChooser;
 
 public class ForecastingPanel extends JPanel {
 	
-	public JDateChooser dateChooser;
 	public JButton btnCompareToDate;
+	
 	public JPanel color1;
-	public JComboBox product1;
 	public JPanel graph;
+	
+	public JComboBox product1;
 	public JComboBox product2;
 	public JComboBox product3;
 	public JComboBox product4;
 	public JComboBox product5;
+	
+	public JMonthChooser monthChooser;
+	public JYearChooser yearChooser;
 
 	public ForecastingPanel() {
 		setBounds(0, 0, 1009, 721);
@@ -35,6 +41,7 @@ public class ForecastingPanel extends JPanel {
 		panel.setLayout(null);
 		
 		JPanel header = new JPanel();
+		header.setBackground(new Color(255, 255, 255));
 		header.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		header.setLayout(null);
 		header.setBounds(10, 11, 969, 53);
@@ -46,10 +53,6 @@ public class ForecastingPanel extends JPanel {
 		lblNewLabel.setBounds(10, 11, 235, 31);
 		header.add(lblNewLabel);
 		
-		dateChooser = new JDateChooser();
-		dateChooser.setBounds(535, 10, 161, 33);
-		header.add(dateChooser);
-		
 		btnCompareToDate = new JButton("Compare to Date Selected");
 		btnCompareToDate.setVerticalTextPosition(SwingConstants.CENTER);
 		btnCompareToDate.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -60,21 +63,31 @@ public class ForecastingPanel extends JPanel {
 		btnCompareToDate.setBounds(718, 9, 241, 35);
 		header.add(btnCompareToDate);
 		
+		monthChooser = new JMonthChooser();
+		monthChooser.getComboBox().setLocation(3, 14);
+		monthChooser.setBounds(483, 11, 105, 30);
+		header.add(monthChooser);
+		
+		yearChooser = new JYearChooser();
+		yearChooser.getSpinner().setLocation(0, 11);
+		yearChooser.setBounds(608, 11, 100, 30);
+		header.add(yearChooser);
+		
 		JPanel container = new JPanel();
+		container.setBackground(new Color(255, 255, 255));
 		container.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		container.setBounds(10, 75, 969, 613);
 		panel.add(container);
 		container.setLayout(null);
 		
 		JPanel products = new JPanel();
+		products.setBackground(new Color(255, 255, 255));
 		products.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		products.setBounds(10, 11, 215, 591);
 		container.add(products);
 		products.setLayout(null);
 		
-		String [] test = {"None","1","2","3","4","5"};
-		
-		product1 = new JComboBox(test);
+		product1 = new JComboBox();
 		product1.setBounds(10, 102, 155, 30);
 		products.add(product1);
 		
@@ -84,7 +97,7 @@ public class ForecastingPanel extends JPanel {
 		color1.setBounds(175, 102, 30, 30);
 		products.add(color1);
 		
-		product2 = new JComboBox(test);
+		product2 = new JComboBox();
 		product2.setBounds(10, 143, 155, 30);
 		products.add(product2);
 		
@@ -94,7 +107,7 @@ public class ForecastingPanel extends JPanel {
 		color2.setBounds(175, 143, 30, 30);
 		products.add(color2);
 		
-		product3 = new JComboBox(test);
+		product3 = new JComboBox();
 		product3.setBounds(10, 184, 155, 30);
 		products.add(product3);
 		
@@ -104,7 +117,7 @@ public class ForecastingPanel extends JPanel {
 		color3.setBounds(175, 184, 30, 30);
 		products.add(color3);
 		
-		product4 = new JComboBox(test);
+		product4 = new JComboBox();
 		product4.setBounds(10, 225, 155, 30);
 		products.add(product4);
 		
@@ -114,7 +127,7 @@ public class ForecastingPanel extends JPanel {
 		color4.setBounds(175, 225, 30, 30);
 		products.add(color4);
 		
-		product5 = new JComboBox(test);
+		product5 = new JComboBox();
 		product5.setBounds(10, 266, 155, 30);
 		products.add(product5);
 		
