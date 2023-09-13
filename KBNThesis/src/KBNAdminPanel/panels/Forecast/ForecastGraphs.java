@@ -12,6 +12,9 @@ public class ForecastGraphs extends JPanel {
 	
 	public JPanel graph1;
 	public JPanel graph2;
+	
+	public JLabel lblPresent;
+	public JLabel lblPrevious;
 
 	public ForecastGraphs() {
 		setBackground(new Color(255, 255, 255));
@@ -40,16 +43,16 @@ public class ForecastGraphs extends JPanel {
 		panel.add(graph2);
 		graph2.setLayout(null);
 		
-		JLabel lblNewLabel_1_1 = new JLabel("02");
-		lblNewLabel_1_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		lblNewLabel_1_1.setBounds(426, 531, 162, 27);
-		add(lblNewLabel_1_1);
+		lblPrevious = new JLabel("02");
+		lblPrevious.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPrevious.setFont(new Font("Tahoma", Font.PLAIN, 28));
+		lblPrevious.setBounds(426, 531, 162, 27);
+		add(lblPrevious);
 		
-		JLabel lblNewLabel_1 = new JLabel("01");
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		lblNewLabel_1.setBounds(132, 531, 162, 27);
-		add(lblNewLabel_1);
+		lblPresent = new JLabel("01");
+		lblPresent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPresent.setFont(new Font("Tahoma", Font.PLAIN, 28));
+		lblPresent.setBounds(132, 531, 162, 27);
+		add(lblPresent);
 	}
 }

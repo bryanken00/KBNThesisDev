@@ -12,6 +12,8 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -52,12 +54,16 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	
 	//Array
 	private ArrayList products;
+	
+	//Date
+	private LocalDate currentDate;
 
 	private JPanel contentPane;
 	private JPanel panel;
 	private JPanel container;
 
 	public AdminPanel() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1280, 760);
 		contentPane = new JPanel();
@@ -94,6 +100,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         
         // Array
         products = new ArrayList<>();
+        
+        // Date
+		currentDate = LocalDate.now();
         
         // Components
 		components();
@@ -137,6 +146,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		forecast.product3.addItemListener(this);
 		forecast.product4.addItemListener(this);
 		forecast.product5.addItemListener(this);
+		
+		forecast.btnCompareToDate.addActionListener(this);
 	}
 	
 	private void components() {
@@ -216,6 +227,49 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
 		}
 	}
+	
+	private void getSoldQuantityPrev(String itemName, String dateStart, String dateEnd) {
+		try {
+			int quantity = 0;
+			String prodName = itemName.split("-")[0];
+			String prodVariant = itemName.split("-")[1];
+			int barNumber = Integer.parseInt(itemName.split("-")[2]);
+			String gettingTotalQuantity = "SELECT a.ProductName, a.volume, SUM(a.Quantity) As total "
+					+ "FROM tblordercheckoutdata AS a "
+					+ "JOIN tblorderstatus AS b ON b.OrderRefNumber = a.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = a.OrderRefNumber "
+					+ "WHERE a.ProductName = '" + prodName +"' AND a.volume = '" + prodVariant + "' AND b.Status = 'Completed' AND c.OrderDate >= '" + dateStart + "' AND c.OrderDate <= '" + dateEnd + "';";
+			
+			
+			System.out.println(gettingTotalQuantity);
+			st.execute(gettingTotalQuantity);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				if(rs.getString(3) == null)
+					quantity = 0;
+				else
+					quantity = rs.getInt(3);
+			}
+			
+			if(barNumber == 1) {
+				bar2.bar1.setBounds(18, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 2) {
+				bar2.bar2.setBounds(80, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 3) {
+				bar2.bar3.setBounds(142, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 4) {
+				bar2.bar4.setBounds(204, 508 - quantity, 44, 0 + quantity);
+			} else if(barNumber == 5) {
+				bar2.bar5.setBounds(266, 508 - quantity, 44, 0 + quantity);
+			}else {
+				return;
+			}
+			
+			quantity = 0;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -227,6 +281,33 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			panelVisible();
 			forecast.setVisible(true);
 			renderingKBNProducts();
+			LocalDate firstDateOfCurrentMonth = currentDate.withDayOfMonth(1);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
+			forecastgraph.lblPresent.setText(firstDateOfCurrentMonth.format(formatter));
+		}
+		if(e.getSource() == forecast.btnCompareToDate) {
+			
+			int month = forecast.monthChooser.getMonth() + 1;
+			int year = forecast.yearChooser.getYear();
+			String prodName = forecast.product1.getSelectedItem().toString();
+			String prodName1 = forecast.product2.getSelectedItem().toString();
+			String prodName2 = forecast.product3.getSelectedItem().toString();
+			String prodName3 = forecast.product4.getSelectedItem().toString();
+			String prodName4 = forecast.product5.getSelectedItem().toString();
+	        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
+	        LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+
+	        if(!forecast.product1.getSelectedItem().equals("None"))
+	        	getSoldQuantityPrev(prodName + "-1",firstDayOfMonth + "",lastDayOfMonth + "");
+	        if(!forecast.product2.getSelectedItem().equals("None"))
+	        	getSoldQuantityPrev(prodName1 + "-2",firstDayOfMonth + "",lastDayOfMonth + "");
+	        if(!forecast.product3.getSelectedItem().equals("None"))
+	        	getSoldQuantityPrev(prodName2 + "-3",firstDayOfMonth + "",lastDayOfMonth + "");
+	        if(!forecast.product4.getSelectedItem().equals("None"))
+	        	getSoldQuantityPrev(prodName3 + "-4",firstDayOfMonth + "",lastDayOfMonth + "");
+	        if(!forecast.product5.getSelectedItem().equals("None"))
+	        	getSoldQuantityPrev(prodName4 + "-5",firstDayOfMonth + "",lastDayOfMonth + "");
+	        
 		}
 	}
 
