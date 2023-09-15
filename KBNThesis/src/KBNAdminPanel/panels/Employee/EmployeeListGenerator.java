@@ -24,6 +24,9 @@ public class EmployeeListGenerator extends JPanel {
 	public JButton[] btnAction;
 	public JSeparator[] separator;
 	
+	public String[] accountID;
+	
+	
 	private int EmpCount = 0;
 	
 //	private JLabel lblaccType;
@@ -33,6 +36,7 @@ public class EmployeeListGenerator extends JPanel {
 //	private JButton btnAction;
 //	private JSeparator separator;
 //	private JPanel panel;
+	
 //	private JPanel panel_1;
 //	private JLabel lblaccType_1;
 //	private JLabel lblName_1;
@@ -107,13 +111,12 @@ public class EmployeeListGenerator extends JPanel {
 //		lblContact_1.setBounds(628, 10, 158, 46);
 //		panel_1.add(lblContact_1);
 //		
-//		btnAction_1 = new JButton("");
-//		btnAction_1.setIcon(new ImageIcon(EmployeeListGenerator.class.getResource("/KBNAdminPanel/resources/Employee/dots.png")));
+//		btnAction_1 = new JButton("Edit");
 //		btnAction_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 //		btnAction_1.setFocusable(false);
 //		btnAction_1.setBorderPainted(false);
 //		btnAction_1.setBackground(Color.WHITE);
-//		btnAction_1.setBounds(802, 11, 37, 45);
+//		btnAction_1.setBounds(802, 11, 65, 45);
 //		add(btnAction_1);
 //		
 //		separator_1 = new JSeparator();
@@ -131,6 +134,9 @@ public class EmployeeListGenerator extends JPanel {
 		lblContact = new JLabel[EmpCount];
 		btnAction = new JButton[EmpCount];
 		separator = new JSeparator[EmpCount];
+		
+		accountID = new String[EmpCount];
+		
 		GenerateEmployee();
 	}
 	
@@ -164,10 +170,10 @@ public class EmployeeListGenerator extends JPanel {
 			lblContact[i].setFont(new Font("Tahoma", Font.PLAIN, 12));
 			panel[i].add(lblContact[i]);
 			
-			btnAction[i] = new JButton("");
-			btnAction[i].setBounds(802, 11, 37, 45);
+			btnAction[i] = new JButton("Edit");
+			btnAction[i].setBounds(802, 11, 65, 45);
 			btnAction[i].setFont(new Font("Tahoma", Font.PLAIN, 18));
-			btnAction[i].setIcon(new ImageIcon(EmployeeListGenerator.class.getResource("/KBNAdminPanel/resources/Employee/dots.png")));
+//			btnAction[i].setIcon(new ImageIcon(EmployeeListGenerator.class.getResource("/KBNAdminPanel/resources/Employee/dots.png")));
 			btnAction[i].setFocusable(false);
 			btnAction[i].setBorderPainted(false);
 			btnAction[i].setBackground(Color.WHITE);

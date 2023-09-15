@@ -315,7 +315,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			
 			empGen.setEmpCount(empCount);
 			
-			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact\r\n"
+			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact, a.AccountID\r\n"
 					+ "FROM tblaccount AS a\r\n"
 					+ "JOIN tblaccountinfo AS b ON b.AccountID = a.AccountID";
 			
@@ -328,6 +328,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 				empGen.lblName[i].setText(rs.getString(2));
 				empGen.lblDepartment[i].setText(rs.getString(3));
 				empGen.lblContact[i].setText("<html><center>" + rs.getString(5) + "<br>" + rs.getString(4) + "</center></html>");
+				empGen.accountID[i] = rs.getString(6);
 				i++;
 			}
 				

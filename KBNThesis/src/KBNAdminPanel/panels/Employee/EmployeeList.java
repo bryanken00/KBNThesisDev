@@ -15,7 +15,8 @@ public class EmployeeList extends JPanel {
 	
 	
 	public EmployeeList() {
-		setBounds(1, 1, 967, 611);
+//		setBounds(1, 1, 967, 611);
+		setBounds(0, 0, 969, 613);
 		setLayout(null);
 		
 		JPanel panel = new JPanel();
