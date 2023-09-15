@@ -46,6 +46,8 @@ public class EmployeePanel extends JPanel {
 		btnSearch.setIcon(new ImageIcon(EmployeePanel.class.getResource("/KBNAdminPanel/resources/search.png")));
 		btnSearch.setBorderPainted(false);
 		btnSearch.setOpaque(false);
+		btnSearch.setFocusable(false);
+		btnSearch.setBackground(Color.WHITE);
 		btnSearch.setBounds(789, 11, 37, 31);
 		header.add(btnSearch);
 		
@@ -58,6 +60,8 @@ public class EmployeePanel extends JPanel {
 		btnCreate.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		btnCreate.setOpaque(false);
 		btnCreate.setBorderPainted(false);
+		btnCreate.setFocusable(false);
+		btnCreate.setBackground(Color.WHITE);
 		btnCreate.setBounds(856, 11, 103, 31);
 		header.add(btnCreate);
 		

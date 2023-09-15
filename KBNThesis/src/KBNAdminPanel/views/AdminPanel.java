@@ -26,6 +26,7 @@ import KBN.views.MarketingModule;
 import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
+import KBNAdminPanel.panels.Employee.EmployeeCreate;
 import KBNAdminPanel.panels.Employee.EmployeeList;
 import KBNAdminPanel.panels.Employee.EmployeeListGenerator;
 import KBNAdminPanel.panels.Employee.EmployeePanel;
@@ -52,6 +53,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private EmployeePanel empPanel;
 	private EmployeeList empList;
 	private EmployeeListGenerator empGen;
+	private EmployeeCreate empCreate;
 	
 	private int empCount = 0;
 	
@@ -105,6 +107,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         empPanel = new EmployeePanel();
         empList = new EmployeeList();
         empGen = new EmployeeListGenerator();
+        empCreate = new EmployeeCreate();
         
         // Database
         dbConn = new DbConnection();
@@ -130,9 +133,11 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		panelVisible();
 		salesPanel.setVisible(true);
 		
+		//Container
 		container.add(salesPanel);
 		container.add(forecast);
 		container.add(empPanel);
+		container.add(empCreate);
 		
 		empPanel.container.add(empList);
 		empList.scrollPane.setViewportView(empGen);
@@ -148,6 +153,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		salesPanel.setVisible(false);
 		forecast.setVisible(false);
 		empPanel.setVisible(false);
+		empCreate.setVisible(false);
 	}
 	
 	private void actList() {
@@ -171,6 +177,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		forecast.product5.addItemListener(this);
 		
 		forecast.btnCompareToDate.addActionListener(this);
+		
+		//Employee
+		empPanel.btnCreate.addActionListener(this);
 	}
 	
 	private void components() {
@@ -371,6 +380,12 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			panelVisible();
 			setEmployeeCount();
 			empPanel.setVisible(true);
+		}
+		
+		//Employee
+		if(e.getSource() == empPanel.btnCreate) {
+			panelVisible();
+			empCreate.setVisible(true);
 		}
 		
 	}
