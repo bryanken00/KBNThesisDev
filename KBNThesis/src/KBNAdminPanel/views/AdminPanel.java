@@ -26,6 +26,7 @@ import KBN.views.MarketingModule;
 import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
+import KBNAdminPanel.panels.Employee.EmployeeList;
 import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
@@ -45,7 +46,11 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private barGen bar1;
 	private barGen bar2;
 	
+	// Employee
+	private EmployeeList empList;
+	
 	private JButton btnChecker;
+	
 	
 	//Database
 	private DbConnection dbConn;
@@ -90,6 +95,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         bar1 = new barGen();
         bar2 = new barGen();
         
+        empList = new EmployeeList();
+        
         // Database
         dbConn = new DbConnection();
         try {
@@ -115,6 +122,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		salesPanel.setVisible(true);
 		container.add(salesPanel);
 		container.add(forecast);
+		container.add(empList);
 		forecast.graph.add(forecastgraph);
 		forecastgraph.graph1.add(bar1);
 		forecastgraph.graph2.add(bar2);
@@ -125,6 +133,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private void panelVisible() {
 		salesPanel.setVisible(false);
 		forecast.setVisible(false);
+		empList.setVisible(false);
 	}
 	
 	private void actList() {
@@ -277,6 +286,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			panelVisible();
 			salesPanel.setVisible(true);
 		}
+		
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
 			forecast.setVisible(true);
@@ -285,6 +295,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
 			forecastgraph.lblPresent.setText(firstDateOfCurrentMonth.format(formatter));
 		}
+		
 		if(e.getSource() == forecast.btnCompareToDate) {
 			
 			int month = forecast.monthChooser.getMonth() + 1;
@@ -307,8 +318,13 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	getSoldQuantityPrev(prodName3 + "-4",firstDayOfMonth + "",lastDayOfMonth + "");
 	        if(!forecast.product5.getSelectedItem().equals("None"))
 	        	getSoldQuantityPrev(prodName4 + "-5",firstDayOfMonth + "",lastDayOfMonth + "");
-	        
 		}
+		
+		if(e.getSource() == navs.btnEmployeeList) {
+			panelVisible();
+			empList.setVisible(true);
+		}
+		
 	}
 
 	@Override
