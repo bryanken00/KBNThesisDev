@@ -297,7 +297,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	//Employee
 	private void setEmployeeCount() {
 		try {
-			String SQL = "Select AccountID FROM tblaccount;";
+			String SQL = "Select COUNT(a.AccountID) FROM tblaccount AS a JOIN tblaccountinfo AS b ON b.AccountID = a.AccountID;";
 			st.execute(SQL);
 			rs = st.getResultSet();
 			
@@ -309,6 +309,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact\r\n"
 					+ "FROM tblaccount AS a\r\n"
 					+ "JOIN tblaccountinfo AS b ON b.AccountID = a.AccountID";
+			
 			st.execute(getEmpInfo);
 			rs = st.getResultSet();
 			
