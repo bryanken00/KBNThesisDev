@@ -27,6 +27,8 @@ import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
 import KBNAdminPanel.panels.Employee.EmployeeList;
+import KBNAdminPanel.panels.Employee.EmployeeListGenerator;
+import KBNAdminPanel.panels.Employee.EmployeePanel;
 import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
@@ -47,7 +49,11 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private barGen bar2;
 	
 	// Employee
+	private EmployeePanel empPanel;
 	private EmployeeList empList;
+	private EmployeeListGenerator empGen;
+	
+	private int empCount = 0;
 	
 	private JButton btnChecker;
 	
@@ -95,7 +101,10 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         bar1 = new barGen();
         bar2 = new barGen();
         
+        //Employee
+        empPanel = new EmployeePanel();
         empList = new EmployeeList();
+        empGen = new EmployeeListGenerator();
         
         // Database
         dbConn = new DbConnection();
@@ -120,9 +129,14 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		
 		panelVisible();
 		salesPanel.setVisible(true);
+		
 		container.add(salesPanel);
 		container.add(forecast);
-		container.add(empList);
+		container.add(empPanel);
+		
+		empPanel.container.add(empList);
+		empList.scrollPane.setViewportView(empGen);
+		
 		forecast.graph.add(forecastgraph);
 		forecastgraph.graph1.add(bar1);
 		forecastgraph.graph2.add(bar2);
@@ -133,7 +147,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private void panelVisible() {
 		salesPanel.setVisible(false);
 		forecast.setVisible(false);
-		empList.setVisible(false);
+		empPanel.setVisible(false);
 	}
 	
 	private void actList() {
@@ -279,6 +293,38 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
 		}
 	}
+	
+	//Employee
+	private void setEmployeeCount() {
+		try {
+			String SQL = "Select AccountID FROM tblaccount;";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				empCount = rs.getInt(1);
+			
+			empGen.setEmpCount(empCount);
+			
+			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact\r\n"
+					+ "FROM tblaccount AS a\r\n"
+					+ "JOIN tblaccountinfo AS b ON b.AccountID = a.AccountID";
+			st.execute(getEmpInfo);
+			rs = st.getResultSet();
+			
+			int i = 0;
+			while(rs.next()) {
+				empGen.lblaccType[i].setText(rs.getString(1));
+				empGen.lblName[i].setText(rs.getString(2));
+				empGen.lblDepartment[i].setText(rs.getString(3));
+				empGen.lblContact[i].setText("<html><center>" + rs.getString(5) + "<br>" + rs.getString(4) + "</center></html>");
+				i++;
+			}
+				
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error SetEmployeeCount + " + e.getMessage());
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -322,7 +368,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		
 		if(e.getSource() == navs.btnEmployeeList) {
 			panelVisible();
-			empList.setVisible(true);
+			setEmployeeCount();
+			empPanel.setVisible(true);
 		}
 		
 	}

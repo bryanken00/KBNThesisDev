@@ -12,16 +12,17 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JSeparator;
+import javax.swing.ImageIcon;
 
 public class EmployeeListGenerator extends JPanel {
 
-	private JPanel[] panel;
-	private JLabel[] lblaccType;
-	private JLabel[] lblName;
-	private JLabel[] lblDepartment;
-	private JLabel[] lblContact;
-	private JButton[] btnAction;
-	private JSeparator[] separator;
+	public JPanel[] panel;
+	public JLabel[] lblaccType;
+	public JLabel[] lblName;
+	public JLabel[] lblDepartment;
+	public JLabel[] lblContact;
+	public JButton[] btnAction;
+	public JSeparator[] separator;
 	
 	private int EmpCount = 0;
 	
@@ -106,13 +107,14 @@ public class EmployeeListGenerator extends JPanel {
 //		lblContact_1.setBounds(628, 10, 158, 46);
 //		panel_1.add(lblContact_1);
 //		
-//		btnAction_1 = new JButton(".");
+//		btnAction_1 = new JButton("");
+//		btnAction_1.setIcon(new ImageIcon(EmployeeListGenerator.class.getResource("/KBNAdminPanel/resources/Employee/dots.png")));
 //		btnAction_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 //		btnAction_1.setFocusable(false);
 //		btnAction_1.setBorderPainted(false);
 //		btnAction_1.setBackground(Color.WHITE);
 //		btnAction_1.setBounds(802, 11, 37, 45);
-//		panel_1.add(btnAction_1);
+//		add(btnAction_1);
 //		
 //		separator_1 = new JSeparator();
 //		separator_1.setBounds(10, 65, 947, 7);
@@ -162,9 +164,10 @@ public class EmployeeListGenerator extends JPanel {
 			lblContact[i].setFont(new Font("Tahoma", Font.PLAIN, 12));
 			panel[i].add(lblContact[i]);
 			
-			btnAction[i] = new JButton(".");
+			btnAction[i] = new JButton("");
 			btnAction[i].setBounds(802, 11, 37, 45);
 			btnAction[i].setFont(new Font("Tahoma", Font.PLAIN, 18));
+			btnAction[i].setIcon(new ImageIcon(EmployeeListGenerator.class.getResource("/KBNAdminPanel/resources/Employee/dots.png")));
 			btnAction[i].setFocusable(false);
 			btnAction[i].setBorderPainted(false);
 			btnAction[i].setBackground(Color.WHITE);
