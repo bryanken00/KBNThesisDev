@@ -572,22 +572,47 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        }
 	        
 	        //Employee
+        	String accType = empCreate.cbAccType.getSelectedItem() + "";
+        	String department = empCreate.cbDepartment.getSelectedItem() + "";
+        	String position = empCreate.cbPosition.getSelectedItem() + "";
+        	
+        	DefaultComboBoxModel<String> nullmodel = new DefaultComboBoxModel<>(new String[] {""});
+        	DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        	
 	        if (e.getSource() == empCreate.cbAccType) {
-	        	String accType = empCreate.cbAccType.getSelectedItem() + "";
-	        	String department = empCreate.cbDepartment.getSelectedItem() + "";
-	        	String position = empCreate.cbPosition.getSelectedItem() + "";
 
-	        	DefaultComboBoxModel<String> nullmodel = new DefaultComboBoxModel<>(new String[] {""});
 	        	empCreate.cbPosition.setModel(nullmodel);
 	        	
-	        	DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 	        	String[] depAdmin = {"Marketing", "Production", "Warehouse"};
+	        	String[] depCashier = {"Cashier"};
 	        	
-	        	if (accType.equals("Admin")) {
+	        	if (accType.equals("Admin") || accType.equals("Staff")) {
 	        	    for (String item : depAdmin) {
 	        	        model.addElement(item);
 	        	    }
 	        	    empCreate.cbDepartment.setModel(model);
+	        	} else if (accType.equals("Cashier")) {
+	        	    for (String item : depCashier) {
+	        	        model.addElement(item);
+	        	    }
+	        	    empCreate.cbDepartment.setModel(model);
+	        	    empCreate.cbPosition.setModel(model);
+	        	}
+	        }
+	        if (e.getSource() == empCreate.cbDepartment) {
+	        	String[] marketingStaffPosition = {"Inventory-Ordering"};
+	        	String[] warehouseStaffPosition = {"GenerateQR-Inventory","First-inFirst-out"};
+	        	
+	        	if(accType.equals("Staff") && department.equals("Marketing")) {
+	        	    for (String item : marketingStaffPosition) {
+	        	        model.addElement(item);
+	        	    }
+	        		empCreate.cbPosition.setModel(model);
+	        	} else if(accType.equals("Staff") && department.equals("Warehouse")) {
+	        	    for (String item : warehouseStaffPosition) {
+	        	        model.addElement(item);
+	        	    }
+	        		empCreate.cbPosition.setModel(model);
 	        	}
 	        }
 	    }

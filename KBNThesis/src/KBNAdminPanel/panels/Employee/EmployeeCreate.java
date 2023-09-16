@@ -153,7 +153,8 @@ public class EmployeeCreate extends JPanel {
 		birthDate.setBounds(376, 261, 190, 31);
 		panel.add(birthDate);
 
-		cbDepartment = new JComboBox();
+		String[] depAdmin = {"Marketing", "Production", "Warehouse"};
+		cbDepartment = new JComboBox(depAdmin);
 		cbDepartment.setBackground(new Color(255, 255, 255));
 		cbDepartment.setBounds(537, 464, 171, 31);
 		panel.add(cbDepartment);
