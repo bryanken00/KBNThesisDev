@@ -12,10 +12,13 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -54,6 +57,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private EmployeeList empList;
 	private EmployeeListGenerator empGen;
 	private EmployeeCreate empCreate;
+	private String verifyEmployeeRegister = "Not Verified";
 	
 	private int empCount = 0;
 	
@@ -180,6 +184,13 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		
 		//Employee
 		empPanel.btnCreate.addActionListener(this);
+		empCreate.btnRegister.addActionListener(this);
+		empCreate.btnVerify.addActionListener(this);
+		
+
+		empCreate.cbAccType.addItemListener(this);
+		empCreate.cbDepartment.addItemListener(this);
+		empCreate.cbPosition.addItemListener(this);
 	}
 	
 	private void components() {
@@ -388,6 +399,74 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			panelVisible();
 			empCreate.setVisible(true);
 		}
+		if(e.getSource() == empCreate.btnVerify) {
+			try {
+				String Username = empCreate.txtUsername.getText();
+				
+				if(Username.length() < 6) {
+					JOptionPane.showMessageDialog(null, "The username must be 6 to 20 letters.");
+					return;
+				}
+				
+				ArrayList arrAccount = new ArrayList<>();
+				String SQL = "SELECT Username FROM tblaccount";
+				
+				st.execute(SQL);
+				rs = st.getResultSet();
+				while(rs.next())
+					arrAccount.add(rs.getString(1));
+				
+				if(arrAccount.contains(Username))
+					verifyEmployeeRegister = "Already Exist";
+				else
+					verifyEmployeeRegister = "Verified";
+				
+				if(verifyEmployeeRegister.equals("Verified")) {
+					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/check-mark.png")));
+				}else {
+					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/close.png")));
+				}
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "ERROR empCreate.btnVerify: " + e2.getMessage());
+			}
+		}
+		if(e.getSource() == empCreate.btnRegister) {
+			try {
+				String FirstName = empCreate.txtFirstName.getText();
+				String LastName = empCreate.txtLastName.getText();
+				String MiddleName = empCreate.txtMiddleName.getText();
+				String Address = empCreate.txtAddress.getText();
+				
+//				//convertion
+				Date inputdate = empCreate.birthDate.getDate();
+				String Birthdate = "";
+				if(inputdate != null) {
+				    SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				    Birthdate = outputDateFormat.format(inputdate);
+				}
+			    
+			    String Age = empCreate.txtAge.getText();
+			    String Gender = empCreate.cbGender.getSelectedItem().toString();
+			    String Email = empCreate.txtEmailAdd.getText();
+			    String Contact = empCreate.txtContact.getText();
+			    
+			    String Username = empCreate.txtUsername.getText();
+			    String Password = empCreate.txtPassword.getText();
+			    String ConfirmPassword = empCreate.txtConfirmPassword.getText();
+			    String Type = empCreate.cbAccType.getSelectedItem().toString();
+			    String Department = empCreate.cbDepartment.getSelectedItem().toString();
+			    String Position = empCreate.cbPosition.getSelectedItem().toString();
+			    
+			    if(verifyEmployeeRegister.equals("Not Verified")) {
+			    	JOptionPane.showMessageDialog(null, "Please verify Username first");
+			    	return;
+			    }
+			    
+			    
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "ERROR empCreate.btnRegister: " + e2.getMessage());
+			}
+		}
 		
 	}
 
@@ -489,6 +568,26 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        		bar1.bar5.setVisible(true);
 	        		bar2.bar5.setVisible(true);
 	        		getSoldQuantityPresent(forecast.product5.getSelectedItem() + "-5");
+	        	}
+	        }
+	        
+	        //Employee
+	        if (e.getSource() == empCreate.cbAccType) {
+	        	String accType = empCreate.cbAccType.getSelectedItem() + "";
+	        	String department = empCreate.cbDepartment.getSelectedItem() + "";
+	        	String position = empCreate.cbPosition.getSelectedItem() + "";
+
+	        	DefaultComboBoxModel<String> nullmodel = new DefaultComboBoxModel<>(new String[] {""});
+	        	empCreate.cbPosition.setModel(nullmodel);
+	        	
+	        	DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+	        	String[] depAdmin = {"Marketing", "Production", "Warehouse"};
+	        	
+	        	if (accType.equals("Admin")) {
+	        	    for (String item : depAdmin) {
+	        	        model.addElement(item);
+	        	    }
+	        	    empCreate.cbDepartment.setModel(model);
 	        	}
 	        }
 	    }
