@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -335,6 +336,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			
 			empGen.setEmpCount(empCount);
 			
+			empGenRemoveButtons();
+			empGenSetButtons();
+			
 			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact, a.AccountID\r\n"
 					+ "FROM tblaccount AS a\r\n"
 					+ "JOIN tblaccountinfo AS b ON b.AccountID = a.AccountID";
@@ -354,6 +358,18 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 				
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error SetEmployeeCount + " + e.getMessage());
+		}
+	}
+	
+	private void empGenRemoveButtons() {
+		for(int i = 0; i < empCount; i++) {
+			empGen.btnAction[i].removeActionListener(this);
+		}
+	}
+	
+	private void empGenSetButtons() {
+		for(int i = 0; i < empCount; i++) {
+			empGen.btnAction[i].addActionListener(this);
 		}
 	}
 	
@@ -596,6 +612,25 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		        empCreate.btnShowConfirmPassword.setText("Hide");
 		    }
 		}
+		
+		//Employe List Gen
+	    for (int i = 0; i < empCount; i++) {
+	        if (e.getSource() == empGen.btnAction[i]) {
+	        	System.out.println(empGen.accountID[i]);
+
+				panelVisible();
+				empCreate.setVisible(true);
+				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+				Date date = null;
+				try {
+					date = sdf.parse("01/05/2000");
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+				empCreate.setTextfromEdit("FN","MN","LN","Address",date,"19","Male","bryan@gmail","09123","username","Staff","Marketing","Inventory-Ordering","password");
+	            break;
+	        }
+	    }
 		
 	}
 

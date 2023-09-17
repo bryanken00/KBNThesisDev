@@ -8,6 +8,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,7 @@ import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 
 public class EmployeeCreate extends JPanel {
@@ -416,5 +418,46 @@ public class EmployeeCreate extends JPanel {
 	    Pattern pattern = Pattern.compile(regex);
 	    Matcher matcher = pattern.matcher(email);
 	    return matcher.matches();
+	}
+	
+	public void setTextfromEdit(String FirstName, String MiddleName, String LastName, String Address, Date birthDate, String Age, String Gender, String Email, String Contact, String username, String AccountType,String Department, String Position, String Password) {
+		try {
+			txtLastName.setText(LastName);
+			txtFirstName.setText(FirstName);
+			txtMiddleName.setText(MiddleName);
+			
+			txtAddress.setText(LastName);
+			
+			this.birthDate.setDate(birthDate);
+			doc1.replace(0, doc1.getLength(), Age, null);
+			if(Gender.equals("Male"))
+				cbGender.setSelectedIndex(0);
+			else
+				cbGender.setSelectedIndex(1);
+			
+			txtEmailAdd.setText(Email);
+			txtContact.setText(Contact);
+			
+			txtUsername.setText(username);
+			
+			String[] depAdmin = {"Admin", "Staff", "Cashier"};
+			DefaultComboBoxModel<String> type = new DefaultComboBoxModel<>(depAdmin);
+			cbAccType.setModel(type);
+			if(AccountType.equals("Marketing"))
+				cbAccType.setSelectedIndex(0);
+			if(AccountType.equals("Staff"))
+				cbAccType.setSelectedIndex(1);
+			if(AccountType.equals("Cashier"))
+				cbAccType.setSelectedIndex(2);
+			DefaultComboBoxModel<String> dep = new DefaultComboBoxModel<>();
+			dep.addElement(Department);
+			DefaultComboBoxModel<String> pos = new DefaultComboBoxModel<>();
+			pos.addElement(Position);
+			txtPassword.setText(Password);
+			txtConfirmPassword.setText(Password);
+			
+		} catch (Exception e) {
+		}
+
 	}
 }

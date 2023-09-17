@@ -58,6 +58,8 @@ public class EmployeeList extends JPanel {
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 66, 967, 545);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(10);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		add(scrollPane);
 	}
 }
