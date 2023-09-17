@@ -63,6 +63,9 @@ public class EmployeeCreate extends JPanel {
 	public JLabel dotPassword;
 	public JLabel dotConfirmPassword;
 	
+	public AbstractDocument doc;
+	public AbstractDocument doc1;
+	
 	public boolean emailValid;
 	
 	public EmployeeCreate() {
@@ -110,7 +113,7 @@ public class EmployeeCreate extends JPanel {
 		txtContact.setBounds(376, 365, 332, 31);
 		panel.add(txtContact);
 		
-		AbstractDocument doc = (AbstractDocument) txtContact.getDocument();
+		doc = (AbstractDocument) txtContact.getDocument();
 		doc.setDocumentFilter(new DocumentFilter() {
 		    @Override
 		    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
@@ -134,7 +137,7 @@ public class EmployeeCreate extends JPanel {
 		txtAge.setBounds(598, 261, 87, 31);
 		panel.add(txtAge);
 		
-		AbstractDocument doc1 = (AbstractDocument) txtAge.getDocument();
+		doc1 = (AbstractDocument) txtAge.getDocument();
 		doc1.setDocumentFilter(new DocumentFilter() {
 		    @Override
 		    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {

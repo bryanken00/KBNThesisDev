@@ -409,18 +409,22 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	}
 	
 	private void clearInputFields() {
-	    empCreate.txtFirstName.setText("");
-	    empCreate.txtLastName.setText("");
-	    empCreate.txtMiddleName.setText("");
-	    empCreate.txtAddress.setText("");
-	    empCreate.birthDate.setDate(null);
-	    empCreate.txtAge.setText("");
-	    empCreate.cbGender.setSelectedIndex(0); // Reset to the first item
-	    empCreate.txtEmailAdd.setText("");
-	    empCreate.txtContact.setText("");
-	    empCreate.txtUsername.setText("");
-	    empCreate.txtPassword.setText("");
-	    empCreate.txtConfirmPassword.setText("");
+		try {
+		    empCreate.txtFirstName.setText("");
+		    empCreate.txtLastName.setText("");
+		    empCreate.txtMiddleName.setText("");
+		    empCreate.txtAddress.setText("");
+		    empCreate.birthDate.setDate(null);
+		    empCreate.doc1.remove(0, empCreate.doc1.getLength());
+		    empCreate.cbGender.setSelectedIndex(0); // Reset to the first item
+		    empCreate.txtEmailAdd.setText("");
+		    empCreate.doc.remove(0, empCreate.doc.getLength());
+		    empCreate.txtUsername.setText("");
+		    empCreate.txtPassword.setText("");
+		    empCreate.txtConfirmPassword.setText("");
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error ClearTextField: " + e.getMessage());
+		}
 	}
 
 	@Override
