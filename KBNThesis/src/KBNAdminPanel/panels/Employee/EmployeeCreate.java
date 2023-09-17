@@ -4,14 +4,27 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JTextFieldDateEditor;
+
 import javax.swing.ImageIcon;
 
 public class EmployeeCreate extends JPanel {
@@ -23,8 +36,8 @@ public class EmployeeCreate extends JPanel {
 	public JTextField txtAddress;
 	public JTextField txtAge;
 	public JTextField txtEmailAdd;
-	public JTextField txtPassword;
-	public JTextField txtConfirmPassword;
+	public JPasswordField txtPassword;
+	public JPasswordField txtConfirmPassword;
 	public JTextField txtUsername;
 	
 	public JButton btnRegister;
@@ -36,6 +49,21 @@ public class EmployeeCreate extends JPanel {
 	public JComboBox cbPosition;
 	public JButton btnVerify;
 	public JLabel iconLabel;
+	public JButton btnShowPassword;
+	public JButton btnShowConfirmPassword;
+	
+	public JLabel dotLastName;
+	public JLabel dotFirstName;
+	public JLabel dotMiddleName;
+	public JLabel dotAddress;
+	public JLabel dotBirthdate;
+	public JLabel dotAge;
+	public JLabel dotEmail;
+	public JLabel dotContact;
+	public JLabel dotPassword;
+	public JLabel dotConfirmPassword;
+	
+	public boolean emailValid;
 	
 	public EmployeeCreate() {
 		setBounds(0, 0, 1009, 721);
@@ -82,6 +110,22 @@ public class EmployeeCreate extends JPanel {
 		txtContact.setBounds(376, 365, 332, 31);
 		panel.add(txtContact);
 		
+		AbstractDocument doc = (AbstractDocument) txtContact.getDocument();
+		doc.setDocumentFilter(new DocumentFilter() {
+		    @Override
+		    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+		        // Allow only numeric characters (0-9) to be inserted
+		        if (text.matches("[0-9]+")) {
+		            super.replace(fb, offset, length, text, attrs);
+		        }
+		    }
+
+		    @Override
+		    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+		        super.remove(fb, offset, length);
+		    }
+		});
+		
 		txtAddress = new JTextField();
 		txtAddress.setBounds(22, 261, 295, 31);
 		panel.add(txtAddress);
@@ -90,9 +134,52 @@ public class EmployeeCreate extends JPanel {
 		txtAge.setBounds(598, 261, 87, 31);
 		panel.add(txtAge);
 		
+		AbstractDocument doc1 = (AbstractDocument) txtAge.getDocument();
+		doc1.setDocumentFilter(new DocumentFilter() {
+		    @Override
+		    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+		        // Allow only numeric characters (0-9) to be inserted
+		        if (text.matches("[0-9]+")) {
+		            super.replace(fb, offset, length, text, attrs);
+		        }
+		    }
+
+		    @Override
+		    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+		        // Allow removal of text
+		        super.remove(fb, offset, length);
+		    }
+		});
+		
 		txtEmailAdd = new JTextField();
 		txtEmailAdd.setBounds(22, 365, 295, 31);
 		panel.add(txtEmailAdd);
+		
+		txtEmailAdd.getDocument().addDocumentListener(new DocumentListener() {
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		        validateEmail();
+		    }
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		        validateEmail();
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		        // Not used for plain text components
+		    }
+
+		    private void validateEmail() {
+		        String email = txtEmailAdd.getText();
+		        if (isValidEmail(email)) {
+		        	dotEmail.setVisible(false);
+		        } else {
+		        	dotEmail.setVisible(true);
+		        }
+		    }
+		});
 		
 		JLabel lblNewLabel = new JLabel("Last Name");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -151,6 +238,20 @@ public class EmployeeCreate extends JPanel {
 		
 		birthDate = new JDateChooser();
 		birthDate.setBounds(376, 261, 190, 31);
+		
+		//disable editing
+        JTextFieldDateEditor editor = (JTextFieldDateEditor) birthDate.getDateEditor();
+        editor.setEditable(false);
+        
+        //add minimum year
+        Calendar minDate = Calendar.getInstance();
+        minDate.set(Calendar.YEAR, 1900);
+        birthDate.setMinSelectableDate(minDate.getTime());
+        
+        //add maximum year
+        Calendar maxDate = Calendar.getInstance();
+        maxDate.set(Calendar.YEAR, 2008);
+        birthDate.setMaxSelectableDate(maxDate.getTime());
 		panel.add(birthDate);
 
 		String[] depAdmin = {"Marketing", "Production", "Warehouse"};
@@ -164,8 +265,9 @@ public class EmployeeCreate extends JPanel {
 		cbAccType.setBackground(new Color(255, 255, 255));
 		cbAccType.setBounds(376, 464, 151, 31);
 		panel.add(cbAccType);
-		
-		cbPosition = new JComboBox();
+
+		String[] adminPos = {"All"}; 
+		cbPosition = new JComboBox(adminPos);
 		cbPosition.setBackground(new Color(255, 255, 255));
 		cbPosition.setBounds(728, 464, 231, 31);
 		panel.add(cbPosition);
@@ -176,18 +278,28 @@ public class EmployeeCreate extends JPanel {
 		cbGender.setBounds(728, 261, 231, 31);
 		panel.add(cbGender);
 		
-		txtPassword = new JTextField();
-		txtPassword.setBounds(22, 568, 295, 31);
+		btnShowPassword = new JButton("Show");
+		btnShowPassword.setBackground(Color.WHITE);
+		btnShowPassword.setBounds(245, 568, 72, 31);
+		panel.add(btnShowPassword);
+		
+		btnShowConfirmPassword = new JButton("Show");
+		btnShowConfirmPassword.setBackground(Color.WHITE);
+		btnShowConfirmPassword.setBounds(599, 568, 72, 31);
+		panel.add(btnShowConfirmPassword);
+		
+		txtPassword = new JPasswordField();
+		txtPassword.setBounds(22, 568, 225, 31);
 		panel.add(txtPassword);
+		
+		txtConfirmPassword = new JPasswordField();
+		txtConfirmPassword.setBounds(376, 568, 225, 31);
+		panel.add(txtConfirmPassword);
 		
 		JLabel lblNewLabel_4_1 = new JLabel("Password");
 		lblNewLabel_4_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblNewLabel_4_1.setBounds(22, 537, 106, 20);
 		panel.add(lblNewLabel_4_1);
-		
-		txtConfirmPassword = new JTextField();
-		txtConfirmPassword.setBounds(376, 568, 332, 31);
-		panel.add(txtConfirmPassword);
 		
 		JLabel lblNewLabel_4_1_1 = new JLabel("Confirm Password");
 		lblNewLabel_4_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -224,5 +336,82 @@ public class EmployeeCreate extends JPanel {
 		lblNewLabel_1_1_1_2.setBounds(728, 433, 106, 20);
 		panel.add(lblNewLabel_1_1_1_2);
 		
+		dotLastName = new JLabel("*");
+		dotLastName.setForeground(Color.RED);
+		dotLastName.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotLastName.setBounds(95, 137, 19, 20);
+		panel.add(dotLastName);
+		
+		dotFirstName = new JLabel("*");
+		dotFirstName.setForeground(Color.RED);
+		dotFirstName.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotFirstName.setBounds(450, 137, 19, 20);
+		panel.add(dotFirstName);
+		
+		dotMiddleName = new JLabel("*");
+		dotMiddleName.setForeground(Color.RED);
+		dotMiddleName.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotMiddleName.setBounds(815, 137, 19, 20);
+		panel.add(dotMiddleName);
+		
+		dotAddress = new JLabel("*");
+		dotAddress.setForeground(Color.RED);
+		dotAddress.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotAddress.setBounds(95, 230, 19, 20);
+		panel.add(dotAddress);
+		
+		dotBirthdate = new JLabel("*");
+		dotBirthdate.setForeground(Color.RED);
+		dotBirthdate.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotBirthdate.setBounds(450, 230, 19, 20);
+		panel.add(dotBirthdate);
+		
+		dotAge = new JLabel("*");
+		dotAge.setForeground(Color.RED);
+		dotAge.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotAge.setBounds(628, 230, 19, 20);
+		panel.add(dotAge);
+		
+		dotEmail = new JLabel("input a valid email");
+		dotEmail.setForeground(Color.RED);
+		dotEmail.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotEmail.setBounds(115, 334, 202, 20);
+		panel.add(dotEmail);
+		
+		dotContact = new JLabel("*");
+		dotContact.setForeground(Color.RED);
+		dotContact.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotContact.setBounds(483, 334, 19, 20);
+		panel.add(dotContact);
+		
+		dotPassword = new JLabel("*");
+		dotPassword.setForeground(Color.RED);
+		dotPassword.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotPassword.setBounds(84, 537, 19, 20);
+		panel.add(dotPassword);
+		
+		dotConfirmPassword = new JLabel("*");
+		dotConfirmPassword.setForeground(Color.RED);
+		dotConfirmPassword.setFont(new Font("Tahoma", Font.BOLD, 15));
+		dotConfirmPassword.setBounds(494, 537, 19, 20);
+		panel.add(dotConfirmPassword);
+		
+		dotLastName.setVisible(false);
+		dotFirstName.setVisible(false);
+		dotMiddleName.setVisible(false);
+		dotAddress.setVisible(false);
+		dotBirthdate.setVisible(false);
+		dotAge.setVisible(false);
+		dotEmail.setVisible(false);
+		dotContact.setVisible(false);
+		dotPassword.setVisible(false);
+		dotConfirmPassword.setVisible(false);
+	}
+	
+	private boolean isValidEmail(String email) {
+	    String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+	    Pattern pattern = Pattern.compile(regex);
+	    Matcher matcher = pattern.matcher(email);
+	    return matcher.matches();
 	}
 }

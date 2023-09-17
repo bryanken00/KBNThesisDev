@@ -21,9 +21,14 @@ import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
+import com.toedter.calendar.JDateChooser;
 
 import KBN.views.MarketingModule;
 import KBNAdminPanel.commons.DbConnection;
@@ -60,6 +65,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private String verifyEmployeeRegister = "Not Verified";
 	
 	private int empCount = 0;
+	
+	private boolean EmpCreateCheck;
 	
 	private JButton btnChecker;
 	
@@ -186,11 +193,13 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		empPanel.btnCreate.addActionListener(this);
 		empCreate.btnRegister.addActionListener(this);
 		empCreate.btnVerify.addActionListener(this);
+		empCreate.btnShowPassword.addActionListener(this);
+		empCreate.btnShowConfirmPassword.addActionListener(this);
 		
-
 		empCreate.cbAccType.addItemListener(this);
 		empCreate.cbDepartment.addItemListener(this);
 		empCreate.cbPosition.addItemListener(this);
+		
 	}
 	
 	private void components() {
@@ -347,6 +356,72 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			JOptionPane.showMessageDialog(null, "Error SetEmployeeCount + " + e.getMessage());
 		}
 	}
+	
+	private void empCreateChecker() {
+		
+		empCreate.dotLastName.setVisible(false);
+		empCreate.dotFirstName.setVisible(false);
+		empCreate.dotMiddleName.setVisible(false);
+		
+		empCreate.dotAddress.setVisible(false);
+		empCreate.dotBirthdate.setVisible(false);
+		empCreate.dotAge.setVisible(false);
+		
+		empCreate.dotEmail.setVisible(false);
+		empCreate.dotContact.setVisible(false);
+		
+		empCreate.dotPassword.setVisible(false);
+		empCreate.dotConfirmPassword.setVisible(false);
+		
+		if(empCreate.txtLastName.getText().equals(""))
+			empCreate.dotLastName.setVisible(true);
+		if(empCreate.txtFirstName.getText().equals(""))
+			empCreate.dotFirstName.setVisible(true);
+		if(empCreate.txtMiddleName.getText().equals(""))
+			empCreate.dotMiddleName.setVisible(true);
+		
+		if(empCreate.txtAddress.getText().equals(""))
+			empCreate.dotAddress.setVisible(true);
+		if(empCreate.birthDate.getDate() == null)
+			empCreate.dotBirthdate.setVisible(true);
+		if(empCreate.txtAge.getText().equals(""))
+			empCreate.dotAge.setVisible(true);
+		
+		if(empCreate.txtEmailAdd.getText().equals(""))
+			empCreate.dotEmail.setVisible(true);
+		if(empCreate.txtContact.getText().equals(""))
+			empCreate.dotContact.setVisible(true);
+		
+		char[] passwordChars = empCreate.txtPassword.getPassword();
+		if (passwordChars.length < 8)
+		    empCreate.dotPassword.setVisible(true);
+
+		char[] confirmPasswordChars = empCreate.txtConfirmPassword.getPassword();
+		if (confirmPasswordChars.length < 8)
+		    empCreate.dotConfirmPassword.setVisible(true);
+		
+		if(empCreate.dotLastName.isVisible() || empCreate.dotFirstName.isVisible() || empCreate.dotMiddleName.isVisible()
+		|| empCreate.dotAddress.isVisible() || empCreate.dotBirthdate.isVisible() || empCreate.dotAge.isVisible()
+		|| empCreate.dotEmail.isVisible() || empCreate.dotContact.isVisible() || empCreate.dotPassword.isVisible() || empCreate.dotConfirmPassword.isVisible())
+			EmpCreateCheck = true;
+		else
+			EmpCreateCheck = false;
+	}
+	
+	private void clearInputFields() {
+	    empCreate.txtFirstName.setText("");
+	    empCreate.txtLastName.setText("");
+	    empCreate.txtMiddleName.setText("");
+	    empCreate.txtAddress.setText("");
+	    empCreate.birthDate.setDate(null);
+	    empCreate.txtAge.setText("");
+	    empCreate.cbGender.setSelectedIndex(0); // Reset to the first item
+	    empCreate.txtEmailAdd.setText("");
+	    empCreate.txtContact.setText("");
+	    empCreate.txtUsername.setText("");
+	    empCreate.txtPassword.setText("");
+	    empCreate.txtConfirmPassword.setText("");
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -430,6 +505,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 				JOptionPane.showMessageDialog(null, "ERROR empCreate.btnVerify: " + e2.getMessage());
 			}
 		}
+		
 		if(e.getSource() == empCreate.btnRegister) {
 			try {
 				String FirstName = empCreate.txtFirstName.getText();
@@ -451,21 +527,70 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			    String Contact = empCreate.txtContact.getText();
 			    
 			    String Username = empCreate.txtUsername.getText();
-			    String Password = empCreate.txtPassword.getText();
-			    String ConfirmPassword = empCreate.txtConfirmPassword.getText();
+			    char[] passwordChars = empCreate.txtPassword.getPassword();
+			    String password = new String(passwordChars);
+			    char[] confirmPasswordChars = empCreate.txtConfirmPassword.getPassword();
+			    String ConfirmPassword = new String(confirmPasswordChars);
 			    String Type = empCreate.cbAccType.getSelectedItem().toString();
 			    String Department = empCreate.cbDepartment.getSelectedItem().toString();
 			    String Position = empCreate.cbPosition.getSelectedItem().toString();
 			    
+			    // Checking username if exist
 			    if(verifyEmployeeRegister.equals("Not Verified")) {
 			    	JOptionPane.showMessageDialog(null, "Please verify Username first");
 			    	return;
 			    }
 			    
+			    // check inputs if have null value
+			    empCreateChecker();
+			    if(EmpCreateCheck)
+			    	return;
+			    
+			    if(!password.equals(ConfirmPassword)) {
+			    	JOptionPane.showMessageDialog(null, "Password not match!");
+			    	return;
+			    }
+			    String getAccountID = "SELECT COUNT(AccountID) FROM tblAccount";
+			    st.execute(getAccountID);
+			    rs = st.getResultSet();
+			    int accID = 0;
+			    if(rs.next())
+			    	accID = rs.getInt(1) + 1;
+			    String insertAcc = "INSERT INTO tblAccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
+			    String insertAccInfo = "INSERT INTO tblaccountinfo(AccountID,FirstName,MiddleName,LastName,Address,Birthdate,Age,Gender,EmailAdd,Contact) VALUES('" + accID + "','" + FirstName + "','" + MiddleName + "','" + LastName + "','" + Address + "','" + Birthdate + "','" + Age + "','" + Gender + "','" + Email + "','" + Contact + "');";
+			    
+			    int insertAcc_1 = st.executeUpdate(insertAcc);
+			    int insertAccInfo_1 = 0;
+			    
+			    if (insertAcc_1 > 0) 
+			    	insertAccInfo_1 = st.executeUpdate(insertAccInfo);
+			    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
+			    	JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
+			    
+			    clearInputFields();
 			    
 			} catch (Exception e2) {
 				JOptionPane.showMessageDialog(null, "ERROR empCreate.btnRegister: " + e2.getMessage());
 			}
+		}
+		
+		if(e.getSource() == empCreate.btnShowPassword) {
+		    if (empCreate.txtPassword.getEchoChar() == 0) {
+		        empCreate.txtPassword.setEchoChar('*');
+		        empCreate.btnShowPassword.setText("Show");
+		    } else {
+		        empCreate.txtPassword.setEchoChar((char) 0);
+		        empCreate.btnShowPassword.setText("Hide");
+		    }
+		}
+		if(e.getSource() == empCreate.btnShowConfirmPassword) {
+		    if (empCreate.txtConfirmPassword.getEchoChar() == 0) {
+		        empCreate.txtConfirmPassword.setEchoChar('*');
+		        empCreate.btnShowConfirmPassword.setText("Show");
+		    } else {
+		        empCreate.txtConfirmPassword.setEchoChar((char) 0);
+		        empCreate.btnShowConfirmPassword.setText("Hide");
+		    }
 		}
 		
 	}
@@ -577,7 +702,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         	String position = empCreate.cbPosition.getSelectedItem() + "";
         	
         	DefaultComboBoxModel<String> nullmodel = new DefaultComboBoxModel<>(new String[] {""});
+        	DefaultComboBoxModel<String> adminPosition = new DefaultComboBoxModel<>(new String[] {"All"});
         	DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        	DefaultComboBoxModel<String> modelPost = new DefaultComboBoxModel<>();
         	
 	        if (e.getSource() == empCreate.cbAccType) {
 
@@ -586,10 +713,11 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	String[] depAdmin = {"Marketing", "Production", "Warehouse"};
 	        	String[] depCashier = {"Cashier"};
 	        	
-	        	if (accType.equals("Admin") || accType.equals("Staff")) {
+	        	if (accType.equals("Admin")) {
 	        	    for (String item : depAdmin) {
 	        	        model.addElement(item);
 	        	    }
+	        	    empCreate.cbPosition.setModel(adminPosition);
 	        	    empCreate.cbDepartment.setModel(model);
 	        	} else if (accType.equals("Cashier")) {
 	        	    for (String item : depCashier) {
@@ -597,24 +725,39 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	    }
 	        	    empCreate.cbDepartment.setModel(model);
 	        	    empCreate.cbPosition.setModel(model);
+	        	} else if(accType.equals("Staff")) {
+	        	    for (String item : depAdmin) {
+	        	        model.addElement(item);
+	        	    }
+	        	    empCreate.cbDepartment.setModel(model);
+	        	    
+		        	String[] marketingStaffPosition = {"Inventory-Ordering"};
+	        	    for (String item : marketingStaffPosition) {
+	        	    	modelPost.addElement(item);
+	        	    }
+	        		empCreate.cbPosition.setModel(modelPost);
 	        	}
 	        }
+	        
 	        if (e.getSource() == empCreate.cbDepartment) {
 	        	String[] marketingStaffPosition = {"Inventory-Ordering"};
 	        	String[] warehouseStaffPosition = {"GenerateQR-Inventory","First-inFirst-out"};
 	        	
 	        	if(accType.equals("Staff") && department.equals("Marketing")) {
 	        	    for (String item : marketingStaffPosition) {
-	        	        model.addElement(item);
+	        	    	modelPost.addElement(item);
 	        	    }
-	        		empCreate.cbPosition.setModel(model);
+	        		empCreate.cbPosition.setModel(modelPost);
 	        	} else if(accType.equals("Staff") && department.equals("Warehouse")) {
 	        	    for (String item : warehouseStaffPosition) {
-	        	        model.addElement(item);
+	        	    	modelPost.addElement(item);
 	        	    }
-	        		empCreate.cbPosition.setModel(model);
+	        		empCreate.cbPosition.setModel(modelPost);
+	        	} else if(accType.equals("Staff") && department.equals("Production")) {
+	        		empCreate.cbPosition.setModel(nullmodel);
 	        	}
 	        }
+	        
 	    }
 	}
 }
