@@ -429,7 +429,7 @@ public class EmployeeCreate extends JPanel {
 			txtAddress.setText(LastName);
 			
 			this.birthDate.setDate(birthDate);
-			doc1.replace(0, doc1.getLength(), Age, null);
+			txtAge.setText(Age);
 			if(Gender.equals("Male"))
 				cbGender.setSelectedIndex(0);
 			else

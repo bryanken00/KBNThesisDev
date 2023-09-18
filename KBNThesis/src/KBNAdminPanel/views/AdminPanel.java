@@ -68,6 +68,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private int empCount = 0;
 	
 	private boolean EmpCreateCheck;
+	private String accoudIdEmpUpdate = "";
+	private boolean isUpdateEmpInfo = false;
 	
 	private JButton btnChecker;
 	
@@ -118,7 +120,6 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         //Employee
         empPanel = new EmployeePanel();
         empList = new EmployeeList();
-        empGen = new EmployeeListGenerator();
         empCreate = new EmployeeCreate();
         
         // Database
@@ -152,7 +153,6 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		container.add(empCreate);
 		
 		empPanel.container.add(empList);
-		empList.scrollPane.setViewportView(empGen);
 		
 		forecast.graph.add(forecastgraph);
 		forecastgraph.graph1.add(bar1);
@@ -336,8 +336,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			
 			empGen.setEmpCount(empCount);
 			
-			empGenRemoveButtons();
-			empGenSetButtons();
+//			empGenRemoveButtons();
 			
 			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact, a.AccountID\r\n"
 					+ "FROM tblaccount AS a\r\n"
@@ -355,6 +354,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 				empGen.accountID[i] = rs.getString(6);
 				i++;
 			}
+
+			empGenSetButtons();
 				
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error SetEmployeeCount + " + e.getMessage());
@@ -426,6 +427,8 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	
 	private void clearInputFields() {
 		try {
+			verifyEmployeeRegister = "Not Verified";
+			empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/close.png")));
 		    empCreate.txtFirstName.setText("");
 		    empCreate.txtLastName.setText("");
 		    empCreate.txtMiddleName.setText("");
@@ -484,6 +487,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		}
 		
 		if(e.getSource() == navs.btnEmployeeList) {
+	        empGen = new EmployeeListGenerator();
+			empList.scrollPane.setViewportView(empGen);
+			
 			panelVisible();
 			setEmployeeCount();
 			empPanel.setVisible(true);
@@ -491,6 +497,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		
 		//Employee
 		if(e.getSource() == empPanel.btnCreate) {
+		    clearInputFields();
 			panelVisible();
 			empCreate.setVisible(true);
 		}
@@ -570,23 +577,67 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			    	JOptionPane.showMessageDialog(null, "Password not match!");
 			    	return;
 			    }
-			    String getAccountID = "SELECT COUNT(AccountID) FROM tblAccount";
-			    st.execute(getAccountID);
-			    rs = st.getResultSet();
-			    int accID = 0;
-			    if(rs.next())
-			    	accID = rs.getInt(1) + 1;
-			    String insertAcc = "INSERT INTO tblAccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
-			    String insertAccInfo = "INSERT INTO tblaccountinfo(AccountID,FirstName,MiddleName,LastName,Address,Birthdate,Age,Gender,EmailAdd,Contact) VALUES('" + accID + "','" + FirstName + "','" + MiddleName + "','" + LastName + "','" + Address + "','" + Birthdate + "','" + Age + "','" + Gender + "','" + Email + "','" + Contact + "');";
-			    
-			    int insertAcc_1 = st.executeUpdate(insertAcc);
-			    int insertAccInfo_1 = 0;
-			    
-			    if (insertAcc_1 > 0) 
-			    	insertAccInfo_1 = st.executeUpdate(insertAccInfo);
-			    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
-			    	JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
-			    
+			    if(!isUpdateEmpInfo) {
+				    String getAccountID = "SELECT COUNT(AccountID) FROM tblAccount";
+				    st.execute(getAccountID);
+				    rs = st.getResultSet();
+				    int accID = 0;
+				    if(rs.next())
+				    	accID = rs.getInt(1) + 1;
+				    String insertAcc = "INSERT INTO tblAccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
+				    String insertAccInfo = "INSERT INTO tblaccountinfo(AccountID,FirstName,MiddleName,LastName,Address,Birthdate,Age,Gender,EmailAdd,Contact) VALUES('" + accID + "','" + FirstName + "','" + MiddleName + "','" + LastName + "','" + Address + "','" + Birthdate + "','" + Age + "','" + Gender + "','" + Email + "','" + Contact + "');";
+				    
+				    int insertAcc_1 = st.executeUpdate(insertAcc);
+				    int insertAccInfo_1 = 0;
+				    
+				    if (insertAcc_1 > 0) 
+				    	insertAccInfo_1 = st.executeUpdate(insertAccInfo);
+				    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
+				    	JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
+				    else {
+				    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
+				    }
+			    } else {
+			    	String accID = accoudIdEmpUpdate;
+			    	
+			    	String SQLUpdateAccInfo = "Update tblaccountinfo\r\n"
+			    			+ "SET FirstName = '" + FirstName + "',\r\n"
+			    			+ "MiddleName = '" + MiddleName + "',\r\n"
+			    			+ "LastName = '" + LastName + "',\r\n"
+			    			+ "Address = '" + Address + "',\r\n"
+			    			+ "Birthdate = '" + Birthdate + "',\r\n"
+			    			+ "Age = '" + Age + "',\r\n"
+			    			+ "Gender = '" + Gender + "',\r\n"
+			    			+ "EmailAdd = '" + Email + "',\r\n"
+			    			+ "Contact = '" + Contact + "'\r\n"
+			    			+ "WHERE AccountID = '" + accID + "';";
+			    	
+			    	String SQLUpdateAcc = "UPDATE tblaccount\r\n"
+			    			+ "SET Username = '" + Username + "',\r\n"
+			    			+ "Password = '" + password + "',\r\n"
+			    			+ "accType = '" + Type + "',\r\n"
+			    			+ "Department = '" + Department + "',\r\n"
+			    			+ "Position = '" + Position + "'\r\n"
+			    			+ "WHERE AccountID = '" + accID + "';";
+			    	
+				    int insertAcc_1 = st.executeUpdate(SQLUpdateAcc);
+				    int insertAccInfo_1 = 0;
+				    if (insertAcc_1 > 0) 
+				    	insertAccInfo_1 = st.executeUpdate(SQLUpdateAccInfo);
+				    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
+				    	JOptionPane.showMessageDialog(null, "Account Update successfully.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+				    else {
+				    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
+				    }
+				    
+
+			        empGen = new EmployeeListGenerator();
+					empList.scrollPane.setViewportView(empGen);
+					panelVisible();
+					setEmployeeCount();
+					empPanel.setVisible(true);
+			    }
+		    	isUpdateEmpInfo = false;
 			    clearInputFields();
 			    
 			} catch (Exception e2) {
@@ -613,23 +664,38 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		    }
 		}
 		
-		//Employe List Gen
+		//Employe List Edit/Update
 	    for (int i = 0; i < empCount; i++) {
-	        if (e.getSource() == empGen.btnAction[i]) {
-	        	System.out.println(empGen.accountID[i]);
-
-				panelVisible();
-				empCreate.setVisible(true);
-				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-				Date date = null;
-				try {
-					date = sdf.parse("01/05/2000");
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-				empCreate.setTextfromEdit("FN","MN","LN","Address",date,"19","Male","bryan@gmail","09123","username","Staff","Marketing","Inventory-Ordering","password");
-	            break;
-	        }
+			try {
+		        if (e.getSource() == empGen.btnAction[i]) {
+		        	System.out.println("AccountID? " + accoudIdEmpUpdate);
+					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/close.png")));
+				    clearInputFields();
+					panelVisible();
+					empCreate.setVisible(true);
+		        	accoudIdEmpUpdate = empGen.accountID[i];
+		        	isUpdateEmpInfo = true;
+					SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+					Date date = null;
+						date = sdf.parse("01/05/2000");
+		
+					
+					String SQLSEelect = "SELECT b.FirstName, b.MiddleName, b.LastName, b.Address, b.Birthdate, b.Age, b.Gender, b.EmailAdd, b.Contact, a.Username, a.accType, a.Department, a.Position, a.Password\r\n"
+							+ "FROM tblaccount AS a\r\n"
+							+ "JOIN tblaccountinfo AS b ON b.AccountID = a.AccountID\r\n"
+							+ "WHERE a.AccountID = '" + accoudIdEmpUpdate + "';";
+					st.execute(SQLSEelect);
+					rs = st.getResultSet();
+					if(rs.next()) {
+						empCreate.setTextfromEdit(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getDate(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11),rs.getString(12),rs.getString(13),rs.getString(14));	
+					}
+					verifyEmployeeRegister = "Verified";
+					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/check-mark.png")));
+		            break;
+		        }
+	        } catch (Exception e1) {
+	        	JOptionPane.showMessageDialog(null, "Error EmpListEdit: " + e1.getMessage());
+			}
 	    }
 		
 	}
