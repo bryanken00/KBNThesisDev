@@ -779,7 +779,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			        + "\n"
 			        + "  START TRANSACTION;\n"
 			        + "\n"
-			        + "  -- Insert data into tblproductsarchive\n"
 			        + "  INSERT INTO tblproductsarchive\n"
 			        + "  (prodID, prodImg, prodName, prodPrice, prodVolume, Quantity, Sold, prodCategory, Description, Ingredients, Howtouse)\n"
 			        + "  SELECT\n"
@@ -813,7 +812,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			        + "\n"
 			        + "  START TRANSACTION;\n"
 			        + "\n"
-			        + "  -- Insert data into tblproducts\n"
 			        + "  INSERT INTO tblproducts\n"
 			        + "  (prodID, prodImg, prodName, prodPrice, prodVolume, Quantity, Sold, prodCategory, Description, Ingredients, Howtouse)\n"
 			        + "  SELECT\n"
@@ -829,9 +827,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			        + "    Ingredients,\n"
 			        + "    Howtouse\n"
 			        + "  FROM tblproductsarchive\n"
-			        + "  WHERE prodID = " + ID + ";\n"
+					+ "  WHERE prodID = " + ID + ";\n"
 			        + "\n"
-			        + "  -- Delete the inserted rows from tblproductsarchive\n"
 			        + "  DELETE FROM tblproductsarchive WHERE prodID IN (SELECT prodID FROM tblproducts);\n"
 			        + "\n"
 			        + "  COMMIT;\n"
@@ -840,12 +837,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String proccessIfNoError = "CALL InsertAndDeleteWithRollback();";
 
 			st.execute(dropDelimiter);
-			System.out.println(Archive);
 			st.execute(Archive);
+			
+			//final execute if 2 query is no error
 			st.execute(proccessIfNoError);
 			
 			KBNPanelFunc();
-
+			rightClick.setVisible(false);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ErrorArchiveKBN: " + e.getMessage());
 			System.out.println(e.getMessage());
