@@ -27,7 +27,6 @@ import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.CustomerCreateAccount;
 import KBN.Module.Marketing.ProductDetails;
-import KBN.Module.Marketing.RightClick;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
@@ -37,6 +36,7 @@ import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
 import KBN.Module.Marketing.KBNProducts.KBNProducts;
 import KBN.Module.Marketing.KBNProducts.PopUpPRODIMG;
+import KBN.Module.Marketing.KBNProducts.RightClick;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
@@ -543,8 +543,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == custAccount.btnClientProfile)
 			custAccountClientProfileFunc();
 		
+		//Right Click
 		if(e.getSource() == rightClick.btnEdit)
 			prodDetailsFunc();
+		if(e.getSource() == rightClick.btnArchive)
+			archiveKBNProducts();
 		
 		// Client Profile
 		
@@ -759,6 +762,94 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	    } else {
 	        JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
 	    }
+	}
+	private void archiveKBNProducts() {
+		String dropDelimiter = "DROP PROCEDURE IF EXISTS InsertAndDeleteWithRollback;";
+		try {
+			String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
+			String Archive = "";
+			String Restore = "";
+			Archive = "CREATE PROCEDURE InsertAndDeleteWithRollback()\n"
+			        + "BEGIN\n"
+			        + "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\n"
+			        + "  BEGIN\n"
+			        + "    ROLLBACK;\n"
+			        + "    RESIGNAL;\n"
+			        + "  END;\n"
+			        + "\n"
+			        + "  START TRANSACTION;\n"
+			        + "\n"
+			        + "  -- Insert data into tblproductsarchive\n"
+			        + "  INSERT INTO tblproductsarchive\n"
+			        + "  (prodID, prodImg, prodName, prodPrice, prodVolume, Quantity, Sold, prodCategory, Description, Ingredients, Howtouse)\n"
+			        + "  SELECT\n"
+			        + "    prodID,\n"
+			        + "    prodImg,\n"
+			        + "    prodName,\n"
+			        + "    prodPrice,\n"
+			        + "    prodVolume,\n"
+			        + "    Quantity,\n"
+			        + "    Sold,\n"
+			        + "    prodCategory,\n"
+			        + "    Description,\n"
+			        + "    Ingredients,\n"
+			        + "    Howtouse\n"
+			        + "  FROM tblproducts\n"
+			        + "  WHERE prodID = " + ID + ";\n"
+			        + "\n"
+			        + "  -- Delete the inserted rows from tblproducts\n"
+			        + "  DELETE FROM tblproducts WHERE prodID IN (SELECT prodID FROM tblproductsarchive);\n"
+			        + "\n"
+			        + "  COMMIT;\n"
+			        + "END;";
+
+			Restore = "CREATE PROCEDURE InsertAndDeleteWithRollback()\n"
+			        + "BEGIN\n"
+			        + "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\n"
+			        + "  BEGIN\n"
+			        + "    ROLLBACK;\n"
+			        + "    RESIGNAL;\n"
+			        + "  END;\n"
+			        + "\n"
+			        + "  START TRANSACTION;\n"
+			        + "\n"
+			        + "  -- Insert data into tblproducts\n"
+			        + "  INSERT INTO tblproducts\n"
+			        + "  (prodID, prodImg, prodName, prodPrice, prodVolume, Quantity, Sold, prodCategory, Description, Ingredients, Howtouse)\n"
+			        + "  SELECT\n"
+			        + "    prodID,\n"
+			        + "    prodImg,\n"
+			        + "    prodName,\n"
+			        + "    prodPrice,\n"
+			        + "    prodVolume,\n"
+			        + "    Quantity,\n"
+			        + "    Sold,\n"
+			        + "    prodCategory,\n"
+			        + "    Description,\n"
+			        + "    Ingredients,\n"
+			        + "    Howtouse\n"
+			        + "  FROM tblproductsarchive\n"
+			        + "  WHERE prodID = " + ID + ";\n"
+			        + "\n"
+			        + "  -- Delete the inserted rows from tblproductsarchive\n"
+			        + "  DELETE FROM tblproductsarchive WHERE prodID IN (SELECT prodID FROM tblproducts);\n"
+			        + "\n"
+			        + "  COMMIT;\n"
+			        + "END;";
+			
+			String proccessIfNoError = "CALL InsertAndDeleteWithRollback();";
+
+			st.execute(dropDelimiter);
+			System.out.println(Archive);
+			st.execute(Archive);
+			st.execute(proccessIfNoError);
+			
+			KBNPanelFunc();
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ErrorArchiveKBN: " + e.getMessage());
+			System.out.println(e.getMessage());
+		}
 	}
 	
 //	private void mostSoldProd() {
