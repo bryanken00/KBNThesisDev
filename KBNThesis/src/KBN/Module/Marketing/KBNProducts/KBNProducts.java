@@ -23,24 +23,27 @@ import java.util.Comparator;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import java.awt.Font;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 public class KBNProducts extends JPanel {
 
 	public String columnDefaultData[];
 	public DefaultTableModel main;
+	private TableRowSorter<TableModel> sorter;
 	public JTable table;
 	public JScrollPane scrollPane;
 	public JTextField txtSearchBar;
-	public JComboBox cbSoldProd;
-	public JComboBox cbCategories;
-	public JComboBox cbSort;
 	
-	private  TableRowSorter<TableModel> sorter;
+	public JButton btnProducts;
+	public JButton btnArchive;
 	
 	public KBNProducts() {
 		setBackground(new Color(255, 255, 255));
         this.setBounds(0, 0, 989, 699);
-        setLayout(null);
+		setLayout(null);
         
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(26, 146, 933, 511);
@@ -56,30 +59,47 @@ public class KBNProducts extends JPanel {
 		scrollPane.getViewport().setBackground(Color.WHITE);
 		
 		String [] soldProd = {"Sold Products"};
-		cbSoldProd = new JComboBox(soldProd);
-		cbSoldProd.setBounds(63, 61, 197, 33);
-		add(cbSoldProd);
 		
 		String [] categories = {"Categories"};
-		cbCategories = new JComboBox(categories);
-		cbCategories.setBounds(270, 61, 197, 33);
-		add(cbCategories);
 
 		String [] sort = {"Sort"};
-		cbSort = new JComboBox(sort);
-		cbSort.setBounds(477, 61, 197, 33);
-		add(cbSort);
 		
 		txtSearchBar = new JTextField();
-		txtSearchBar.setText("search bar");
 		txtSearchBar.setBounds(684, 61, 260, 33);
+		txtSearchBar.setText("search bar");
 		add(txtSearchBar);
 		txtSearchBar.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(KBNProducts.class.getResource("/KBN/resources/Marketing/menuKBN.png")));
 		lblNewLabel.setBounds(26, 38, 933, 78);
+		lblNewLabel.setIcon(new ImageIcon(KBNProducts.class.getResource("/KBN/resources/Marketing/menuKBN.png")));
 		add(lblNewLabel);
+		
+		btnProducts = new JButton("Products");
+		btnProducts.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnProducts.setFocusable(false);
+		btnProducts.setBorderPainted(false);
+		btnProducts.setBackground(Color.WHITE);
+		btnProducts.setBounds(113, 61, 114, 33);
+		add(btnProducts);
+		
+		btnArchive = new JButton("Archive");
+		btnArchive.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnArchive.setFocusable(false);
+		btnArchive.setBorderPainted(false);
+		btnArchive.setBackground(Color.WHITE);
+		btnArchive.setBounds(250, 59, 114, 35);
+		add(btnArchive);
+		
+		JLabel lblNewLabel_1 = new JLabel("List:");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblNewLabel_1.setBounds(55, 61, 55, 33);
+		add(lblNewLabel_1);
+		
+		JSeparator separator = new JSeparator();
+		separator.setOrientation(SwingConstants.VERTICAL);
+		separator.setBounds(238, 61, 48, 33);
+		add(separator);
 		
 		tableSetup();
 		

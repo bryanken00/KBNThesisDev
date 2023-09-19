@@ -73,6 +73,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	//KBN Products
 	private KBNProducts kbnProd;
 	private PopUpPRODIMG popupKBNProd;
+	private String kbnProdButtonChecker = "Products";
 	
 	private RebrandingProd rebrandingProd;
 	private CustomerAccount custAccount;
@@ -483,6 +484,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//KBN ProdMouseList
 		kbnProd.table.addMouseListener(this);
 		
+		//KBNProducts Panel
+		kbnProd.btnProducts.addActionListener(this);
+		kbnProd.btnArchive.addActionListener(this);
+		
 		//RightClick
 		rightClick.btnAddItem.addActionListener(this);
 		rightClick.btnEdit.addActionListener(this);
@@ -506,9 +511,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == btnDashboard)
 			dashboardPanelFunc();
 		
+		//KBN Products
 		if(e.getSource() == btnKbn)
 			KBNPanelFunc();
 		
+		if(e.getSource() == kbnProd.btnProducts)
+			KBNPanelFunc();
+		
+		if(e.getSource() == kbnProd.btnArchive)
+			KBNPanelFuncArchive();
+			
 		if(e.getSource() == btnRebranding)
 			rebrandProdPanelFunc();
 		if(e.getSource() == btnCustomerAccount)
@@ -737,6 +749,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void kbnProdClickFunc(String prodID) {
 		try {
+			if(kbnProdButtonChecker.equals("Archive"))
+				return;
 			String SQL = "SELECT prodIMG FROM tblproducts WHERE prodID = '" + prodID + "'";
 			st.execute(SQL);
 			rs = st.getResultSet();
@@ -837,13 +851,21 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String proccessIfNoError = "CALL InsertAndDeleteWithRollback();";
 
 			st.execute(dropDelimiter);
-			st.execute(Archive);
+			if(kbnProdButtonChecker.equals("Products"))
+				st.execute(Archive);
+			if(kbnProdButtonChecker.equals("Archive"))
+				st.execute(Restore);
 			
 			//final execute if 2 query is no error
 			st.execute(proccessIfNoError);
-			
-			KBNPanelFunc();
-			rightClick.setVisible(false);
+
+			if(kbnProdButtonChecker.equals("Products")) {
+				KBNPanelFunc();
+				rightClick.setVisible(false);
+			}else {
+				KBNPanelFuncArchive();
+				rightClick.setVisible(false);
+			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ErrorArchiveKBN: " + e.getMessage());
 			System.out.println(e.getMessage());
@@ -1378,8 +1400,36 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			JOptionPane.showMessageDialog(null, "ChartData: " + e.getMessage());
 		}
     }
+    
+	private void KBNPanelFuncArchive() {
+		popupKBNProd.setVisible(false);
+		rightClick.btnArchive.setText("Restore");
+		kbnProdButtonChecker = "Archive";
+		setVisiblePanel();
+		kbnProd.main.setRowCount(0);
+		kbnProd.table.setModel(kbnProd.main);
+//        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
+        
+//        kbnProd
+        
+        try {
+        	String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM tblproductsarchive";
+        	st.execute(sql);
+        	rs = st.getResultSet();
+        	while(rs.next()) {
+            	Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5), rs.getString(6)};
+            	kbnProd.main.addRow(data);
+//            	System.out.println(rs.getString(1));
+        	}
+        }catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "KBNProducts: " + e.getMessage());
+		}
+		kbnProd.setVisible(true);
+	}
 	
 	private void KBNPanelFunc() {
+		rightClick.btnArchive.setText("Archive");
+		kbnProdButtonChecker = "Products";
 		setVisiblePanel();
 		kbnProd.main.setRowCount(0);
 		kbnProd.table.setModel(kbnProd.main);
