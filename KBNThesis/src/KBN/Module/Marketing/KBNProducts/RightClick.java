@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.border.LineBorder;
 
 public class RightClick extends JPanel {
 	public JButton btnEdit;
@@ -14,6 +15,7 @@ public class RightClick extends JPanel {
 	 * Create the panel.
 	 */
 	public RightClick() {
+		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBounds(100, 100, 200, 90);
 		setLayout(null);
 		
@@ -22,7 +24,7 @@ public class RightClick extends JPanel {
 		btnAddItem.setFocusable(false);
 		btnAddItem.setBorderPainted(false);
 		btnAddItem.setBackground(Color.WHITE);
-		btnAddItem.setBounds(0, 0, 200, 30);
+		btnAddItem.setBounds(1, 1, 198, 29);
 		add(btnAddItem);
 		
 		btnEdit = new JButton("Edit Details");
@@ -30,7 +32,7 @@ public class RightClick extends JPanel {
 		btnEdit.setFocusable(false);
 		btnEdit.setBorderPainted(false);
 		btnEdit.setBackground(Color.WHITE);
-		btnEdit.setBounds(0, 30, 200, 30);
+		btnEdit.setBounds(1, 30, 198, 30);
 		add(btnEdit);
 		
 		btnArchive = new JButton("Archive");
@@ -38,7 +40,7 @@ public class RightClick extends JPanel {
 		btnArchive.setFocusable(false);
 		btnArchive.setBorderPainted(false);
 		btnArchive.setBackground(Color.WHITE);
-		btnArchive.setBounds(0, 60, 200, 30);
+		btnArchive.setBounds(1, 60, 198, 29);
 		add(btnArchive);
 
 	}

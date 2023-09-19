@@ -1388,11 +1388,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //        kbnProd
         
         try {
-        	String sql = "SELECT prodID, prodName, prodVolume, Quantity, Sold FROM tblproducts";
+        	String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM tblproducts";
         	st.execute(sql);
         	rs = st.getResultSet();
         	while(rs.next()) {
-            	Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5)};
+            	Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5), rs.getString(6)};
             	kbnProd.main.addRow(data);
 //            	System.out.println(rs.getString(1));
         	}
