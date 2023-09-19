@@ -177,7 +177,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 			rs = st.getResultSet();
 			while(rs.next()) {
 				logSuccess += 1;
-				accLevel = rs.getString(4);
+				accLevel = rs.getString(4) + "-" + rs.getString(5) + "-" + rs.getString(6);
 			}
 		}catch (Exception e) {
 			// TODO: handle exception

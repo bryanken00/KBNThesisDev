@@ -135,14 +135,15 @@ public class Modules extends JFrame implements ActionListener{
 	}
 	
 	public void accLevelIdentifier(String accLevel, String name) {
+		System.out.println(accLevel);
 		lblUsername.setText(name);
-		if(accLevel.equals("Admin-MSO") || accLevel.equals("Staff-MSS")) //Marketing
+		if(accLevel.equals("Admin-Marketing-All") || accLevel.equals("Staff-Marketing-Inventory-Ordering")) //Marketing
 			btnMarketing.setEnabled(true);
-		else if(accLevel.equals("Admin-PAO") || accLevel.equals("Staff-RMS") || accLevel.equals("Staff-PMS")) //Warehouse
+		else if(accLevel.equals("Admin-Warehouse-All") || accLevel.equals("Staff-Warehouse-GenerateQR-Inventory") || accLevel.equals("Staff-Warehouse-First-inFirst-out")) //Warehouse
 			btnWarehouse.setEnabled(true);
-		else if(accLevel.equals("Admin-PO")) //Production
+		else if(accLevel.equals("Admin-Production-All")) //Production
 			btnProduction.setEnabled(true);
-		else if(accLevel.equals("Admin")) {
+		else if(accLevel.equals("Admin--")) {
 			btnMarketing.setEnabled(true);
 			btnWarehouse.setEnabled(true);
 			btnProduction.setEnabled(true);

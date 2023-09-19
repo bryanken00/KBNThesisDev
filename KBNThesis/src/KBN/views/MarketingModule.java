@@ -403,7 +403,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void marketingButtons() {
 		
-		if(AccountLevel.equals("Staff-MSS")) {
+		if(AccountLevel.equals("Staff-Marketing-Inventory-Ordering")) {
 			btnKbn.setEnabled(true);
 			btnRebranding.setEnabled(true);
 			
@@ -411,7 +411,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			btnRawMaterials.setEnabled(true);
 			btnOrdering.setEnabled(true);
 			
-		}else if(AccountLevel.equals("Admin") || AccountLevel.equals("Admin-MSO")) {
+		}else if(AccountLevel.equals("Admin--") || AccountLevel.equals("Admin-Marketing-All")) {
 			btnKbn.setEnabled(true);
 			btnRebranding.setEnabled(true);
 			

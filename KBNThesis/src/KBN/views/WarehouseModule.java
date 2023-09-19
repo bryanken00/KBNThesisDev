@@ -223,7 +223,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	}
 	
 	private void warehouseButtons() {
-		if(accLevel.equals("Admin") || accLevel.equals("Admin-PAO")) {
+		if(accLevel.equals("Admin--") || accLevel.equals("Admin-Warehouse-All")) {
 			
 			btnAddItem.setEnabled(true);
 			btnArchive.setEnabled(true);
@@ -241,12 +241,12 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			archiveRC.btnAddItem.setEnabled(true);
 			archiveRC.btnQRGen.setEnabled(true);
 
-		} else if(accLevel.equals("Staff-RMS")) {
+		} else if(accLevel.equals("Staff-Warehouse-GenerateQR-Inventory")) {
 			btnQRCode.setEnabled(true);
 			
 			table.addMouseListener(this);
 			archiveRC.btnQRGen.setEnabled(true);
-		} else if(accLevel.equals("Staff-PMS")) {
+		} else if(accLevel.equals("Staff-Warehouse-First-inFirst-out")) {
 			btnfirstinFirstout.setEnabled(true);
 		} else {
 			warehouseButtonsDefault();
