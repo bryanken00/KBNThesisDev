@@ -849,6 +849,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			while(rs.next()) {
 				opdDashboard.lblRefNumber[i].setText(rs.getString(1));
 				opdDashboard.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				opdDashboard.lblStatus[i].setText(rs.getString(5));
 				//status indicator
 				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
 //				System.out.println(rs.getString(1) + ", " + rs.getString(5));
@@ -1195,6 +1196,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			while(rs.next()) {
 				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
 				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				orderPanel.orderLPanel.opd.lblStatus[i].setText(rs.getString(5));
 				//status indicator
 				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
 				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));

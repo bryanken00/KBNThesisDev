@@ -135,7 +135,7 @@ public class Modules extends JFrame implements ActionListener{
 	}
 	
 	public void accLevelIdentifier(String accLevel, String name) {
-		System.out.println(accLevel);
+//		System.out.println(accLevel);
 		lblUsername.setText(name);
 		if(accLevel.equals("Admin-Marketing-All") || accLevel.equals("Staff-Marketing-Inventory-Ordering")) //Marketing
 			btnMarketing.setEnabled(true);
