@@ -8,6 +8,7 @@ import javax.swing.JTextField;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 import java.awt.Color;
+import javax.swing.JComboBox;
 
 public class Registration extends JPanel {
 	
@@ -23,6 +24,7 @@ public class Registration extends JPanel {
 	public JButton btnRegister;
 	public JTextField txtBrand;
 	public JButton btnGeneratePass;
+	public JComboBox cbAccType;
 	
 	public Registration() {
 		setBounds(0, 0, 834, 487);
@@ -154,5 +156,15 @@ public class Registration extends JPanel {
 		txtBrand.setColumns(10);
 		txtBrand.setBounds(24, 274, 224, 30);
 		add(txtBrand);
+		
+		JLabel lblAccType = new JLabel("Username");
+		lblAccType.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblAccType.setBounds(572, 310, 134, 30);
+		add(lblAccType);
+		
+		String accType[] = {"Rebranding","KBN"};
+		cbAccType = new JComboBox(accType);
+		cbAccType.setBounds(572, 340, 224, 30);
+		add(cbAccType);
 	}
 }

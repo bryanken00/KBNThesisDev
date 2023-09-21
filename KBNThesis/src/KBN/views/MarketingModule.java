@@ -26,7 +26,6 @@ import javax.swing.border.EmptyBorder;
 import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.CustomerAccount;
 import KBN.Module.Marketing.CustomerCreateAccount;
-import KBN.Module.Marketing.ProductDetails;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
@@ -36,6 +35,7 @@ import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
 import KBN.Module.Marketing.KBNProducts.KBNProducts;
 import KBN.Module.Marketing.KBNProducts.PopUpPRODIMG;
+import KBN.Module.Marketing.KBNProducts.ProductDetails;
 import KBN.Module.Marketing.KBNProducts.RightClick;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
@@ -229,7 +229,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         objComponent();
         setUsername();
 //        orderCounter();
-        preRegStatus();
         setActionList();
         setVisiblePanel();
         defaultPanel();
@@ -237,8 +236,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //        mostSoldProd();
 		chartdataSetter();
 		dashboard1();
-		
 		btnChecker = btnDashboard;
+		preRegCounter();
+		preRegStatus();
 		
 		marketingButtons();
 	}
@@ -772,7 +772,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
 	        prodDetails.ProductDetails(ID);
 	        prodDetails.setVisible(true);
-	        // prodDetails.ProductDetails(ID);
 	    } else {
 	        JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
 	    }
@@ -901,21 +900,23 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //	}
 	
 	private void preRegStatus() {
-		String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
 		try {
+			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
 			st.execute(sql);
 			rs = st.getResultSet();
 			if(rs.next())
 				rowCount = rs.getInt(1);
 			
 			if(rowCount == 0) {
+				custAccount.lblNotif.removeMouseListener(this);
 				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
 			}else {
+				custAccount.lblNotif.removeMouseListener(this);
 				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
 				custAccount.lblNotif.addMouseListener(this);
 			}
 		} catch (Exception e) {
-			
+			JOptionPane.showMessageDialog(null, "Error preReg: " + e.getCause());
 		}
 	}
 	
@@ -1487,6 +1488,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			orderPanel.main.setRowCount(0);
 	        orderPanel.table.setModel(orderPanel.main);
+	        System.out.println(refNum);
 			String sql = "UPDATE tblorderstatus SET Status = 'Approved' WHERE OrderRefNumber = '" + refNum + "';";
 			int i = st.executeUpdate(sql);
 			if(i == 1)
@@ -1504,7 +1506,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			orderPanel.main.setRowCount(0);
 	        orderPanel.table.setModel(orderPanel.main);
-			String sql = "UPDATE tblorderstatus SET Status = 'toship' WHERE OrderRefNumber = '" + refNum + "';";
+			String sql = "UPDATE tblorderstatus SET Status = 'toShip' WHERE OrderRefNumber = '" + refNum + "';";
 			int i = st.executeUpdate(sql);
 			if(i == 1)
 				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " is ready to Ship");
@@ -1936,19 +1938,32 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public void mouseClicked(MouseEvent e) {
 		
         Component clickedComponent = e.getComponent();
-        
+        orderCounter();
+        preRegStatus();
         //checking if the mouseClick if JPanel
         if (clickedComponent instanceof JPanel) {
+            // Check for a match in the orderList array
             for (int i = 0; i < OrderCount; i++) {
-                if ((JPanel)clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
-                	OrderListIndexClicked = i;
+                if ((JPanel) clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
+                    OrderListIndexClicked = i;
                     orderPanel.main.setRowCount(0);
                     orderPanel.table.setModel(orderPanel.main);
                     panelDataSetter();
-                    break;
+                    return; // Exit the method or return if a match is found
+                }
+            }
+
+            // Check for a match in the preReg.panel array
+            for (int i = 0; i < rowCount; i++) {
+                if (clickedComponent == preReg.preReg.panel[i]) {
+                    preRegDataSetter(i);
+                    return; // Exit the method or return if a match is found
                 }
             }
         }
+        
+
+        
 //        for (int i = 0; i < OrderCount; i++) {
 //            if ((JPanel)clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
 //            	OrderListIndexClicked = i;
@@ -1959,13 +1974,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //            }
 //        }
 //        
-        for(int i = 0; i < rowCount; i++) {
-        	if(clickedComponent == preReg.preReg.panel[i]) {
-        		preRegDataSetter(i);
-        	}
-        }
+
         
 	}
+	
+//	private void preRegList() {
+//		try {
+//			preReg.preReg.lblAddress
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, "Error PreRegList: " + e.getMessage());
+//		}
+//	}
 	
 	private void preRegDataSetter(int index) {
 		regID = preReg.preReg.rowID.get(index).toString();
@@ -2010,7 +2029,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			if(!orderClickIdentifier.equals("cust"))
 				refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
-			System.out.println(refNum);
 	        orderPanel.lblRefNum.setText(refNum);
 	        orderPanel.lblCustName.setText(this.orderPanel.orderLPanel.opd.lblName[OrderListIndexClicked].getText());
 	        String sql = "SELECT a.OrderRefNumber, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, a.Address, c.Discount FROM tblordercheckout AS a JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber JOIN tblcustomerinformation AS c ON a.UserID = c.UserID WHERE a.OrderRefNumber = '" + refNum + "'";
@@ -2056,9 +2074,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderStatusSetter() {
 		try {
 			
+
+        	orderPanel.btnApproved.removeActionListener(this);
+        	orderPanel.btnToShip.removeActionListener(this);
+        	orderPanel.btnDelivery.removeActionListener(this);
+        	orderPanel.btnDeliveryComplete.removeActionListener(this);
+        	orderPanel.btnInvoice.removeActionListener(this);
+			
 			orderPanel.btnApproved.setBackground(Color.white);
-			orderPanel.btnDelivery.setBackground(Color.white);
 			orderPanel.btnToShip.setBackground(Color.white);
+			orderPanel.btnDelivery.setBackground(Color.white);
 			orderPanel.btnDeliveryComplete.setBackground(Color.white);
 			orderPanel.btnInvoice.setBackground(Color.white);
 			
@@ -2071,10 +2096,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        	status = rs.getString(1);
 	        }
 	        
-	        if(status.equals("Approved")) {
+	        if(status.equalsIgnoreCase("toPay")) {
+	        	orderPanel.btnApproved.addActionListener(this);
+	        } else if(status.equals("Approved")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnDelivery.addActionListener(this);
+	        	orderPanel.btnToShip.addActionListener(this);;
 	        }
 	        else if(status.equalsIgnoreCase("toship")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
@@ -2211,8 +2238,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	private void noticListSetter() {
 		try {
-			preReg = new preRegister();
-			preRegCounter();
+//			preReg = new preRegister();
 			preRegMouseList();
 			String sql = "SELECT ID, FirstName, MiddleName, LastName, Brand, City, Province FROM tblpreregistration WHERE status = 'pending'";
 			st.execute(sql);

@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.KBNProducts;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -35,11 +35,8 @@ public class ProductDetails extends JDialog {
 	public JTextField txtPrice;
 	public JTextField txtVariant;
 	public JTextField txtDescription;
-	public JButton btnEDesc;
 	public JTextField txtIngredients;
 	public JTextField txtManual;
-	public JButton btnEIngredients;
-	public JButton btnEManual;
 	public JLabel lblImg;
 	
 	private DbConnection dbConn;
@@ -48,7 +45,6 @@ public class ProductDetails extends JDialog {
 	
 	private String prodID = "";
 	private JTextField txtCategory;
-	private JButton btnECategory;
 	
 	public void ProductDetails(String prodID) {
 		this.prodID = prodID;
@@ -121,17 +117,9 @@ public class ProductDetails extends JDialog {
 		
 		txtDescription = new JTextField();
 		txtDescription.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		txtDescription.setBounds(518, 263, 228, 28);
+		txtDescription.setBounds(518, 263, 286, 28);
 		getContentPane().add(txtDescription);
 		txtDescription.setColumns(10);
-		
-		btnEDesc = new JButton("E");
-		btnEDesc.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnEDesc.setFocusable(false);
-		btnEDesc.setBorderPainted(false);
-		btnEDesc.setBackground(Color.WHITE);
-		btnEDesc.setBounds(753, 263, 51, 28);
-		getContentPane().add(btnEDesc);
 		
 		JLabel lblNewLabel_1_1_1_1_1_1 = new JLabel("Ingredients:");
 		lblNewLabel_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -141,16 +129,8 @@ public class ProductDetails extends JDialog {
 		txtIngredients = new JTextField();
 		txtIngredients.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtIngredients.setColumns(10);
-		txtIngredients.setBounds(518, 353, 228, 28);
+		txtIngredients.setBounds(518, 353, 286, 28);
 		getContentPane().add(txtIngredients);
-		
-		btnEIngredients = new JButton("E");
-		btnEIngredients.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnEIngredients.setFocusable(false);
-		btnEIngredients.setBorderPainted(false);
-		btnEIngredients.setBackground(Color.WHITE);
-		btnEIngredients.setBounds(753, 353, 51, 28);
-		getContentPane().add(btnEIngredients);
 		
 		JLabel lblNewLabel_1_1_1_1_1_1_1 = new JLabel("Manual:");
 		lblNewLabel_1_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -160,30 +140,14 @@ public class ProductDetails extends JDialog {
 		txtManual = new JTextField();
 		txtManual.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtManual.setColumns(10);
-		txtManual.setBounds(518, 443, 228, 28);
+		txtManual.setBounds(518, 443, 286, 28);
 		getContentPane().add(txtManual);
-		
-		btnEManual = new JButton("E");
-		btnEManual.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnEManual.setFocusable(false);
-		btnEManual.setBorderPainted(false);
-		btnEManual.setBackground(Color.WHITE);
-		btnEManual.setBounds(753, 443, 51, 28);
-		getContentPane().add(btnEManual);
 		
 		txtCategory = new JTextField();
 		txtCategory.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtCategory.setColumns(10);
-		txtCategory.setBounds(518, 203, 228, 28);
+		txtCategory.setBounds(518, 203, 286, 28);
 		getContentPane().add(txtCategory);
-		
-		btnECategory = new JButton("E");
-		btnECategory.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnECategory.setFocusable(false);
-		btnECategory.setBorderPainted(false);
-		btnECategory.setBackground(Color.WHITE);
-		btnECategory.setBounds(753, 203, 51, 28);
-		getContentPane().add(btnECategory);
 	}
 	
 	private void DataSetters() {
