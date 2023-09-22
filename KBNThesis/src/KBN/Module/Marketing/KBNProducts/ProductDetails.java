@@ -31,6 +31,7 @@ import javax.swing.JComboBox;
 import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -39,6 +40,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -57,20 +59,17 @@ public class ProductDetails extends JDialog implements ActionListener{
 	private Statement st;
 	private ResultSet rs;
 	
+	private String imgPath = "";
+	
 	private String prodID = "";
 	private JComboBox cbCategory;
-	
-	public void ProductDetails(String prodID) {
-		this.prodID = prodID;
-		DataSetters();
-	}
 	
 	private ArrayList<String> arrCb;
 	private ArrayList<String> arrCBIdentifier;
 	private JTextPane txtDescription;
 	private JTextPane txtIngredients;
-	private JButton btnSave;
 	private JTextPane txtManual;
+	public JButton btnSave;
 	private JButton btnAddImg;
 
 	public ProductDetails() {
@@ -222,6 +221,11 @@ public class ProductDetails extends JDialog implements ActionListener{
 		btnSave.addActionListener(this);
 	}
 	
+	public void ProductDetails(String prodID) {
+		this.prodID = prodID;
+		DataSetters();
+	}
+	
 	public void cbSetter() {
 		try {
 			String cbSQL = "SELECT * FROM tblproductcategories";
@@ -296,27 +300,96 @@ public class ProductDetails extends JDialog implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnSave) {
-			
+			if(btnSave.getText().equals("Save")) {
+				addProduct();
+			}else if(btnSave.getText().equals("Update")) {
+				updateProduct();
+			}
 		}
 		if(e.getSource() == btnAddImg) {
-            JFileChooser fileChooser = new JFileChooser();
-            
-            // Create a filter to only accept image files with extensions jpg, jpeg, png, and gif
-            FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
-                "Image Files", "jpg", "jpeg", "png", "gif");
-            
-            fileChooser.setFileFilter(imageFilter); // Set the filter on the file chooser
-            
-            int returnValue = fileChooser.showOpenDialog(null);
-            
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                uploadFile(selectedFile);
-            }
+			uploadIMG();
 		}
 	}
 	
+	//Save
+	private void addProduct() {
+		try {
+			String img = imgPath;
+			String prodName = txtProdName.getText();
+			String prodPrice = txtPrice.getText();
+			String prodVol = txtVariant.getText();
+			String prodQuantity = "0";
+			String prodSold = "0";
+			String prodCat = cbCategory.getSelectedItem().toString();
+			String Description = txtDescription.getText();
+			String Ingredients = txtIngredients.getText();
+			String howtouse = txtManual.getText();
+			
+			String SQLInsert = "INSERT INTO tblproducts (prodImg,prodName,prodPrice,prodVolume,Quantity,Sold,prodCategory,Description,Ingredients,Howtouse) VALUES('"
+					+ img + "','"
+					+ prodName + "','"
+					+ prodPrice + "','"
+					+ prodVol + "','"
+					+ prodQuantity + "','"
+					+ prodSold + "','"
+					+ prodCat + "','"
+					+ Description + "','"
+					+ Ingredients + "','"
+					+ howtouse + "');";
+			
+			st.execute(SQLInsert);
+			
+			JOptionPane.showMessageDialog(null, "Product Added!");
+			
+			this.dispose();
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error SAVE: " + e.getMessage());
+		}
+	}
+	
+	//update
+	private void updateProduct() {
+		try {
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error Update: " + e.getMessage());
+		}
+	}
+	
+	private void uploadIMG() {
+        JFileChooser fileChooser = new JFileChooser();
+        
+        // Create a filter to only accept image files with extensions jpg, jpeg, png, and gif
+        FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+            "Image Files", "jpg", "jpeg", "png", "gif");
+        
+        fileChooser.setFileFilter(imageFilter); // Set the filter on the file chooser
+        
+        int returnValue = fileChooser.showOpenDialog(null);
+        
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            uploadFile(selectedFile);
+        }
+	}
+	
 	private void uploadFile(File file) {
+		
+	    try {
+	        BufferedImage originalImage = ImageIO.read(file);
+	        int newWidth = 300;
+	        int newHeight = 350;
+	        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+	        resizedImage.getGraphics().drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+
+	        // Save the resized image back to the same file
+	        ImageIO.write(resizedImage, "png", file);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return; // Handle the exception as needed
+	    }
+	    
         String targetURL = "http://localhost/webdevelopment/thesis1_website/Products/upload.php";
 
         try {
@@ -348,6 +421,7 @@ public class ProductDetails extends JDialog implements ActionListener{
                     while ((line = reader.readLine()) != null) {
                         System.out.println("Response: " + line);
                         lblImg.setIcon(new ImageIcon(imgLoader(line)));
+                        imgPath = line;
                     }
                 }
             } else {

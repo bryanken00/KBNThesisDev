@@ -2,6 +2,7 @@ package KBN.Module.Marketing.KBNProducts;
 
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -35,14 +36,21 @@ public class PopUpPRODIMG extends JFrame {
 	
 	public void setLink(String link) {
        try {
-           
-    	   URL imageUrl = new URL(link);
-           
-           Image originalImage = ImageIO.read(imageUrl);
-           Image resizedImage = originalImage.getScaledInstance(200, 400, Image.SCALE_SMOOTH);
-           
-           lblImg.setIcon(new ImageIcon(resizedImage));
-           
+           URL imageUrl = new URL(link);
+
+           // Check if the image exists by making an HTTP HEAD request
+           HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+           connection.setRequestMethod("HEAD");
+           int responseCode = connection.getResponseCode();
+
+           if (responseCode == HttpURLConnection.HTTP_OK) {
+               // Image exists, load and display it
+               Image originalImage = ImageIO.read(imageUrl);
+               Image resizedImage = originalImage.getScaledInstance(200, 400, Image.SCALE_SMOOTH);
+               lblImg.setIcon(new ImageIcon(resizedImage));
+           } else {
+        	   this.dispose();
+           }
         } catch (Exception e) {
         	JOptionPane.showMessageDialog(null, "ProductIMG ERROR: " + e.getMessage());
         }

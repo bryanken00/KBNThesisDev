@@ -560,9 +560,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			prodDetailsFunc();
 		if(e.getSource() == rightClick.btnArchive)
 			archiveKBNProducts();
+		if(e.getSource() == rightClick.btnAddItem)
+			addItem();
 		
 		// Client Profile
-		
 		if(e.getSource() == btnClientProfile)
 			clientProfileFunc();
 		
@@ -767,7 +768,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	private void addItem() {
+		prodDetails.btnSave.setText("Save");
+		prodDetails.cbSetter();
+        prodDetails.setVisible(true);
+	}
+	
 	private void prodDetailsFunc() {
+		prodDetails.btnSave.setText("Update");
 	    if (kbnProd.table.getSelectedRow() != -1) {
 	        String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
 	        prodDetails.ProductDetails(ID);
@@ -776,6 +784,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
 	    }
 	}
+	
 	private void archiveKBNProducts() {
 		String dropDelimiter = "DROP PROCEDURE IF EXISTS InsertAndDeleteWithRollback;";
 		try {
