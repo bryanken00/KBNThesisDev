@@ -162,7 +162,7 @@ public class Registration extends JPanel {
 		lblAccType.setBounds(572, 310, 134, 30);
 		add(lblAccType);
 		
-		String accType[] = {"Rebranding","KBN"};
+		String accType[] = {"KBN","Rebranding"};
 		cbAccType = new JComboBox(accType);
 		cbAccType.setBounds(572, 340, 224, 30);
 		add(cbAccType);

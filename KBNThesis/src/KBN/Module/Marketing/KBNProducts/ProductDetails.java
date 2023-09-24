@@ -340,9 +340,8 @@ public class ProductDetails extends JDialog implements ActionListener{
 			st.execute(SQLInsert);
 			
 			JOptionPane.showMessageDialog(null, "Product Added!");
-			
+			clearInputs();
 			this.dispose();
-			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error SAVE: " + e.getMessage());
 		}
@@ -351,7 +350,34 @@ public class ProductDetails extends JDialog implements ActionListener{
 	//update
 	private void updateProduct() {
 		try {
+			String productID = prodID;
+			String img = imgPath;
+			String prodName = txtProdName.getText();
+			String prodPrice = txtPrice.getText();
+			String prodVol = txtVariant.getText();
+			String prodCat = cbCategory.getSelectedItem().toString();
+			String Description = txtDescription.getText();
+			String Ingredients = txtIngredients.getText();
+			String howtouse = txtManual.getText();
 			
+			String SQLUpdate = "UPDATE tblproducts\r\n"
+					+ "SET prodImg = '" + img + "',\r\n"
+					+ "prodName = '" + prodName + "',\r\n"
+					+ "prodPrice = '" + prodPrice +"',\r\n"
+					+ "prodVolume = '" + prodVol + "',\r\n"
+					+ "Quantity = 0,\r\n"
+					+ "Sold = 0,\r\n"
+					+ "prodCategory = '" + prodCat + "',\r\n"
+					+ "Description = '" + Description + "',\r\n"
+					+ "Ingredients = '" + Ingredients + "',\r\n"
+					+ "Howtouse = '" + Ingredients + "'\r\n"
+					+ "WHERE prodID = '" + prodID + "';";
+			
+			st.execute(SQLUpdate);
+
+			JOptionPane.showMessageDialog(null, "Product Updated!");
+			clearInputs();
+			this.dispose();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error Update: " + e.getMessage());
 		}
@@ -432,4 +458,15 @@ public class ProductDetails extends JDialog implements ActionListener{
             e.printStackTrace();
         }
     }
+	private void clearInputs() {
+		prodID = "";
+		imgPath = "";
+		txtProdName.setText("");
+		txtPrice.setText("");
+		txtVariant.setText("");
+		cbCategory.setSelectedIndex(0);
+		txtDescription.setText("");
+		txtIngredients.setText("");
+		txtManual.setText("");
+	}
 }

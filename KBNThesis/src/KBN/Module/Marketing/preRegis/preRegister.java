@@ -131,7 +131,8 @@ public class preRegister extends JDialog implements ActionListener {
 			try {
 				String ID = mModule.regID;
 				st = dbConn.getConnection().createStatement();
-				String sql = "SELECT Username FROM tblCustomerAccount";
+				st.execute("DROP PROCEDURE IF EXISTS `CreateAccountWithRollback`;");
+				String sql = "SELECT Username FROM tblCustomerAccount;";
 				st.execute(sql);
 				rs = st.getResultSet();
 				
@@ -161,21 +162,38 @@ public class preRegister extends JDialog implements ActionListener {
 					if(accType.equals("Rebranding"))
 						accType = "";
 					
-					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "')";
-					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"')";
-					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "'";
-//					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
-					System.out.println("sqlCustAcc: " + sqlCustAcc);
-					System.out.println("sqlCustAccInfo: " + sqlCustAccInfo);
-					System.out.println("sqlUpdatePreReg: " + sqlUpdatePreReg);
+					String createAccount = "CREATE PROCEDURE CreateAccountWithRollback()\r\n"
+							+ "BEGIN\r\n"
+							+ "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+							+ "  BEGIN\r\n"
+							+ "    ROLLBACK;\r\n"
+							+ "    RESIGNAL;\r\n"
+							+ "  END;\r\n"
+							+ "\r\n"
+							+ "  START TRANSACTION;\r\n"
+							+ "  \r\n"
+							+ "  INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "');\r\n"
+							+ "  \r\n"
+							+ "  INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"');\r\n"
+							+ "  \r\n"
+							+ "  UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';\r\n"
+							+ "  \r\n"
+							+ "  COMMIT;\r\n"
+							+ "END;";
 					
-//					System.out.println(sqlCustAccInfo);
+					st.execute(createAccount);
+					st.execute("CALL CreateAccountWithRollback();");
 					
-					st.execute(sqlCustAcc);
-					st.execute(sqlCustAccInfo);
-					st.execute(sqlUpdatePreReg);
-					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
+//					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "');";
+//					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"');";
+//					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';";
+//					st.execute(sqlCustAcc);
+//					st.execute(sqlCustAccInfo);
+//					st.execute(sqlUpdatePreReg);
 //					st.execute(sqlOrders);
+					
+					
+					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
 				}else {
 					JOptionPane.showMessageDialog(null, "Please Complete the form");
 				}
