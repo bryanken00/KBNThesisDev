@@ -9,6 +9,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -52,13 +55,19 @@ import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
+
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+
 import javax.swing.border.LineBorder;
 
 
@@ -1629,42 +1638,72 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void custAccountClientProfileFunc() {
-		
-		// {"User ID","Account","Email", "Contact", "Brand", "Account Type"}
-		uID = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 0) + "";
-		String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 5) + "";
-		custN = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
-		custB = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
-		
-		if(!"rebranding".equals(AccType))
-			return;
-		
-		clientProfileChecker = AccType;
-		
-		clientProfileFunc();
-		
-		//Setting Customer Profile
-		cp.lblClientName.setText(custN);
-		cp.lblBrand.setText(custB);
-		cp.lblNone.setText("");
-		
-		
-		//SQL Getting this week Quantity
+		try {
+			// {"UserID","Account","Email", "Contact", "Brand", "Account Type"}
+			uID = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 0) + "";
+			String AccType = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 5) + "";
+			custN = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
+			custB = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
+			
+			if(!"rebranding".equals(AccType))
+				return;
+			
+			clientProfileChecker = AccType;
+			
+			clientProfileFunc();
+			
+			String SQLAccountInfo = "SELECT Email, Number, Address, Discount FROM tblcustomerinformation WHERE userID = '" + uID + "'";
+			st.execute(SQLAccountInfo);
+			rs = st.getResultSet();
+			String data = "";
+			while(rs.next()) {
+				data = rs.getString(1) + "<br>" + rs.getString(2) + "<br>" + rs.getString(3);
+				imgResizer(rs.getInt(4));
+				System.out.println(rs.getInt(4));
+			}
+			
+			//Setting Customer Profile
+			cp.lblClientName.setText(custN);
+			cp.lblBrand.setText(custB);
+			cp.lblDetails.setText("<html>" + data + "</html>");
+			
+			
+			//SQL Getting this week Quantity
 
-        ClientProfileWeekly(uID);
-        
-        ClientProfileMonthly(uID);
-        
-        ClientProfileYearly(uID);
-        
-		// OrderList printing
-		clientProfileOrderListRefresher(uID, custN,custB);
-		
+	        ClientProfileWeekly(uID);
+	        
+	        ClientProfileMonthly(uID);
+	        
+	        ClientProfileYearly(uID);
+	        
+			// OrderList printing
+			clientProfileOrderListRefresher(uID, custN,custB);
+			
 
-		clientProfileOrderListRemoveActionlist();
-		
-		clientProfileOrderListActionList();
-		
+			clientProfileOrderListRemoveActionlist();
+			
+			clientProfileOrderListActionList();
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error custAccountClientProfileFunc: " + e.getMessage());
+		}
+	}
+	
+	private void imgResizer(int percent) {
+	    try {
+	    	//Class Path
+	        URL imageUrl = ClientProfile.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + percent + ".png");
+
+	        if (imageUrl != null) {
+	            Image originalImage = ImageIO.read(imageUrl);
+	            Image resizedImage = originalImage.getScaledInstance(70, 70, Image.SCALE_SMOOTH);
+	            cp.lblDiscount.setIcon(new ImageIcon(resizedImage));
+	        } else {
+	            this.dispose();
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ProductIMG ERROR: " + e.getMessage());
+	    }
 	}
 	
 	private void clientProfileOrderListRefresher(String userID, String custBrand, String custName) {

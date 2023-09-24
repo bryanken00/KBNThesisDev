@@ -25,6 +25,7 @@ public class ClientProfileScrollablePanel extends JPanel {
 
 	public ClientProfileScrollablePanel() {
 		setBounds(0, 0, 635, 452);
+		setBackground(new Color(255, 255, 255));
 		setLayout(null);
 	}
 	
@@ -52,6 +53,7 @@ public class ClientProfileScrollablePanel extends JPanel {
 		
 		panel[i] = new JPanel();
 		panel[i].setBounds(10, y, 582, 100);
+		panel[i].setBackground(new Color(255, 255, 255));
 		panel[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		add(panel[i]);
 		panel[i].setLayout(null);
