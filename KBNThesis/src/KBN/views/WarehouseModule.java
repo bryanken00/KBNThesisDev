@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import KBN.Module.Warehouse.AddDataWarehouse;
 import KBN.Module.Warehouse.AddItemWarehouse;
@@ -46,6 +48,7 @@ import java.awt.ScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -54,9 +57,11 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -107,16 +112,16 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private JButton btnRawMats;
 	private JButton btnPackMats;
 	private JButton btnFinishProduct;
-	private JButton btnQRCode;
 	private JLabel lblUsername;
-	private JButton btnAddItem;
-	private JButton btnArchive;
 	private JComboBox cbCategories;
 	private JTextField txtSearchBar;
 	private JButton btnSearch;
 	private JPanel tablePanel;
 	private JScrollPane scrollPane;
+	
 	private JTable table;
+	private TableRowSorter<TableModel> sorter;
+	
 	private JButton btnfirstinFirstout;
 	private JComboBox cbSort;
 	private JButton btnSummary;
@@ -198,6 +203,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
         
         
 		tableData();
+		tableSorter();
 		categoriesSetup();
 		
 		warehouseButtonsDefault();
@@ -205,9 +211,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	}
 	
 	private void warehouseButtonsDefault() {
-		btnAddItem.setEnabled(false);
-		btnArchive.setEnabled(false);
-		btnQRCode.setEnabled(false);
 		
 		btnRawMats.setEnabled(false);
 		btnPackMats.setEnabled(false);
@@ -225,10 +228,6 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	private void warehouseButtons() {
 		if(accLevel.equals("Admin--") || accLevel.equals("Admin-Warehouse-All")) {
 			
-			btnAddItem.setEnabled(true);
-			btnArchive.setEnabled(true);
-			btnQRCode.setEnabled(true);
-			
 			btnRawMats.setEnabled(true);
 			btnPackMats.setEnabled(true);
 			btnFinishProduct.setEnabled(true);
@@ -242,7 +241,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 			archiveRC.btnQRGen.setEnabled(true);
 
 		} else if(accLevel.equals("Staff-Warehouse-GenerateQR-Inventory")) {
-			btnQRCode.setEnabled(true);
+//			btnQRCode.setEnabled(true);
 			
 			table.addMouseListener(this);
 			archiveRC.btnQRGen.setEnabled(true);
@@ -268,33 +267,9 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		separator.setBounds(10, 87, 241, 13);
 		panel.add(separator);
 		
-		btnAddItem = new JButton("Add Item");
-		btnAddItem.setBounds(10, 102, 241, 46);
-		panel.add(btnAddItem);
-		btnAddItem.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnAddItem.setFocusable(false);
-		btnAddItem.setBorderPainted(false);
-		btnAddItem.setBackground(Color.WHITE);
-		
-		btnArchive = new JButton("Archive");
-		btnArchive.setBounds(10, 159, 241, 46);
-		panel.add(btnArchive);
-		btnArchive.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnArchive.setFocusable(false);
-		btnArchive.setBorderPainted(false);
-		btnArchive.setBackground(Color.WHITE);
-		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setBounds(10, 273, 241, 13);
 		panel.add(separator_1);
-		
-		btnQRCode = new JButton("<html><center>QR-Code <br/> Generator</center></html>");
-		btnQRCode.setBounds(10, 216, 241, 46);
-		panel.add(btnQRCode);
-		btnQRCode.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnQRCode.setFocusable(false);
-		btnQRCode.setBorderPainted(false);
-		btnQRCode.setBackground(Color.WHITE);
 		
 		btnRawMats = new JButton("Raw Materials");
 		btnRawMats.setBounds(10, 297, 241, 46);
@@ -504,15 +479,9 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		btnfirstinFirstout.addMouseListener(this);
 		btnArchiveList.addMouseListener(this);
 		btnSummary.addMouseListener(this);
-		btnAddItem.addMouseListener(this);
-		btnArchive.addMouseListener(this);
-		btnQRCode.addMouseListener(this);
 	}
 	
 	private void buttonList() {
-		btnAddItem.addActionListener(this);
-		btnArchive.addActionListener(this);
-		btnQRCode.addActionListener(this);
 		btnRawMats.addActionListener(this);
 		btnFinishProduct.addActionListener(this);
 		btnPackMats.addActionListener(this);
@@ -563,6 +532,93 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		}
 	}
 	
+	private void tableSorter() {
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		sorter = new TableRowSorter<>(main);
+	    sorter.setComparator(2, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            return s1.compareTo(s2);
+	        }
+	    });
+
+	    sorter.setComparator(4, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            try {
+	                Date date1 = dateFormat.parse(s1);
+	                Date date2 = dateFormat.parse(s2);
+	                return date1.compareTo(date2);
+	            } catch (ParseException e) {
+	                e.printStackTrace();
+	                return 0;
+	            }
+	        }
+	    });
+
+	    sorter.setComparator(5, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            return s1.compareTo(s2);
+	        }
+	    });
+	    
+	    sorter.setComparator(6, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            return s1.compareTo(s2);
+	        }
+	    });
+	    
+	    sorter.setComparator(7, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(8, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(9, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(10, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    
+		table.setRowSorter(sorter);
+	    table.getTableHeader().addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	            int columnIndex = table.columnAtPoint(e.getPoint());
+	            sorter.toggleSortOrder(columnIndex);
+	        }
+	    });
+	}
+	
 	private void addItem() {
 		addWarehouse = new AddItemWarehouse();
 		addWarehouse.setVisible(true);
@@ -597,11 +653,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		sumTable.setVisible(false);
 	}
 	
-	private void buttonVisible() {		
-		//btnRawMats
-		btnQRCode.setVisible(false);
-		btnAddItem.setVisible(false);
-		btnArchive.setVisible(false);
+	private void buttonVisible() {
 		
 		//btnFIFO
 		cbFIFO.setVisible(false);
@@ -693,7 +745,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	}
 	
 	private void printingTableData(String sql) {
-		main.getDataVector().removeAllElements();
+		main.setRowCount(0);
 		revalidate();
 		arrSQLResult = new ArrayList<>();
 		try {
@@ -720,7 +772,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 				main.addRow(arrSQLResult.toArray());
 				arrSQLResult.clear();
 			}
-			table.setModel(main);
+//			table.setModel(main);
 		}catch (Exception e) {
 			//Debugger
 			JOptionPane.showMessageDialog(null, "Table ERROR: \n" + e.getMessage());
@@ -1196,11 +1248,8 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 		if(this.getTitle().equals("Warehouse Inventory - Archive List")){
 			cbArchiveCat.setVisible(true);
 			btnRestore.setVisible(true);
-			btnQRCode.setVisible(true);
 		}else if(this.getTitle().equals("Warehouse Inventory")) {
-			btnAddItem.setVisible(true);
-			btnArchive.setVisible(true);
-			btnQRCode.setVisible(true);
+			
 		}else if(this.getTitle().equals("Warehouse Inventory - First In First Out")) {
 			cbFIFO.setVisible(true);
 			btnItemIn.setVisible(true);
