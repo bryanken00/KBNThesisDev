@@ -27,12 +27,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import KBN.Module.Marketing.AuditTrail;
-import KBN.Module.Marketing.CustomerAccount;
-import KBN.Module.Marketing.CustomerCreateAccount;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
 import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
+import KBN.Module.Marketing.Customer.CustomerAccount;
+import KBN.Module.Marketing.Customer.CustomerCreateAccount;
 import KBN.Module.Marketing.Delivery.DeliveryStatus;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
@@ -241,7 +241,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         setActionList();
         setVisiblePanel();
         defaultPanel();
-        custAccountFunc();
 //        mostSoldProd();
 		chartdataSetter();
 		dashboard1();
@@ -489,6 +488,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
 		custAccount.btnClientProfile.addActionListener(this);
+		custAccount.btnSearch.addActionListener(this);
 		
 		//KBN ProdMouseList
 		kbnProd.table.addMouseListener(this);
@@ -563,6 +563,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			custAccountCreateAccount();
 		if(e.getSource() == custAccount.btnClientProfile)
 			custAccountClientProfileFunc();
+		if(e.getSource() == custAccount.btnSearch) {
+			if(!custAccount.txtSearchBar.getText().equals("Search by Account"))
+				custAccountSearchFunc(custAccount.txtSearchBar.getText());
+			else
+				custAccPanelFunc();
+		}
 		
 		//Right Click
 		if(e.getSource() == rightClick.btnEdit)
@@ -972,7 +978,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void setOrderListDataDashboard() {
 		try {
-			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber";
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE c.status != 'Cancelled' AND c.status != 'Expired'";
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -1479,6 +1485,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccPanelFunc() {
 		setVisiblePanel();
 		custAccount.setVisible(true);
+        custAccountFunc();
 	}
 	
 	private void AuditPanelFunc() {
@@ -1614,8 +1621,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void custAccountFunc() {
 		try {
+			custAccount.main.setRowCount(0);
             st = dbConn.getConnection().createStatement();
-			String sql = "SELECT userID,Firstname, Lastname, Email, Number, Description, AccountType FROM tblcustomerinformation ORDER BY AccountType DESC";
+			String sql = "SELECT userID, Firstname, Lastname, Email, Number, Description, AccountType FROM tblcustomerinformation ORDER BY AccountType DESC";
 			st.execute(sql);
 			
 			rs = st.getResultSet();
@@ -1686,6 +1694,32 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error custAccountClientProfileFunc: " + e.getMessage());
+		}
+	}
+	
+	private void custAccountSearchFunc(String search) {
+		try {
+			custAccount.main.setRowCount(0);
+            st = dbConn.getConnection().createStatement();
+			String sql = "SELECT userID, Firstname, Lastname, Email, Number, Description, AccountType FROM tblcustomerinformation WHERE CONCAT(Firstname, Lastname) LIKE '%" + search + "%';";
+			st.execute(sql);
+			
+			rs = st.getResultSet();
+			ArrayList SQLResult = new ArrayList<>();
+			
+			while(rs.next()) {
+				SQLResult.add(rs.getString(1));
+				SQLResult.add(rs.getString(2) + " " + rs.getString(3));
+				SQLResult.add(rs.getString(4));
+				SQLResult.add(rs.getString(5));
+				SQLResult.add(rs.getString(6));
+				SQLResult.add(rs.getString(7));
+				custAccount.main.addRow(SQLResult.toArray());
+				SQLResult.clear();
+			}
+			custAccount.table.setModel(custAccount.main);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR custAccountSearchFunc: " + e.getMessage());
 		}
 	}
 	
@@ -2200,11 +2234,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status\r\n"
+			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status, b.courierID\r\n"
 					+ "FROM tblordercheckout AS a\r\n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
 					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID\r\n"
 					+ "WHERE d.Status = 'Delivery'";
 //			System.out.println(SQL);
 			st.execute(SQL);
@@ -2224,6 +2259,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				// End of Date
 				arrDelList.add(rs.getString(5));
 				arrDelList.add(rs.getString(6));
+				arrDelList.add(rs.getString(7));
 				dTB1.main.addRow(arrDelList.toArray());
 				arrDelList.clear();
 			}

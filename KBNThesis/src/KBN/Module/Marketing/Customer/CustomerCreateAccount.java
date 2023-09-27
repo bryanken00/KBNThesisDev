@@ -1,4 +1,4 @@
-package KBN.Module.Marketing;
+package KBN.Module.Marketing.Customer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
