@@ -49,7 +49,6 @@ public class CustomerAccount extends JPanel implements MouseListener{
 		txtSearchBar.setBounds(24, 59, 400, 28);
 		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setForeground(Color.GRAY);
-		txtSearchBar.setColumns(10);
 		add(txtSearchBar);
 		
 		btnCreate = new JButton("Create");

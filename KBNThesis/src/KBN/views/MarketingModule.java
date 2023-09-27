@@ -512,6 +512,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//Delivery
 		delStatus.btnListOfDelivery.addActionListener(this);
 		delStatus.btnCompleted.addActionListener(this);
+		delStatus.btnSearch.addActionListener(this);
 		
 	}
 	
@@ -544,6 +545,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			DeliveryFuncDefault();
 		if(e.getSource() == delStatus.btnCompleted)
 			DeliveryFuncCompleted();
+		if(e.getSource() == delStatus.btnSearch)
+			DeliveryFuncSearch(delStatus.txtSearchbar.getText());
 		
 		//Ordering
 		if(e.getSource() == btnOrdering)
@@ -2317,6 +2320,45 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			dTB2.table.setModel(dTB2.main);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "DeliveryFuncERROR: " + e.getMessage());
+		}
+	}
+	
+	private void DeliveryFuncSearch(String search) {
+		try {
+			dTB1.main.setRowCount(0);
+			ArrayList arrDelList = new ArrayList<>();
+			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status, b.courierID\r\n"
+					+ "FROM tblordercheckout AS a\r\n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
+					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID\r\n"
+					+ "WHERE d.Status = 'Delivery' AND (b.CourierID LIKE '%" + search + "%' OR a.OrderRefNumber LIKE '%" + search + "%')";
+//			System.out.println(SQL);
+			st.execute(SQL);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				//Date
+	            Date date = inputFormat.parse(rs.getString(1));
+	            String outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
+				arrDelList.add(rs.getString(2));
+				arrDelList.add(rs.getString(3));
+				
+				// Date
+				date = inputFormat.parse(rs.getString(4));
+				outputDate = outputFormat.format(date);
+				arrDelList.add(outputDate);
+				// End of Date
+				arrDelList.add(rs.getString(5));
+				arrDelList.add(rs.getString(6));
+				arrDelList.add(rs.getString(7));
+				dTB1.main.addRow(arrDelList.toArray());
+				arrDelList.clear();
+			}
+			dTB1.table.setModel(dTB1.main);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR DeliveryFuncSearch: " + e.getMessage());
 		}
 	}
 

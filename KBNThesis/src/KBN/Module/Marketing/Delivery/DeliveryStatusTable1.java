@@ -1,9 +1,12 @@
 package KBN.Module.Marketing.Delivery;
 
+import java.awt.Color;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class DeliveryStatusTable1 extends JPanel {
 	
@@ -20,7 +23,12 @@ public class DeliveryStatusTable1 extends JPanel {
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
+		
 		tableSetup();
+		
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE); // Background
+        header.setForeground(Color.BLACK); // Text
 		
 	}
 	
