@@ -24,7 +24,7 @@ public class onDelivery extends JDialog {
 	public JButton btnConfirm;
 
 	public onDelivery() {
-		getContentPane().setBackground(SystemColor.activeCaption);
+		getContentPane().setBackground(new Color(255, 255, 255));
 		getContentPane().setLayout(null);
 //		setUndecorated(true);
 		this.setModal(true);

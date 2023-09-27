@@ -162,6 +162,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private String orderClickIdentifier = "";
 	
 	private int OrderCount = 0; // Order List
+	private int OrderCountDash = 0; // Order List
 	private int orderBTNClickCount = 0;
 	private int rowCount; // Pre - Registration
 	private int ClientProfileCounter; // Client Profile OrderList
@@ -970,9 +971,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rs = st.getResultSet();
 			
 			if(rs.next())
-				OrderCount = rs.getInt(1);
+				OrderCountDash = rs.getInt(1);
 			
-			opdDashboard.iOrderCount(OrderCount);
+			opdDashboard.iOrderCount(OrderCountDash);
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
@@ -1317,13 +1318,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 			if(rs.next())
 				OrderCount = rs.getInt(1);
-			
+			orderPanel.orderLPanel.opd = new OrderListPanelData();
+			orderPanel.orderLPanel.scrollPane.setViewportView(orderPanel.orderLPanel.opd);
 			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+			System.out.println("OrderCount: " + OrderCount);
+			setOrderListData();
+			orderPanelMouseList();
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
 		}
-		setOrderListData();
 	}
 	
 	private void setOrderListData() {
@@ -2023,26 +2027,31 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public void mouseClicked(MouseEvent e) {
 		
         Component clickedComponent = e.getComponent();
-        orderCounter();
+        Component clickedComponent1 = e.getComponent();
+//        orderCounter();
         preRegStatus();
-        //checking if the mouseClick if JPanel
+
         if (clickedComponent instanceof JPanel) {
-            // Check for a match in the orderList array
+
+            // Pre Reg
+            for (int i = 0; i < rowCount; i++) {
+                if (clickedComponent == preReg.preReg.panel[i]) {
+                    preRegDataSetter(i);
+                    return;
+                }
+            }
+        }
+        
+        if(clickedComponent1 instanceof JPanel) {
+        	// OrderList
             for (int i = 0; i < OrderCount; i++) {
-                if ((JPanel) clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
+                if (clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
+                	System.out.println(i);
                     OrderListIndexClicked = i;
                     orderPanel.main.setRowCount(0);
                     orderPanel.table.setModel(orderPanel.main);
                     panelDataSetter();
-                    return; // Exit the method or return if a match is found
-                }
-            }
-
-            // Check for a match in the preReg.panel array
-            for (int i = 0; i < rowCount; i++) {
-                if (clickedComponent == preReg.preReg.panel[i]) {
-                    preRegDataSetter(i);
-                    return; // Exit the method or return if a match is found
+                    return;
                 }
             }
         }
@@ -2058,7 +2067,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //                break;
 //            }
 //        }
-//        
 
         
 	}
@@ -2073,7 +2081,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void preRegDataSetter(int index) {
 		regID = preReg.preReg.rowID.get(index).toString();
-		System.out.println(regID); // debugging
+//		System.out.println(regID); // debugging
 		try {
 			String sql = "SELECT Firstname, Middlename, Lastname, Contactnum, Emailadd, Street, Barangay, City, Province, Brand FROM tblpreregistration WHERE ID = '" + regID + "'";
 			

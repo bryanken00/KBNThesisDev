@@ -21,12 +21,14 @@ public class OrderListPanel extends JPanel {
 	public JTextField txtSearch;
 	public JLabel lblInstruction;
 	public JLabel lblTimeDiff;
+	public JScrollPane scrollPane;
 	
 	public OrderListPanel() {
+		setBackground(new Color(255, 255, 255));
 		setBounds(0, 0, 320, 677);
 		setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 82, 320, 595);
 		scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		add(scrollPane);

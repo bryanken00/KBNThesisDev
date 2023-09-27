@@ -13,7 +13,9 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.JScrollPane;
+import javax.swing.border.LineBorder;
 
 public class OrderingPanel extends JPanel {
 	
@@ -51,6 +53,7 @@ public class OrderingPanel extends JPanel {
 	public JButton btnToShip;
 
     public OrderingPanel() {
+		setBackground(new Color(255, 255, 255));
         setBounds(0, 0, 989, 699);
         setLayout(null);
         
@@ -60,11 +63,15 @@ public class OrderingPanel extends JPanel {
         add(PanelOrderList);
         
         panel_1 = new JPanel();
+        panel_1.setBackground(new Color(255, 255, 255));
+        panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
         panel_1.setBounds(346, 11, 633, 677);
         add(panel_1);
         panel_1.setLayout(null);
         
         topPanel = new JPanel();
+        topPanel.setBackground(new Color(255, 255, 255));
+        topPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
         topPanel.setBounds(10, 10, 613, 105);
         panel_1.add(topPanel);
         topPanel.setLayout(null);
@@ -119,6 +126,8 @@ public class OrderingPanel extends JPanel {
         topPanel.add(lblAdd);
         
         middlePanel = new JPanel();
+        middlePanel.setBackground(new Color(255, 255, 255));
+        middlePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
         middlePanel.setLayout(null);
         middlePanel.setBounds(10, 126, 613, 87);
         panel_1.add(middlePanel);
@@ -173,6 +182,7 @@ public class OrderingPanel extends JPanel {
         middlePanel.add(btnToShip);
         
         tablePanel = new JPanel();
+        tablePanel.setBackground(new Color(255, 255, 255));
         tablePanel.setBounds(10, 224, 613, 442);
         panel_1.add(tablePanel);
         tablePanel.setLayout(null);
@@ -182,6 +192,7 @@ public class OrderingPanel extends JPanel {
         tablePanel.add(scrollPane);
         
         table = new JTable();
+        table.setBackground(new Color(255, 255, 255));
         scrollPane.setViewportView(table);
         
         lblItemCount = new JLabel("Items: ");
@@ -208,6 +219,10 @@ public class OrderingPanel extends JPanel {
         orderLPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Set border here
         
         tableSetup();
+        
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE); // Background
+        header.setForeground(Color.BLACK); // Text
     }
     
     

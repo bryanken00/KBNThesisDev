@@ -24,6 +24,7 @@ public class OrderListPanelData extends JPanel {
 	public int OrderCount;
 	
 	public OrderListPanelData() {
+		setBackground(new Color(255, 255, 255));
 		setBounds(0, 0, 320, 1000);
 		setLayout(null);
 	}
