@@ -497,6 +497,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//KBNProducts Panel
 		kbnProd.btnProducts.addActionListener(this);
 		kbnProd.btnArchive.addActionListener(this);
+		kbnProd.btnSearch.addActionListener(this);
 		
 		//RightClick
 		rightClick.btnAddItem.addActionListener(this);
@@ -525,12 +526,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//KBN Products
 		if(e.getSource() == btnKbn)
 			KBNPanelFunc();
-		
 		if(e.getSource() == kbnProd.btnProducts)
 			KBNPanelFunc();
-		
 		if(e.getSource() == kbnProd.btnArchive)
 			KBNPanelFuncArchive();
+		if(e.getSource() == kbnProd.btnSearch)
+			KBNPanelFuncSearch(kbnProd.txtSearchBar.getText());
 			
 		if(e.getSource() == btnRebranding)
 			rebrandProdPanelFunc();
@@ -1050,7 +1051,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblordercheckout AS a "
 					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
 					+ "WHERE a.OrderDate >= CURDATE()";
-//			System.out.println("Today: " + thisDayCount);
 			
 			st.execute(thisDayCount);
 			rs = st.getResultSet();
@@ -1061,7 +1061,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String lastDayCount = "SELECT SUM(b.Quantity) FROM tblordercheckout AS a "
 					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
 					+ "WHERE a.OrderDate >= SUBDATE(CURDATE(),1) AND a.OrderDate <= CURDATE();";
-//			System.out.println("LastDay: " + lastDayCount);
 
 			st.execute(lastDayCount);
 			rs = st.getResultSet();
@@ -1078,6 +1077,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(randOFF > 100)
 				randOFF = 100;
 			
+			System.out.println(randOFF);
 			dashboard1.lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			
 		}catch (Exception e) {
@@ -1459,15 +1459,36 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		kbnProd.setVisible(true);
 	}
 	
+	private void KBNPanelFuncSearch(String search) {
+		String checker__ = "";
+		if(kbnProdButtonChecker.equals("Archive"))
+			checker__ = "tblproductsarchive";
+		else
+			checker__ = "tblProducts";
+		setVisiblePanel();
+		kbnProd.main.setRowCount(0);
+		kbnProd.table.setModel(kbnProd.main);
+        
+        try {
+        	String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM " + checker__ + " WHERE prodName LIKE '%" + search + "%'";
+        	st.execute(sql);
+        	rs = st.getResultSet();
+        	while(rs.next()) {
+            	Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5), rs.getString(6)};
+            	kbnProd.main.addRow(data);
+        	}
+        }catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "ERROR KBNProductsSearch: " + e.getMessage());
+		}
+		kbnProd.setVisible(true);
+	}
+	
 	private void KBNPanelFunc() {
 		rightClick.btnArchive.setText("Archive");
 		kbnProdButtonChecker = "Products";
 		setVisiblePanel();
 		kbnProd.main.setRowCount(0);
 		kbnProd.table.setModel(kbnProd.main);
-//        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
-        
-//        kbnProd
         
         try {
         	String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM tblproducts";
@@ -1476,7 +1497,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         	while(rs.next()) {
             	Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5), rs.getString(6)};
             	kbnProd.main.addRow(data);
-//            	System.out.println(rs.getString(1));
         	}
         }catch (Exception e) {
         	JOptionPane.showMessageDialog(null, "KBNProducts: " + e.getMessage());
