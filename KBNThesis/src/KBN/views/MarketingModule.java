@@ -485,6 +485,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanel.btnInvoice.addActionListener(this);
 		orderPanel.orderLPanel.lblInstruction.addMouseListener(this);
 		onDeliver.btnConfirm.addActionListener(this);
+		orderPanel.orderLPanel.btnSearch.addActionListener(this);
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
@@ -561,6 +562,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanelBTNDELIVERY(refNum);
 		if(e.getSource() == onDeliver.btnConfirm)
 			setDeliveryRider();
+		if(e.getSource() == orderPanel.orderLPanel.btnSearch)
+			orderPanelSearch();
 			
 		
 		//inside Panel 
@@ -896,7 +899,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ErrorArchiveKBN: " + e.getMessage());
-			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -1077,7 +1079,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(randOFF > 100)
 				randOFF = 100;
 			
-			System.out.println(randOFF);
 			dashboard1.lblDailyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			
 		}catch (Exception e) {
@@ -1321,12 +1322,53 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			orderPanel.orderLPanel.opd = new OrderListPanelData();
 			orderPanel.orderLPanel.scrollPane.setViewportView(orderPanel.orderLPanel.opd);
 			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
-			System.out.println("OrderCount: " + OrderCount);
 			setOrderListData();
 			orderPanelMouseList();
-
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
+		}
+	}
+	
+	private void orderCounterSearch(String search) {
+		try {
+			orderBTNClickCount++;
+			st = dbConn.getConnection().createStatement();
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout WHERE OrderRefNumber LIKE '%" + search + "%'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				OrderCount = rs.getInt(1);
+			orderPanel.orderLPanel.opd = new OrderListPanelData();
+			orderPanel.orderLPanel.scrollPane.setViewportView(orderPanel.orderLPanel.opd);
+			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+			setOrderListDataSearch(search);
+			orderPanelMouseList();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
+		}
+	}
+	
+	private void setOrderListDataSearch(String search) {
+		try {
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE a.OrderRefNumber LIKE '%" + search + "%'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
+				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				orderPanel.orderLPanel.opd.lblStatus[i].setText(rs.getString(5));
+				//status indicator
+				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].revalidate();
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].repaint();
+				i++;
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
 		}
 	}
 	
@@ -1528,6 +1570,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanelMouseList();
 	}
 	
+	private void orderPanelFuncSearch() {
+		setVisiblePanel();
+		orderPanel.setVisible(true);
+		clearOrderPanelMouseListeners();
+		orderCounterSearch(orderPanel.orderLPanel.txtSearchBar.getText());
+		orderPanelMouseList();
+	}
+	
 	// Client Profile
 	private void clientProfileFunc() {
 		if("".equals(clientProfileChecker))
@@ -1540,7 +1590,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			orderPanel.main.setRowCount(0);
 	        orderPanel.table.setModel(orderPanel.main);
-	        System.out.println(refNum);
 			String sql = "UPDATE tblorderstatus SET Status = 'Approved' WHERE OrderRefNumber = '" + refNum + "';";
 			int i = st.executeUpdate(sql);
 			if(i == 1)
@@ -1637,6 +1686,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			JOptionPane.showMessageDialog(null, "Error setDeliveryRider: " + e.getMessage());
 		}
 	}
+	
+	private void orderPanelSearch() {
+		if(orderPanel.orderLPanel.txtSearchBar.getText().equals("Search OrderNumber"))
+			orderPanelFunc();
+		else {
+			orderPanelFuncSearch();
+		}
+	}
 
 	
 	
@@ -1694,7 +1751,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			while(rs.next()) {
 				data = rs.getString(1) + "<br>" + rs.getString(2) + "<br>" + rs.getString(3);
 				imgResizer(rs.getInt(4));
-				System.out.println(rs.getInt(4));
 			}
 			
 			//Setting Customer Profile
@@ -2066,7 +2122,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         	// OrderList
             for (int i = 0; i < OrderCount; i++) {
                 if (clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
-                	System.out.println(i);
                     OrderListIndexClicked = i;
                     orderPanel.main.setRowCount(0);
                     orderPanel.table.setModel(orderPanel.main);
