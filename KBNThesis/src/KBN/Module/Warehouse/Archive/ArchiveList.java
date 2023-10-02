@@ -45,14 +45,14 @@ public class ArchiveList extends JPanel implements MouseListener{
 		panel.setLayout(null);
 		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel.setBackground(Color.WHITE);
-		panel.setBounds(10, 11, 969, 83);
+		panel.setBounds(10, 11, 969, 60);
 		add(panel);
 		
 		txtSearchBar = new JTextField();
 		txtSearchBar.setText("Search by Material Name");
 		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setForeground(Color.GRAY);
-		txtSearchBar.setBounds(10, 11, 400, 28);
+		txtSearchBar.setBounds(618, 16, 307, 28);
 		panel.add(txtSearchBar);
 		
 		btnSearch = new JButton("");
@@ -61,25 +61,25 @@ public class ArchiveList extends JPanel implements MouseListener{
 		btnSearch.setFocusable(false);
 		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnSearch.setBackground(Color.WHITE);
-		btnSearch.setBounds(410, 11, 32, 28);
+		btnSearch.setBounds(925, 16, 32, 28);
 		panel.add(btnSearch);
 		
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(452, 11, 161, 28);
+		dateChooser.setBounds(447, 16, 161, 28);
 		panel.add(dateChooser);
 		
 		rawMatsCategory = new JComboBox();
-		rawMatsCategory.setBounds(10, 50, 236, 22);
+		rawMatsCategory.setBounds(10, 19, 236, 22);
 		panel.add(rawMatsCategory);
 		
 		JPanel tableContainer = new JPanel();
 		tableContainer.setLayout(null);
 		tableContainer.setBackground(Color.WHITE);
-		tableContainer.setBounds(10, 105, 969, 583);
+		tableContainer.setBounds(10, 82, 969, 606);
 		add(tableContainer);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 969, 583);
+		scrollPane.setBounds(0, 0, 969, 606);
 		tableContainer.add(scrollPane);
 		
 		table = new JTable();

@@ -169,6 +169,23 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		wNav.lblUsername.setText(dataSet.getUsername());
 	}
 	
+	private void NavsColor() {
+		wNav.btnRawMats.setBackground(Color.WHITE);
+		wNav.btnPackMats.setBackground(Color.WHITE);
+		wNav.btnFinishProduct.setBackground(Color.WHITE);
+		wNav.btnArchiveList.setBackground(Color.WHITE);
+		wNav.btnSummary.setBackground(Color.WHITE);
+		wNav.btnProcessOrder.setBackground(Color.WHITE);
+		
+
+		wNav.btnRawMats.setForeground(Color.BLACK);
+		wNav.btnPackMats.setForeground(Color.BLACK);
+		wNav.btnFinishProduct.setForeground(Color.BLACK);
+		wNav.btnArchiveList.setForeground(Color.BLACK);
+		wNav.btnSummary.setForeground(Color.BLACK);
+		wNav.btnProcessOrder.setForeground(Color.BLACK);
+	}
+	
 	private void warehouseButtonsDefault() {
 		wNav.btnAddItem.setEnabled(false);
 		wNav.btnQRCode.setEnabled(false);
@@ -232,6 +249,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		// rawMats
 		rawMats.btnSearch.addActionListener(this);
 		rawMats.rawMatsCategory.addActionListener(this);
+		rawMats.cbAvailable.addActionListener(this);
 			// Mouse
 			rawMats.table.addMouseListener(this);
 			// Key
@@ -350,6 +368,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Raw Materials Panel
 	private void wNavRawMatsFunc() {
+		NavsColor();
+		wNav.btnRawMats.setBackground(new Color(75, 119, 71));
+		wNav.btnRawMats.setForeground(Color.WHITE);
 		wNav.btnAddItem.setText("Add Item");
         panelVisible();
 		wNav.btnAddItem.setVisible(true);
@@ -361,6 +382,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Archive List Panel
 	private void wNavArcListFunc() {
+		NavsColor();
+		wNav.btnArchiveList.setBackground(new Color(75, 119, 71));
+		wNav.btnArchiveList.setForeground(Color.WHITE);
         panelVisible();
 		wNav.btnAddItem.setText("Restore");
         arcList.setVisible(true);
@@ -371,7 +395,25 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Search
 	private void rawMatsCat() {
-		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE CATEGORIES = '" + rawMats.rawMatsCategory.getSelectedItem() + "'";
+		if(rawMats.cbAvailable.getSelectedIndex() == 0) {
+			String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE CATEGORIES = '" + rawMats.rawMatsCategory.getSelectedItem() + "'";
+			rawMatsTable(sql);
+		}else {
+			String sql = "SELECT DISTINCT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN\r\n"
+					+ "FROM tblcurrentmonth\r\n"
+					+ "WHERE CATEGORIES = '" + rawMats.rawMatsCategory.getSelectedItem() + "'"
+					+ "GROUP BY MATERIAL_NAME, CODE_NAME, SUPPLIER\r\n"
+					+ "ORDER BY DATE_TODAY ASC;";
+			rawMatsTable(sql);
+		}
+	}
+	
+	private void rawMatsAvailable() {
+		String sql = "SELECT DISTINCT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN\r\n"
+				+ "FROM tblcurrentmonth\r\n"
+				+ "GROUP BY MATERIAL_NAME, CODE_NAME, SUPPLIER\r\n"
+				+ "ORDER BY DATE_TODAY ASC;\r\n"
+				+ "";
 		rawMatsTable(sql);
 	}
 	
@@ -382,8 +424,23 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		else
 			MaterialName = rawMats.txtSearchBar.getText();
 		
-		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth WHERE MATERIAL_NAME LIKE '%" + MaterialName + "%'";
-		rawMatsTable(sql);
+		
+		if(rawMats.cbAvailable.getSelectedIndex() == 0) {
+			String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN "
+					+ "FROM tblcurrentmonth "
+					+ "WHERE MATERIAL_NAME LIKE '%" + MaterialName + "%'";
+			rawMatsTable(sql);
+		}else {
+			String sql = "SELECT DISTINCT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN\r\n"
+					+ "FROM tblcurrentmonth\r\n"
+					+ "WHERE MATERIAL_NAME LIKE '%" + MaterialName + "%'"
+					+ "GROUP BY MATERIAL_NAME, CODE_NAME, SUPPLIER\r\n"
+					+ "ORDER BY DATE_TODAY ASC;";
+			rawMatsTable(sql);
+		}
+		
+		
+
 	}
 	
 	// Archive RightClick
@@ -464,6 +521,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Summary
 	private void summaryFunc() {
+		NavsColor();
+		wNav.btnSummary.setBackground(new Color(75, 119, 71));
+		wNav.btnSummary.setForeground(Color.WHITE);
 		panelVisible();
 		summary.setVisible(true);
 		wNav.btnCompute.setVisible(true);
@@ -537,6 +597,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			// Raw Mats 
 			if(e.getSource() == rawMats.rawMatsCategory)
 				rawMatsCat();
+			if(e.getSource() == rawMats.cbAvailable)
+				rawMatsAvailable();
+
 			if(e.getSource() == rawMats.btnSearch)
 				rawMatsSearch();
 				

@@ -35,6 +35,7 @@ public class RawMaterials extends JPanel implements MouseListener{
 	
 	public JTable table;
 	public JButton btnSearch;
+	public JComboBox cbAvailable;
 	
 
 	
@@ -48,19 +49,19 @@ public class RawMaterials extends JPanel implements MouseListener{
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(10, 11, 969, 83);
+		panel.setBounds(10, 11, 969, 60);
 		add(panel);
 		panel.setLayout(null);
 		
 		txtSearchBar = new JTextField();
-		txtSearchBar.setBounds(10, 11, 400, 28);
+		txtSearchBar.setBounds(618, 16, 307, 28);
 		txtSearchBar.addMouseListener(this);
 		panel.add(txtSearchBar);
 		txtSearchBar.setText("Search by Material Name");
 		txtSearchBar.setForeground(Color.GRAY);
 		
 		btnSearch = new JButton("");
-		btnSearch.setBounds(410, 11, 32, 28);
+		btnSearch.setBounds(925, 16, 32, 28);
 		panel.add(btnSearch);
 		btnSearch.setIcon(new ImageIcon(RawMaterials.class.getResource("/KBN/resources/SearchBarUniversal.png")));
 		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
@@ -69,21 +70,26 @@ public class RawMaterials extends JPanel implements MouseListener{
 		btnSearch.setBackground(Color.WHITE);
 		
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(452, 11, 161, 28);
+		dateChooser.setBounds(428, 16, 161, 28);
 		panel.add(dateChooser);
 		
 		rawMatsCategory = new JComboBox();
-		rawMatsCategory.setBounds(10, 50, 236, 22);
+		rawMatsCategory.setBounds(228, 19, 172, 22);
 		panel.add(rawMatsCategory);
+		
+		String [] cb = {"Use History","Available Materials"};
+		cbAvailable = new JComboBox(cb);
+		cbAvailable.setBounds(28, 19, 172, 22);
+		panel.add(cbAvailable);
 		
 		JPanel tableContainer = new JPanel();
 		tableContainer.setBackground(new Color(255, 255, 255));
-		tableContainer.setBounds(10, 105, 969, 583);
+		tableContainer.setBounds(10, 82, 969, 606);
 		add(tableContainer);
 		tableContainer.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 969, 583);
+		scrollPane.setBounds(0, 0, 969, 606);
 		tableContainer.add(scrollPane);
 		
 		table = new JTable();
@@ -231,5 +237,4 @@ public class RawMaterials extends JPanel implements MouseListener{
 		}
 		txtSearchBar.setFocusable(false);
 	}
-	
 }
