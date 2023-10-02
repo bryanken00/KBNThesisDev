@@ -1309,26 +1309,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		normalStock();
 	}
 	
-	private void orderCounter() {
-		try {
-			orderBTNClickCount++;
-			st = dbConn.getConnection().createStatement();
-			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
-			st.execute(sql);
-			rs = st.getResultSet();
-			
-			if(rs.next())
-				OrderCount = rs.getInt(1);
-			orderPanel.orderLPanel.opd = new OrderListPanelData();
-			orderPanel.orderLPanel.scrollPane.setViewportView(orderPanel.orderLPanel.opd);
-			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
-			setOrderListData();
-			orderPanelMouseList();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
-		}
-	}
-	
 	private void orderCounterSearch(String search) {
 		try {
 			orderBTNClickCount++;
@@ -1369,6 +1349,26 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
+		}
+	}
+	
+	private void orderCounter() {
+		try {
+			orderBTNClickCount++;
+			st = dbConn.getConnection().createStatement();
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				OrderCount = rs.getInt(1);
+			orderPanel.orderLPanel.opd = new OrderListPanelData();
+			orderPanel.orderLPanel.scrollPane.setViewportView(orderPanel.orderLPanel.opd);
+			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+			setOrderListData();
+			orderPanelMouseList();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
 		}
 	}
 	

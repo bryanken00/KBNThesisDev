@@ -26,6 +26,7 @@ public class Modules extends JFrame implements ActionListener{
 	private dataSetter dataSet;
 	private WarehouseModule rm;
 	private MarketingModule mm;
+	private WarehouseModule_1 rm1;
 	
 	private ProductionModule pm;
 	
@@ -157,8 +158,11 @@ public class Modules extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnWarehouse) {
-			rm = new WarehouseModule();
-			rm.setVisible(true);
+//			rm = new WarehouseModule();
+//			rm.setVisible(true);
+			
+			rm1 = new WarehouseModule_1();
+			rm1.setVisible(true);
 			this.dispose();
 		}
 		if(e.getSource() == btnProduction) {

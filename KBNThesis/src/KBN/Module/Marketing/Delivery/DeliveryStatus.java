@@ -25,6 +25,7 @@ public class DeliveryStatus extends JPanel implements MouseListener{
 	public JButton btnListOfDelivery;
 	public JButton btnCompleted;
 	public JButton btnSearch;
+	private JButton btnDeliveryDetails;
 	
 	public DeliveryStatus() {
 		setBackground(new Color(255, 255, 255));
@@ -34,7 +35,7 @@ public class DeliveryStatus extends JPanel implements MouseListener{
         panel1 = new JPanel();
         panel1.setBorder(new LineBorder(new Color(0, 0, 0)));
         panel1.setBackground(new Color(255, 255, 255));
-        panel1.setBounds(26, 107, 933, 550);
+        panel1.setBounds(26, 107, 933, 532);
 		add(panel1);
 		panel1.setLayout(null);
 		
@@ -83,6 +84,14 @@ public class DeliveryStatus extends JPanel implements MouseListener{
 		btnSearch.setBackground(Color.WHITE);
 		btnSearch.setBounds(878, 20, 32, 28);
 		panel.add(btnSearch);
+		
+		btnDeliveryDetails = new JButton("View Details");
+		btnDeliveryDetails.setBounds(845, 650, 114, 38);
+		btnDeliveryDetails.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnDeliveryDetails.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		btnDeliveryDetails.setBackground(Color.WHITE);
+		btnDeliveryDetails.setFocusable(false);
+		add(btnDeliveryDetails);
 		
 	}
 	

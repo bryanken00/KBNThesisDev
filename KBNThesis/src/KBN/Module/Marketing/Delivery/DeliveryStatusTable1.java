@@ -16,12 +16,13 @@ public class DeliveryStatusTable1 extends JPanel {
 	
 	public final JScrollPane scrollPane = new JScrollPane();
 	public DeliveryStatusTable1() {
-		setBounds(0, 0, 933, 550);
+		setBounds(0, 0, 933, 532);
 		setLayout(null);
-		scrollPane.setBounds(0, 0, 933, 550);
+		scrollPane.setBounds(0, 0, 933, 532);
 		add(scrollPane);
 		
 		table = new JTable();
+		table.setBackground(new Color(255, 255, 255));
 		scrollPane.setViewportView(table);
 		
 		tableSetup();

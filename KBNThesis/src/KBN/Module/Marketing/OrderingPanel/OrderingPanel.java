@@ -143,40 +143,40 @@ public class OrderingPanel extends JPanel {
         
         btnApproved = new JButton("<html>Order<br>Approved</html>");
         btnApproved.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnApproved.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
         btnApproved.setFocusable(false);
-        btnApproved.setBorderPainted(false);
         btnApproved.setBackground(Color.WHITE);
         btnApproved.setBounds(30, 46, 86, 29);
         middlePanel.add(btnApproved);
         
         btnDelivery = new JButton("<html>On<br>Delivery</html>");
         btnDelivery.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnDelivery.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
         btnDelivery.setFocusable(false);
-        btnDelivery.setBorderPainted(false);
         btnDelivery.setBackground(Color.WHITE);
         btnDelivery.setBounds(262, 46, 86, 29);
         middlePanel.add(btnDelivery);
         
         btnInvoice = new JButton("Invoice");
         btnInvoice.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnInvoice.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
         btnInvoice.setFocusable(false);
-        btnInvoice.setBorderPainted(false);
         btnInvoice.setBackground(Color.WHITE);
         btnInvoice.setBounds(494, 46, 86, 29);
         middlePanel.add(btnInvoice);
         
         btnDeliveryComplete = new JButton("<html>Deliver<br>Complete</html>");
         btnDeliveryComplete.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnDeliveryComplete.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
         btnDeliveryComplete.setFocusable(false);
-        btnDeliveryComplete.setBorderPainted(false);
         btnDeliveryComplete.setBackground(Color.WHITE);
         btnDeliveryComplete.setBounds(378, 46, 86, 29);
         middlePanel.add(btnDeliveryComplete);
         
         btnToShip = new JButton("<html>To<br>Ship</html>");
         btnToShip.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+        btnToShip.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
         btnToShip.setFocusable(false);
-        btnToShip.setBorderPainted(false);
         btnToShip.setBackground(Color.WHITE);
         btnToShip.setBounds(146, 46, 86, 29);
         middlePanel.add(btnToShip);

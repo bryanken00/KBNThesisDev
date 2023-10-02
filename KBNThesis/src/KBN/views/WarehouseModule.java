@@ -67,6 +67,7 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import com.toedter.calendar.JDateChooser;
+import javax.swing.border.LineBorder;
 
 public class WarehouseModule extends JFrame implements ActionListener, PropertyChangeListener, MouseListener, KeyListener{
 
@@ -254,6 +255,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	
 	private void objComponents() {
 		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panel.setLayout(null);
 		panel.setBounds(0, 0, 255, 721);
 		contentPane.add(panel);

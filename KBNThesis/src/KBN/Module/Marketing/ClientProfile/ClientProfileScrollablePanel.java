@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.Color;
@@ -81,8 +82,8 @@ public class ClientProfileScrollablePanel extends JPanel {
 		
 		btnProcessOrder[i] = new JButton("Process Order");
 		btnProcessOrder[i].setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+		btnProcessOrder[i].setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnProcessOrder[i].setFocusable(false);
-		btnProcessOrder[i].setBorderPainted(false);
 		btnProcessOrder[i].setBackground(Color.WHITE);
 		btnProcessOrder[i].setBounds(443, 37, 127, 28);
 		panel[i].add(btnProcessOrder[i]);
