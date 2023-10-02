@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import KBN.Module.Warehouse.Archive.ArchiveList;
 import KBN.Module.Warehouse.RawMatsList.ArchiveRightClick;
 import KBN.Module.Warehouse.RawMatsList.RawMaterials;
 import KBN.Module.Warehouse.nav.WarehouseNav;
@@ -38,15 +39,16 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private ArchiveRightClick rightClickRawMats;
 	private WarehouseNav wNav;
 	private RawMaterials rawMats;
-	private DbConnection dbConn;
+	private ArchiveList arcList;
 	
 	// Account
 	private dataSetter dataSet;
 	private String accLevel = "";
 	
 	//SQL
-	Statement st;
-	ResultSet rs;
+	private DbConnection dbConn;
+	private Statement st;
+	private ResultSet rs;
 	
 	// Date
 	private Date date;
@@ -104,9 +106,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         
-        // Class Declaration
-        wNav = new WarehouseNav();
-        rawMats = new RawMaterials();
+        // Database
         dbConn = new DbConnection();
         try {
 			st = dbConn.getConnection().createStatement();
@@ -114,12 +114,19 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			printingError("Statement ERROR: " + e.getMessage());
 		}
         
+        // Class Declaration
+        wNav = new WarehouseNav();
+        rawMats = new RawMaterials();
+        arcList = new ArchiveList();
+        
+
+        
         // Nav Panel
         panelNav.add(wNav);
         
-        
         // Container Panel
-        container.add(rawMats);//Raw Mats
+        container.add(rawMats); //Raw Mats
+        container.add(arcList); //Archive
         
         // Defaults
         setUsername();
@@ -205,18 +212,26 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		// rawMats
 		rawMats.btnSearch.addActionListener(this);
 		rawMats.rawMatsCategory.addActionListener(this);
-		
-		
 			// Mouse
 			rawMats.table.addMouseListener(this);
 			// Key
 			rawMats.table.addKeyListener(this);
+			
+		// Archive
+		arcList.btnSearch.addActionListener(this);
+		arcList.rawMatsCategory.addActionListener(this);
+			// Mouse
+			arcList.table.addMouseListener(this);
+			// Key
+			arcList.table.addKeyListener(this);
+			
 		
 		
 	}
 	
 	private void panelVisible() {
 		rawMats.setVisible(false);
+		arcList.setVisible(false);
 	}
 	
 	private void categoriesSetup() {
@@ -238,7 +253,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	// Raw Materials
 	private void rawMatsTable(String sql) {
 		rawMats.main.setRowCount(0);
-		revalidate();
+		rawMats.revalidate();
 		arrSQLResult = new ArrayList<>();
 		try {
 			st.execute(sql);
@@ -266,17 +281,67 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			printingError("Table ERROR: " + e.getMessage());
 		}
 	}
+	
+	// Archive List
+	private void printingArchiveList(String sql) {
+		arcList.main.getDataVector().removeAllElements();
+		arcList.revalidate();
+		try {
+			st = dbConn.getConnection().createStatement();
+			st.execute(sql);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				arrSQLResult.add(rs.getString(1));
+				arrSQLResult.add(rs.getString(2));
+				arrSQLResult.add(rs.getString(3));
+				arrSQLResult.add(rs.getString(4));
+				arrSQLResult.add(rs.getString(5));
+				
+				//Date
+	            date = inputFormat.parse(rs.getString(6));
+	            String outputDate = outputFormat.format(date);
+				arrSQLResult.add(outputDate);
+				
+				arrSQLResult.add(rs.getString(7));
+				
+//				//Date
+				date = inputFormat.parse(rs.getString(8));
+				outputDate = outputFormat.format(date);
+				arrSQLResult.add(outputDate);
+				
+				arcList.main.addRow(arrSQLResult.toArray());
+				arrSQLResult.clear();
+			}
+		}catch (Exception e) {
+			printingArchiveList("Table ERROR: \n" + e.getMessage());
+		}
+	}
+	
+	
+	private void wNavRawMatsFunc() {
+		wNav.btnAddItem.setText("Add Item");
+		wNav.btnQRCode.setVisible(true);
+		String sql = "SELECT a.itemID, a.SUPPLIER, a.MATERIAL_NAME, a.CODE_NAME, a.RELEASED_VOLUME, a.DATE_TODAY, tblarchiveuser.userAccount, tblarchiveuser.ArchiveDate FROM tblcurrentmonth_archive AS a INNER JOIN tblarchiveuser ON a.itemID = tblarchiveuser.itemID";
+		printingArchiveList(sql);
+        panelVisible();
+        rawMats.setVisible(true);
+	}
+	
+	private void wNavArcListFunc() {
+		wNav.btnAddItem.setText("Restore");
+		wNav.btnQRCode.setVisible(false);
+        panelVisible();
+        arcList.setVisible(true);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		// Navs
-		if(e.getSource() == wNav.btnRawMats) {
-			String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth";
-			rawMatsTable(sql);
-	        panelVisible();
-	        rawMats.setVisible(true);
-		}
+		if(e.getSource() == wNav.btnRawMats)
+			wNavRawMatsFunc();
+		if(e.getSource() == wNav.btnArchiveList)
+			wNavArcListFunc();
 		
 		
 		// Raw Mats 

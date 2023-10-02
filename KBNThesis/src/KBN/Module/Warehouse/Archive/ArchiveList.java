@@ -1,12 +1,11 @@
-package KBN.Module.Warehouse.RawMatsList;
+package KBN.Module.Warehouse.Archive;
 
 import javax.swing.JPanel;
+import java.awt.Color;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import java.awt.Color;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
@@ -18,55 +17,52 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 
-import javax.swing.ImageIcon;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ImageIcon;
 
-public class RawMaterials extends JPanel implements MouseListener{
-
+public class ArchiveList extends JPanel implements MouseListener{
+	
 	public DefaultTableModel main;
 	private TableRowSorter<TableModel> sorter;
 	
 	public JTextField txtSearchBar;
-	public JComboBox rawMatsCategory;
-	public JDateChooser dateChooser;
-	
-	public JTable table;
 	public JButton btnSearch;
+	public JDateChooser dateChooser;
+	public JComboBox rawMatsCategory;
+	private JScrollPane scrollPane;
+	public JTable table;
 	
-
-	
-
-	public RawMaterials() {
-		setBackground(new Color(255, 255, 255));
+	public ArchiveList() {
 		setBorder(new LineBorder(new Color(0, 0, 0)));
+		setBackground(new Color(255, 255, 255));
 		setBounds(0, 0, 989, 699);
 		setLayout(null);
 		
 		JPanel panel = new JPanel();
+		panel.setLayout(null);
 		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panel.setBackground(new Color(255, 255, 255));
+		panel.setBackground(Color.WHITE);
 		panel.setBounds(10, 11, 969, 83);
 		add(panel);
-		panel.setLayout(null);
 		
 		txtSearchBar = new JTextField();
-		txtSearchBar.setBounds(10, 11, 400, 28);
-		txtSearchBar.addMouseListener(this);
-		panel.add(txtSearchBar);
 		txtSearchBar.setText("Search by Material Name");
+		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setForeground(Color.GRAY);
+		txtSearchBar.setBounds(10, 11, 400, 28);
+		panel.add(txtSearchBar);
 		
 		btnSearch = new JButton("");
-		btnSearch.setBounds(410, 11, 32, 28);
-		panel.add(btnSearch);
-		btnSearch.setIcon(new ImageIcon(RawMaterials.class.getResource("/KBN/resources/SearchBarUniversal.png")));
+		btnSearch.setIcon(new ImageIcon(ArchiveList.class.getResource("/KBN/resources/SearchBarUniversal.png")));
 		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSearch.setFocusable(false);
 		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnSearch.setBackground(Color.WHITE);
+		btnSearch.setBounds(410, 11, 32, 28);
+		panel.add(btnSearch);
 		
 		dateChooser = new JDateChooser();
 		dateChooser.setBounds(452, 11, 161, 28);
@@ -77,18 +73,17 @@ public class RawMaterials extends JPanel implements MouseListener{
 		panel.add(rawMatsCategory);
 		
 		JPanel tableContainer = new JPanel();
-		tableContainer.setBackground(new Color(255, 255, 255));
+		tableContainer.setLayout(null);
+		tableContainer.setBackground(Color.WHITE);
 		tableContainer.setBounds(10, 105, 969, 583);
 		add(tableContainer);
-		tableContainer.setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 0, 969, 583);
 		tableContainer.add(scrollPane);
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
-		
 		
 		tableSetup();
 	}
@@ -231,5 +226,5 @@ public class RawMaterials extends JPanel implements MouseListener{
 		}
 		txtSearchBar.setFocusable(false);
 	}
-	
+
 }
