@@ -8,6 +8,7 @@ import java.awt.Font;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import com.toedter.calendar.JDateChooser;
 
 public class WarehouseNav extends JPanel {
 	
@@ -20,6 +21,13 @@ public class WarehouseNav extends JPanel {
 	public JButton btnArchiveList;
 	public JButton btnSummary;
 	public JButton btnProcessOrder;
+	
+	
+	//Summary
+	public JButton btnExport;
+	public JDateChooser startingDate;
+	public JDateChooser endDate;
+	public JButton btnCompute;
 	
 	public WarehouseNav() {
 		setBackground(new Color(255, 255, 255));
@@ -39,7 +47,7 @@ public class WarehouseNav extends JPanel {
 		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setForeground(new Color(0, 0, 0));
-		separator_1.setBounds(10, 212, 241, 13);
+		separator_1.setBounds(10, 235, 241, 13);
 		add(separator_1);
 		
 		JLabel lblLogo_1 = new JLabel("");
@@ -67,7 +75,7 @@ public class WarehouseNav extends JPanel {
 		btnQRCode.setFocusable(false);
 		btnQRCode.setEnabled(false);
 		btnQRCode.setBackground(Color.WHITE);
-		btnQRCode.setBounds(10, 155, 241, 46);
+		btnQRCode.setBounds(10, 178, 241, 46);
 		add(btnQRCode);
 		
 		btnRawMats = new JButton("Raw Materials");
@@ -76,7 +84,7 @@ public class WarehouseNav extends JPanel {
 		btnRawMats.setEnabled(false);
 		btnRawMats.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnRawMats.setBackground(Color.WHITE);
-		btnRawMats.setBounds(10, 236, 241, 46);
+		btnRawMats.setBounds(10, 259, 241, 46);
 		add(btnRawMats);
 		
 		btnPackMats = new JButton("<html><center>Packaging <br/> Materials</center></html>");
@@ -85,7 +93,7 @@ public class WarehouseNav extends JPanel {
 		btnPackMats.setEnabled(false);
 		btnPackMats.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnPackMats.setBackground(Color.WHITE);
-		btnPackMats.setBounds(10, 302, 241, 46);
+		btnPackMats.setBounds(10, 325, 241, 46);
 		add(btnPackMats);
 		
 		btnFinishProduct = new JButton("Finish Products");
@@ -94,7 +102,7 @@ public class WarehouseNav extends JPanel {
 		btnFinishProduct.setEnabled(false);
 		btnFinishProduct.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnFinishProduct.setBackground(Color.WHITE);
-		btnFinishProduct.setBounds(10, 368, 241, 46);
+		btnFinishProduct.setBounds(10, 391, 241, 46);
 		add(btnFinishProduct);
 		
 		btnArchiveList = new JButton("Archive List");
@@ -103,7 +111,7 @@ public class WarehouseNav extends JPanel {
 		btnArchiveList.setEnabled(false);
 		btnArchiveList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnArchiveList.setBackground(Color.WHITE);
-		btnArchiveList.setBounds(10, 434, 241, 46);
+		btnArchiveList.setBounds(10, 457, 241, 46);
 		add(btnArchiveList);
 		
 		btnSummary = new JButton("Summary");
@@ -112,7 +120,7 @@ public class WarehouseNav extends JPanel {
 		btnSummary.setEnabled(false);
 		btnSummary.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnSummary.setBackground(Color.WHITE);
-		btnSummary.setBounds(10, 500, 241, 46);
+		btnSummary.setBounds(10, 523, 241, 46);
 		add(btnSummary);
 		
 		btnProcessOrder = new JButton("Process Order");
@@ -121,8 +129,37 @@ public class WarehouseNav extends JPanel {
 		btnProcessOrder.setEnabled(false);
 		btnProcessOrder.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnProcessOrder.setBackground(Color.WHITE);
-		btnProcessOrder.setBounds(10, 566, 241, 46);
+		btnProcessOrder.setBounds(10, 589, 241, 46);
 		add(btnProcessOrder);
+		
+		startingDate = new JDateChooser();
+		startingDate.setBounds(10, 98, 241, 28);
+		add(startingDate);
+		
+		endDate = new JDateChooser();
+		endDate.setBounds(10, 137, 241, 28);
+		add(endDate);
+		
+		btnCompute = new JButton("Compute");
+		btnCompute.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnCompute.setFocusable(false);
+		btnCompute.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		btnCompute.setBackground(Color.WHITE);
+		btnCompute.setBounds(20, 178, 97, 46);
+		add(btnCompute);
+		
+		btnExport = new JButton("Export");
+		btnExport.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnExport.setFocusable(false);
+		btnExport.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		btnExport.setBackground(Color.WHITE);
+		btnExport.setBounds(137, 178, 97, 46);
+		add(btnExport);
+		
+		startingDate.setVisible(false);
+		endDate.setVisible(false);
+		btnCompute.setVisible(false);
+		btnExport.setVisible(false);
 
 	}
 }

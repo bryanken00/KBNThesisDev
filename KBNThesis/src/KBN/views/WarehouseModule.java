@@ -1000,15 +1000,11 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 	}
 	
 	private void computeSummary() {
-//		END OF DATE - TOTAL USED
-
 		sumTable.table.removeAll();
 		
-//		String sql = "SELECT MATERIAL_NAME,CODE_NAME, CONTROL_NUMBER, SUPPLIER FROM tblmonthlysummary WHERE CATEGORIES = '" + cbCategories.getSelectedItem() +"'";
 		String dateFrom1 = df.format(dateFrom.getDate());
 		String dateTo1 = df.format(dateTo.getDate());
 		
-//		String sql = "SELECT MATERIAL_NAME, CODE_NAME, SUPPLIER, SUM(RELEASED_VOLUME) FROM tblcurrentmonth WHERE CATEGORIES = '" + cbCategories.getSelectedItem() + "' AND DATE_TODAY >= '" + dateFrom1 + "' AND DATE_TODAY <= '" + dateTo1 + "' GROUP BY MATERIAL_NAME HAVING SUM(RELEASED_VOLUME) > 0";
 		String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, b.CONTROL_NUMBER, a.SUPPLIER, SUM(a.RELEASED_VOLUME) FROM tblcurrentmonth AS a LEFT JOIN tblmonthlysummary AS b ON a.MATERIAL_NAME = b.MATERIAL_NAME AND a.CODE_NAME = b.CODE_NAME AND a.SUPPLIER = b.SUPPLIER WHERE a.CATEGORIES = '" + cbCategories.getSelectedItem() + "' AND a.DATE_TODAY >= '" + dateFrom1 + "' AND a.DATE_TODAY <= '" + dateTo1 + "' GROUP BY a.MATERIAL_NAME HAVING SUM(a.RELEASED_VOLUME) > 0";
 		System.out.println(sql);
 		sumTable.main.getDataVector().removeAllElements();
@@ -1027,22 +1023,7 @@ public class WarehouseModule extends JFrame implements ActionListener, PropertyC
 				sumTable.main.addRow(arrSQLResult.toArray());
 				arrSQLResult.clear();
 			}
-			sumTable.table.setModel(sumTable.main);
-			
-//			for(int i = 0; i < sumTable.table.getRowCount(); i++) {
-//				
-//				String matsName = sumTable.table.getValueAt(1, 0) + "";
-//				String codeName = sumTable.table.getValueAt(1, 1) + "";
-//				String Supplier = sumTable.table.getValueAt(1, 3) + "";
-//				String sql1 = "SELECT CONTROL_NUMBER FROM tblmonthlysummary WHERE MATERIAL_NAME = '" + matsName + "' AND CODE_NAME = '" + codeName + "' AND SUPPLIER = '" + Supplier + "'";
-//				System.out.println(sql1);
-//
-//				st1.execute(sql1);
-//				rs1 = st1.getResultSet();
-//				while(rs1.next()) {
-//					sumTable.table.setValueAt(rs1.getString(1), i, 2);
-//				}
-//			}			
+			sumTable.table.setModel(sumTable.main);		
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Table ERROR: \n" + e.getMessage());
 		}

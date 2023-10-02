@@ -1,11 +1,12 @@
-package KBN.Module.Warehouse.Archive;
+package KBN.Module.Warehouse.Summary;
 
 import javax.swing.JPanel;
-import java.awt.Color;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+
+import java.awt.Color;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
@@ -19,25 +20,24 @@ import java.util.Date;
 
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
+import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ImageIcon;
 
-public class ArchiveList extends JPanel implements MouseListener{
+public class SummaryPanel extends JPanel implements MouseListener{
 	
 	public DefaultTableModel main;
 	private TableRowSorter<TableModel> sorter;
 	
 	public JTextField txtSearchBar;
 	public JButton btnSearch;
+	public JComboBox cbSummaryCategories;
 	public JDateChooser dateChooser;
-	public JComboBox rawMatsCategory;
-	private JScrollPane scrollPane;
 	public JTable table;
-	
-	public ArchiveList() {
-		setBorder(new LineBorder(new Color(0, 0, 0)));
+
+	public SummaryPanel() {
 		setBackground(new Color(255, 255, 255));
+		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBounds(0, 0, 989, 699);
 		setLayout(null);
 		
@@ -56,7 +56,7 @@ public class ArchiveList extends JPanel implements MouseListener{
 		panel.add(txtSearchBar);
 		
 		btnSearch = new JButton("");
-		btnSearch.setIcon(new ImageIcon(ArchiveList.class.getResource("/KBN/resources/SearchBarUniversal.png")));
+		btnSearch.setIcon(new ImageIcon(SummaryPanel.class.getResource("/KBN/resources/SearchBarUniversal.png")));
 		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSearch.setFocusable(false);
 		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -68,9 +68,9 @@ public class ArchiveList extends JPanel implements MouseListener{
 		dateChooser.setBounds(452, 11, 161, 28);
 		panel.add(dateChooser);
 		
-		rawMatsCategory = new JComboBox();
-		rawMatsCategory.setBounds(10, 50, 236, 22);
-		panel.add(rawMatsCategory);
+		cbSummaryCategories = new JComboBox();
+		cbSummaryCategories.setBounds(10, 50, 236, 22);
+		panel.add(cbSummaryCategories);
 		
 		JPanel tableContainer = new JPanel();
 		tableContainer.setLayout(null);
@@ -78,7 +78,7 @@ public class ArchiveList extends JPanel implements MouseListener{
 		tableContainer.setBounds(10, 105, 969, 583);
 		add(tableContainer);
 		
-		scrollPane = new JScrollPane();
+		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 0, 969, 583);
 		tableContainer.add(scrollPane);
 		
@@ -90,10 +90,10 @@ public class ArchiveList extends JPanel implements MouseListener{
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		String[] columnDefaultData = new String[] {"ID", "SUPPLIER", "MATERIAL NAME", "CODE NAME", "RELEASED VOLUME", "PRODUCT DATE","USER - Archive", "ARCHIVE DATE"};
+		String[] columnDefaultData = new String[] {"MATERIAL NAME", "CODE NAME", "CONTROL_NUMBER", "SUPPLIER", "TOTAL USED VOLUME"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
-		table.getColumnModel().getColumn(0).setMinWidth(0);
+		
 		tableSorter();
 	}
 
@@ -102,6 +102,13 @@ public class ArchiveList extends JPanel implements MouseListener{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		sorter = new TableRowSorter<>(main);
+	    sorter.setComparator(0, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            return s1.compareTo(s2);
+	        }
+	    });
+
 	    sorter.setComparator(1, new Comparator<String>() {
 	        @Override
 	        public int compare(String s1, String s2) {
@@ -112,10 +119,12 @@ public class ArchiveList extends JPanel implements MouseListener{
 	    sorter.setComparator(2, new Comparator<String>() {
 	        @Override
 	        public int compare(String s1, String s2) {
-	            return s1.compareTo(s2);
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
 	        }
 	    });
-
+	    
 	    sorter.setComparator(3, new Comparator<String>() {
 	        @Override
 	        public int compare(String s1, String s2) {
@@ -131,41 +140,6 @@ public class ArchiveList extends JPanel implements MouseListener{
 	            return int1.compareTo(int2);
 	        }
 	    });
-	    
-	    sorter.setComparator(5, new Comparator<String>() {
-	        @Override
-	        public int compare(String s1, String s2) {
-	            try {
-	                Date date1 = dateFormat.parse(s1);
-	                Date date2 = dateFormat.parse(s2);
-	                return date1.compareTo(date2);
-	            } catch (ParseException e) {
-	                e.printStackTrace();
-	                return 0;
-	            }
-	        }
-	    });
-	    
-	    sorter.setComparator(6, new Comparator<String>() {
-	        @Override
-	        public int compare(String s1, String s2) {
-	            return s1.compareTo(s2);
-	        }
-	    });
-	    
-	    sorter.setComparator(7, new Comparator<String>() {
-	        @Override
-	        public int compare(String s1, String s2) {
-	            try {
-	                Date date1 = dateFormat.parse(s1);
-	                Date date2 = dateFormat.parse(s2);
-	                return date1.compareTo(date2);
-	            } catch (ParseException e) {
-	                e.printStackTrace();
-	                return 0;
-	            }
-	        }
-	    });  
 	    
 		table.setRowSorter(sorter);
 	    table.getTableHeader().addMouseListener(new MouseAdapter() {
