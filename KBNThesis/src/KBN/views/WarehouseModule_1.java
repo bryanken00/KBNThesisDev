@@ -26,6 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import KBN.Module.Warehouse.Archive.ArchiveList;
+import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
+import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
 import KBN.Module.Warehouse.RawMatsList.ArchiveRightClick;
 import KBN.Module.Warehouse.RawMatsList.RawMaterials;
 import KBN.Module.Warehouse.Summary.SummaryPanel;
@@ -47,6 +49,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private ArchiveList arcList;
 	private SummaryPanel summary;
 	private exportTable exportT;
+	private ProcessOrder procOrder;
+	private ProcessOrderData procOrderData;
 	
 	// Account
 	private dataSetter dataSet;
@@ -66,10 +70,12 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	// Export
 	private JFileChooser fc;
 	
-	//Array
+	// Array
 	private ArrayList arrSQLResult;
 	private List<String> categoryData;
 	
+	// Counter
+	private int processOrder = 0;
 	
 	private JPanel contentPane;
 	private JPanel panelNav;
@@ -132,6 +138,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         arcList = new ArchiveList();
         summary = new SummaryPanel();
         exportT = new exportTable();
+        procOrder = new ProcessOrder();
         
 
         
@@ -139,9 +146,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         panelNav.add(wNav);
         
         // Container Panel
-        container.add(rawMats); //Raw Mats
-        container.add(arcList); //Archive
-        container.add(summary);
+        container.add(rawMats); // Raw Mats
+        container.add(arcList); // Archive
+        container.add(summary); // Summary
+        container.add(procOrder); // ProcessOrder
         
         // Defaults
         setUsername();
@@ -271,6 +279,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		rawMats.setVisible(false);
 		arcList.setVisible(false);
 		summary.setVisible(false);
+		procOrder.setVisible(false);
 		
 		// Navs
 		wNav.btnCompute.setVisible(false);
@@ -448,7 +457,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private void archiveItemFunc() {
 		
 		int[] selectedRows = rawMats.table.getSelectedRows();
-		System.out.println(selectedRows.length);
 
 		int dia = JOptionPane.showConfirmDialog(null, "You want to Archive the selected item?", "Confirmation", JOptionPane.YES_NO_OPTION);
 
@@ -585,6 +593,71 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         
 	}
 	
+	// Process OrderPanel
+	private void procPanelFunc() {
+		NavsColor();
+		panelVisible();
+		wNav.btnProcessOrder.setBackground(new Color(75, 119, 71));
+		wNav.btnProcessOrder.setForeground(Color.WHITE);
+		procOrder.setVisible(true);
+
+        procOrderData = new ProcessOrderData();
+        procOrder.orderListScrollPane.setViewportView(procOrderData);
+        
+        try {	        
+	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
+	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled';";
+	        st.execute(sqlCount);
+	        rs = st.getResultSet();
+	        if(rs.next())
+	        	processOrder = rs.getInt(1);
+	        
+	        procOrderData.OrderCounter(processOrder);
+	        
+	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber) \n"
+	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
+	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
+	        
+	        st.execute(sql);
+	        rs = st.getResultSet();
+	        int panelIndex = 0;
+	        while(rs.next()) {
+	        	procOrderData.lblRef[panelIndex].setText(rs.getString(1));
+	        	procOrderData.lblCustName[panelIndex].setText(rs.getString(3));
+	        	procOrderData.lblTotalItem[panelIndex].setText(rs.getString(5));
+	        	procOrderData.lblTotalAmount[panelIndex].setText("Wala pa");
+	        	procOrderData.lblApprovedName[panelIndex].setText("Wala pa");
+	        	procOrderData.refNumber[panelIndex] = rs.getString(1);
+	        	procOrderData.userID[panelIndex] = rs.getString(2);
+	        	
+	        	panelIndex++;
+	        }
+	        
+	        procPanelActionList();
+        } catch(Exception e) {
+        	printingError("Error wNav.btnProcessOrder: " + e.getMessage());
+        }
+	}
+		
+		// PanelOrderList
+		private void procPanelActionList() {
+			for(int i = 0; i < processOrder; i++) {
+				procOrderData.panel[i].addMouseListener(this);
+			}
+		}
+		// PanelOrderData
+		private void panelOrderData(String refNumber, String uID) {
+			String ref = refNumber;
+			String userID = uID;
+			
+		}
+	
 	
 
 	@Override
@@ -606,11 +679,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				// Raw Mats Right Click
 				if(e.getSource() == rightClickRawMats.btnArchive)
 					archiveItemFunc();
-			
+		
+		/// Archive List		
 		if(e.getSource() == wNav.btnArchiveList)
 			wNavArcListFunc();
-		
-
 		
 		// Summary
 		if(e.getSource() == wNav.btnSummary)
@@ -621,6 +693,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				computeSummary();
 			if(e.getSource() == wNav.btnExport)
 				btnExportFunc();
+			
+		// ProcessOrder
+		if(e.getSource() == wNav.btnProcessOrder)
+			procPanelFunc();
 		
 	}
 	
@@ -642,7 +718,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				rightClickRawMats.setBounds(e.getX() + 265, e.getY() + 115, 200, 90);
 			}
 		}
-		
+		for(int i = 0; i < processOrder; i++) {
+			if(e.getSource() == procOrderData.panel[i]) {
+				panelOrderData(procOrderData.refNumber[i], procOrderData.userID[i]);
+			}
+		}
 	}
 
 	@Override

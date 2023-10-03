@@ -35,6 +35,7 @@ public class OrderListPanelData extends JPanel {
 	}
 	
 	private void settingUp() {
+		
 		this.setPreferredSize(new Dimension(2, 100*OrderCount));
 		orderList = new JPanel[OrderCount];
 		lblRefNumber = new JLabel[OrderCount];
@@ -48,11 +49,10 @@ public class OrderListPanelData extends JPanel {
 		for(int i = 0; i < OrderCount; i++) {
 			panelSetup(i);
 		}
+		
 	}
 	
 	public void panelSetup(int i) {
-
-		
 		int y = 0;
 		if(i > 0)
 			y = 100*i;
