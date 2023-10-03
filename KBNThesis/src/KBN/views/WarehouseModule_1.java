@@ -273,6 +273,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			
 		// Summary
 		summary.btnSearch.addActionListener(this);
+		
+		// Process Order
+		procOrder.btnSearch.addActionListener(this);
 	}
 	
 	private void panelVisible() {
@@ -616,13 +619,14 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        
 	        procOrderData.OrderCounter(processOrder);
 	        
-	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber) \n"
+	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price) \n"
 	        		+ "FROM tblOrderCheckout AS a \n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
 	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
 	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
 	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
+	        
 	        
 	        st.execute(sql);
 	        rs = st.getResultSet();
@@ -631,7 +635,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        	procOrderData.lblRef[panelIndex].setText(rs.getString(1));
 	        	procOrderData.lblCustName[panelIndex].setText(rs.getString(3));
 	        	procOrderData.lblTotalItem[panelIndex].setText(rs.getString(5));
-	        	procOrderData.lblTotalAmount[panelIndex].setText("Wala pa");
+	        	procOrderData.lblTotalAmount[panelIndex].setText(rs.getString(6));
 	        	procOrderData.lblApprovedName[panelIndex].setText("Wala pa");
 	        	procOrderData.refNumber[panelIndex] = rs.getString(1);
 	        	procOrderData.userID[panelIndex] = rs.getString(2);
@@ -644,6 +648,61 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         	printingError("Error wNav.btnProcessOrder: " + e.getMessage());
         }
 	}
+	
+	private void procPanelFuncSearch(String ref) {
+        procOrderData = new ProcessOrderData();
+        procOrder.orderListScrollPane.setViewportView(procOrderData);
+        
+        try {	        
+	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
+	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.OrderRefNumber LIKE '%" + ref + "%';";
+	        st.execute(sqlCount);
+	        rs = st.getResultSet();
+	        if(rs.next())
+	        	processOrder = rs.getInt(1);
+	        
+	        procOrderData.OrderCounter(processOrder);
+	        
+	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price) \n"
+	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND a.OrderRefNumber LIKE '%" + ref + "%' \n"
+	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
+	        
+	        
+	        st.execute(sql);
+	        rs = st.getResultSet();
+	        int panelIndex = 0;
+	        while(rs.next()) {
+	        	procOrderData.lblRef[panelIndex].setText(rs.getString(1));
+	        	procOrderData.lblCustName[panelIndex].setText(rs.getString(3));
+	        	procOrderData.lblTotalItem[panelIndex].setText(rs.getString(5));
+	        	procOrderData.lblTotalAmount[panelIndex].setText(rs.getString(6));
+	        	procOrderData.lblApprovedName[panelIndex].setText("Wala pa");
+	        	procOrderData.refNumber[panelIndex] = rs.getString(1);
+	        	procOrderData.userID[panelIndex] = rs.getString(2);
+	        	
+	        	panelIndex++;
+	        }
+	        
+	        procPanelActionList();
+        } catch(Exception e) {
+        	printingError("Error wNav.btnProcessOrder: " + e.getMessage());
+        }
+	}
+	
+	private void procSearchFunc(String search) {
+		if(search.equals("Search OrderNumber")) {
+			procPanelFunc();
+		}
+		else {
+			procPanelFuncSearch(search);
+		}
+	}
 		
 		// PanelOrderList
 		private void procPanelActionList() {
@@ -655,6 +714,42 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		private void panelOrderData(String refNumber, String uID) {
 			String ref = refNumber;
 			String userID = uID;
+			procOrder.main.setRowCount(0);
+			
+			try {
+				String sql = "SELECT a.OrderRefNumber, CONCAT(c.LastName, ' ', c.FirstName) AS FullName, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, a.Address, c.Discount \n"
+						+ "FROM tblordercheckout AS a \n"
+						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "JOIN tblcustomerinformation AS c ON a.UserID = c.UserID \n"
+						+ "WHERE a.OrderRefNumber = '" + ref + "'";
+				
+				st.execute(sql);
+				rs = st.getResultSet();
+				
+				ArrayList arrTemp = new ArrayList<>();
+				
+				while(rs.next()) {
+					
+					// Order Info
+					procOrder.lblPONumber.setText(rs.getString(1));
+					procOrder.lblMarketingName.setText("Wala pa");
+					procOrder.lblCustomerName.setText(rs.getString(2));
+					procOrder.lblOrderDate.setText(rs.getDate(3) + "");
+					procOrder.lblAddres.setText(rs.getString(8));
+					
+					arrTemp.add(rs.getString(4));
+					arrTemp.add(rs.getString(5));
+					arrTemp.add(rs.getString(6));
+					arrTemp.add(rs.getString(9));
+					arrTemp.add(rs.getString(7));
+					
+					procOrder.main.addRow(arrTemp.toArray());
+					arrTemp.clear();
+					
+				}
+			} catch (Exception e) {
+				printingError("Error panelOrderData: " + e.getMessage());
+			}
 			
 		}
 	
@@ -697,6 +792,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		// ProcessOrder
 		if(e.getSource() == wNav.btnProcessOrder)
 			procPanelFunc();
+		
+			// Process Order Search
+			if(e.getSource() == procOrder.btnSearch)
+			procSearchFunc(procOrder.txtSearchBar.getText());
 		
 	}
 	

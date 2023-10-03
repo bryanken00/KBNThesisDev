@@ -10,11 +10,14 @@ import javax.swing.JTable;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 
-public class ProcessOrder extends JPanel {
+public class ProcessOrder extends JPanel implements MouseListener{
 	
 	public DefaultTableModel main;
 	public JLabel lblTotalAmount;
@@ -29,6 +32,7 @@ public class ProcessOrder extends JPanel {
 	public JTable table;
 	public JTextField txtSearchBar;
 	public JScrollPane orderListScrollPane;
+	public JButton btnSearch;
 
 	public ProcessOrder() {
 		setBackground(new Color(255, 255, 255));
@@ -54,7 +58,7 @@ public class ProcessOrder extends JPanel {
 		comboBox.setBounds(10, 52, 223, 30);
 		panelTopNavOrderList.add(comboBox);
 		
-		JButton btnSearch = new JButton("");
+		btnSearch = new JButton("");
 		btnSearch.setIcon(new ImageIcon(ProcessOrder.class.getResource("/KBN/resources/SearchBarUniversal.png")));
 		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSearch.setFocusable(false);
@@ -65,6 +69,7 @@ public class ProcessOrder extends JPanel {
 		
 		txtSearchBar = new JTextField();
 		txtSearchBar.setText("Search OrderNumber");
+		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setForeground(Color.GRAY);
 		txtSearchBar.setColumns(10);
 		txtSearchBar.setBounds(10, 11, 223, 30);
@@ -201,5 +206,40 @@ public class ProcessOrder extends JPanel {
 		String[] columnDefaultData = new String[] {"Product Name", "Quantity", "Price", "Discount", "Total Price"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if(txtSearchBar.getText().equals("Search OrderNumber"))
+			txtSearchBar.setText("");
+		txtSearchBar.setForeground(Color.BLACK);
+		txtSearchBar.setFocusable(true);
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if(txtSearchBar.getText().equals("")) {
+			txtSearchBar.setText("Search OrderNumber");
+			txtSearchBar.setForeground(Color.GRAY);
+		}
+		txtSearchBar.setFocusable(false);
 	}
 }
