@@ -24,6 +24,7 @@ public class ProcessOrderData extends JPanel {
 	
 	public String[] refNumber;
 	public String[] userID;
+	public String[] orderStatus;
 	public int orderCount = 0;
 
 	public ProcessOrderData() {
@@ -54,6 +55,7 @@ public class ProcessOrderData extends JPanel {
 		
 		refNumber = new String[orderCount];
 		userID = new String[orderCount];
+		orderStatus = new String[orderCount];
 		
 		for(int i = 0; i < orderCount; i++) {
 			panelSetup(i);

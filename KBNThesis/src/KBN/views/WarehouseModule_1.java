@@ -28,6 +28,7 @@ import javax.swing.border.EmptyBorder;
 import KBN.Module.Warehouse.Archive.ArchiveList;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
+import KBN.Module.Warehouse.ProcessOrder.onDelivery;
 import KBN.Module.Warehouse.RawMatsList.ArchiveRightClick;
 import KBN.Module.Warehouse.RawMatsList.RawMaterials;
 import KBN.Module.Warehouse.Summary.SummaryPanel;
@@ -51,6 +52,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private exportTable exportT;
 	private ProcessOrder procOrder;
 	private ProcessOrderData procOrderData;
+	private onDelivery onDeliver;
 	
 	// Account
 	private dataSetter dataSet;
@@ -76,6 +78,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Counter
 	private int processOrder = 0;
+	
+	// ref ID
+	private String refNumber = "";
+	private int processPanelIndex = 0;
 	
 	private JPanel contentPane;
 	private JPanel panelNav;
@@ -120,6 +126,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         this.setLocation(x, y);
         
         //Date Format
+        date = new Date();
         inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 		df = new SimpleDateFormat("yyyy-MM-dd");
@@ -139,6 +146,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         summary = new SummaryPanel();
         exportT = new exportTable();
         procOrder = new ProcessOrder();
+        onDeliver = new onDelivery();
         
 
         
@@ -276,6 +284,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		
 		// Process Order
 		procOrder.btnSearch.addActionListener(this);
+		procOrder.btnProcessOrder.addActionListener(this);
+		procOrder.cbCategory.addActionListener(this);
+			
+			// On Delivery
+			onDeliver.btnConfirm.addActionListener(this);
 	}
 	
 	private void panelVisible() {
@@ -600,6 +613,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private void procPanelFunc() {
 		NavsColor();
 		panelVisible();
+			
 		wNav.btnProcessOrder.setBackground(new Color(75, 119, 71));
 		wNav.btnProcessOrder.setForeground(Color.WHITE);
 		procOrder.setVisible(true);
@@ -639,11 +653,14 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        	procOrderData.lblApprovedName[panelIndex].setText("Wala pa");
 	        	procOrderData.refNumber[panelIndex] = rs.getString(1);
 	        	procOrderData.userID[panelIndex] = rs.getString(2);
-	        	
+	        	procOrderData.orderStatus[panelIndex] = rs.getString(4);
 	        	panelIndex++;
 	        }
 	        
 	        procPanelActionList();
+
+			if(refNumber.equals(""))
+				procOrder.btnProcessOrder.setEnabled(false);
         } catch(Exception e) {
         	printingError("Error wNav.btnProcessOrder: " + e.getMessage());
         }
@@ -695,6 +712,52 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         }
 	}
 	
+	private void procPanelFuncCategory(String cat) {
+        procOrderData = new ProcessOrderData();
+        procOrder.orderListScrollPane.setViewportView(procOrderData);
+        
+        try {	        
+	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
+	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.status = '" + cat + "';";
+	        st.execute(sqlCount);
+	        rs = st.getResultSet();
+	        if(rs.next())
+	        	processOrder = rs.getInt(1);
+	        
+	        procOrderData.OrderCounter(processOrder);
+	        
+	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price) \n"
+	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.status = '" + cat + "' \n"
+	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
+	        
+	        
+	        st.execute(sql);
+	        rs = st.getResultSet();
+	        int panelIndex = 0;
+	        while(rs.next()) {
+	        	procOrderData.lblRef[panelIndex].setText(rs.getString(1));
+	        	procOrderData.lblCustName[panelIndex].setText(rs.getString(3));
+	        	procOrderData.lblTotalItem[panelIndex].setText(rs.getString(5));
+	        	procOrderData.lblTotalAmount[panelIndex].setText(rs.getString(6));
+	        	procOrderData.lblApprovedName[panelIndex].setText("Wala pa");
+	        	procOrderData.refNumber[panelIndex] = rs.getString(1);
+	        	procOrderData.userID[panelIndex] = rs.getString(2);
+	        	procOrderData.orderStatus[panelIndex] = rs.getString(4);
+	        	panelIndex++;
+	        }
+	        
+	        procPanelActionList();
+        } catch(Exception e) {
+        	printingError("Error wNav.btnProcessOrder: " + e.getMessage());
+        }
+	}
+	
 	private void procSearchFunc(String search) {
 		if(search.equals("Search OrderNumber")) {
 			procPanelFunc();
@@ -702,6 +765,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		else {
 			procPanelFuncSearch(search);
 		}
+	}
+	
+	private void procFilterCategory() {
+		procPanelFuncCategory(procOrder.delStatus[procOrder.cbCategory.getSelectedIndex()]);
 	}
 		
 		// PanelOrderList
@@ -728,6 +795,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				
 				ArrayList arrTemp = new ArrayList<>();
 				
+				int totalQuantity = 0;
+				
 				while(rs.next()) {
 					
 					// Order Info
@@ -737,18 +806,112 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					procOrder.lblOrderDate.setText(rs.getDate(3) + "");
 					procOrder.lblAddres.setText(rs.getString(8));
 					
-					arrTemp.add(rs.getString(4));
-					arrTemp.add(rs.getString(5));
-					arrTemp.add(rs.getString(6));
-					arrTemp.add(rs.getString(9));
-					arrTemp.add(rs.getString(7));
+					arrTemp.add(rs.getString(4)); // Prod Name
+					arrTemp.add(rs.getString(5)); // Quantity
+					arrTemp.add(rs.getString(6)); // Price
+					arrTemp.add(rs.getString(9)); // Discount
+					arrTemp.add(rs.getString(7)); // Total Price
+					
+					totalQuantity += rs.getInt(5);
 					
 					procOrder.main.addRow(arrTemp.toArray());
 					arrTemp.clear();
 					
 				}
+				
+
+//				processPanelIndex
+				procOrder.lblItemCount.setText("Item: " + procOrderData.lblTotalItem[processPanelIndex].getText());
+				procOrder.lblQuantityCount.setText("Total Quantity: " + totalQuantity);
+				procOrder.lblDiscount.setText("Discount: 0");
+				procOrder.lblTotalAmount.setText("Total Amount: " + procOrderData.lblTotalAmount[processPanelIndex].getText());
+				
 			} catch (Exception e) {
 				printingError("Error panelOrderData: " + e.getMessage());
+			}
+			
+		}
+		
+		// Default Panel Color
+		private void panelColorProcessOrder() {
+			for(int i = 0; i < processOrder; i++) {
+				procOrderData.panel[i].setBackground(Color.WHITE);
+			}
+		}
+		// Courier
+		private void setCourier(String ref) {
+			try {
+				ArrayList<String> riderName = new ArrayList<>();
+				ArrayList<String> courierID = new ArrayList<>();
+				String SQL = "SELECT Username,CourierID FROM tblcourieraccount";
+				st.execute(SQL);
+				rs = st.getResultSet();
+				while(rs.next()) {
+					riderName.add(rs.getString(1));
+					courierID.add(rs.getString(2));
+				}
+				onDeliver.courierID = new String[courierID.size()];
+				onDeliver.courierID = courierID.toArray(onDeliver.courierID);
+				
+				onDeliver.cbRiderList.setModel(new DefaultComboBoxModel<String>(riderName.toArray(new String[0])));
+				onDeliver.lblRefNumber.setText(ref);
+				
+				onDeliver.setVisible(true);
+				riderName.clear();
+			} catch (Exception e) {
+				printingError("Error setCourier: " + e.getMessage());
+			}
+		}
+		
+		private void setDeliveryStatus() {
+			
+	        int choice = JOptionPane.showConfirmDialog(
+	                null, // Parent component (null for default)
+	                "The information is correct?", // Message
+	                "Confirmation", // Dialog title
+	                JOptionPane.YES_NO_OPTION // Option type
+	            );
+	        if (choice == JOptionPane.NO_OPTION)
+	        	return;
+	        
+			try {
+		        
+				String courier = onDeliver.cbRiderList.getSelectedItem() + "";
+				String courierID = onDeliver.courierID[onDeliver.cbRiderList.getSelectedIndex()] + "";
+				String ref = onDeliver.lblRefNumber.getText();
+				String SQL = "INSERT INTO tblcourierdelivery(OrderRefNumber,courierID) VALUES('" + ref + "','" + courierID + "')";
+				st.execute(SQL);
+				
+		        String SQLSelectDelID = "SELECT DeliveryID FROM tblcourierdelivery WHERE OrderRefNumber = '" + ref + "' AND courierID = '" + courierID + "'";
+		        
+		        st.execute(SQLSelectDelID);
+		        rs = st.getResultSet();
+		        
+		        int dID = 0;
+		        
+		        if(rs.next()) {
+		        	dID = rs.getInt(1);
+		        }
+
+		        // Format the date and time
+				Date currentDate = new Date();
+		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		        String formattedDate = dateFormat.format(currentDate);
+				
+				String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(DeliveryID, DeliveryDate) VALUES('" + dID + "','" + formattedDate + "');";
+				
+				
+				st.execute(SQLDeliveryDate);
+				String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "'";
+				st.executeUpdate(SQLUpdate);
+				
+				printingError("Delivery Updated!");
+				
+				onDeliver.dispose();
+				
+				
+			} catch (Exception e) {
+				printingError("Error setDeliveryStatus: " + e.getMessage());
 			}
 			
 		}
@@ -796,6 +959,18 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			// Process Order Search
 			if(e.getSource() == procOrder.btnSearch)
 			procSearchFunc(procOrder.txtSearchBar.getText());
+			
+			// Categories
+			if(e.getSource() == procOrder.cbCategory)
+			procFilterCategory();
+			
+			// Set Courier
+			if(e.getSource() == procOrder.btnProcessOrder)
+				setCourier(refNumber);
+				
+				// on Deliver = Set Status
+				if(e.getSource() == onDeliver.btnConfirm)
+					setDeliveryStatus();
 		
 	}
 	
@@ -819,6 +994,20 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}
 		for(int i = 0; i < processOrder; i++) {
 			if(e.getSource() == procOrderData.panel[i]) {
+				
+				//Design
+				panelColorProcessOrder();
+				procOrderData.panel[i].setBackground(new Color(131, 255, 165));
+				
+				// Setting up Data
+				processPanelIndex = i;
+				refNumber = procOrderData.refNumber[i];
+				if(procOrderData.orderStatus[i] != null) {
+					if(procOrderData.orderStatus[i].equals("Approved"))
+						procOrder.btnProcessOrder.setEnabled(true);
+					else
+						procOrder.btnProcessOrder.setEnabled(false);
+				}
 				panelOrderData(procOrderData.refNumber[i], procOrderData.userID[i]);
 			}
 		}

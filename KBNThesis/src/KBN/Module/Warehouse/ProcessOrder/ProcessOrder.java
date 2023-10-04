@@ -33,6 +33,10 @@ public class ProcessOrder extends JPanel implements MouseListener{
 	public JTextField txtSearchBar;
 	public JScrollPane orderListScrollPane;
 	public JButton btnSearch;
+	public JButton btnProcessOrder;
+	
+	public String[] delStatus;
+	public JComboBox cbCategory;
 
 	public ProcessOrder() {
 		setBackground(new Color(255, 255, 255));
@@ -54,9 +58,13 @@ public class ProcessOrder extends JPanel implements MouseListener{
 		panelOrderList.add(panelTopNavOrderList);
 		panelTopNavOrderList.setLayout(null);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(10, 52, 223, 30);
-		panelTopNavOrderList.add(comboBox);
+		String[] status = {"Approved", "Delivery"};
+		delStatus = new String[status.length];
+		delStatus[0] = "Approved";
+		delStatus[1] = "Delivery";
+		cbCategory = new JComboBox(status);
+		cbCategory.setBounds(10, 52, 223, 30);
+		panelTopNavOrderList.add(cbCategory);
 		
 		btnSearch = new JButton("");
 		btnSearch.setIcon(new ImageIcon(ProcessOrder.class.getResource("/KBN/resources/SearchBarUniversal.png")));
@@ -170,33 +178,33 @@ public class ProcessOrder extends JPanel implements MouseListener{
 		scrollPane.setViewportView(table);
 		
 		lblItemCount = new JLabel("Items: ");
-		lblItemCount.setBounds(24, 516, 104, 29);
+		lblItemCount.setBounds(24, 516, 86, 29);
 		panel.add(lblItemCount);
 		lblItemCount.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		
 		lblQuantityCount = new JLabel("Total Quantity: ");
-		lblQuantityCount.setBounds(155, 516, 104, 29);
+		lblQuantityCount.setBounds(120, 516, 135, 29);
 		panel.add(lblQuantityCount);
 		lblQuantityCount.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		
 		lblDiscount = new JLabel("Total Discount: ");
-		lblDiscount.setBounds(286, 516, 104, 29);
+		lblDiscount.setBounds(265, 516, 115, 29);
 		panel.add(lblDiscount);
 		lblDiscount.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		
 		lblTotalAmount = new JLabel("Total Amount: ");
-		lblTotalAmount.setBounds(417, 516, 104, 29);
+		lblTotalAmount.setBounds(390, 516, 148, 29);
 		panel.add(lblTotalAmount);
 		lblTotalAmount.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		
-		JButton btnInvoice = new JButton("Process");
-		btnInvoice.setBackground(new Color(75, 119, 71));
-		btnInvoice.setForeground(new Color(255, 255, 255));
-		btnInvoice.setBounds(548, 516, 86, 29);
-		btnInvoice.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
-		btnInvoice.setFocusable(false);
-		btnInvoice.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		panel.add(btnInvoice);
+		btnProcessOrder = new JButton("Process");
+		btnProcessOrder.setBackground(new Color(75, 119, 71));
+		btnProcessOrder.setForeground(new Color(255, 255, 255));
+		btnProcessOrder.setBounds(548, 516, 86, 29);
+		btnProcessOrder.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 11));
+		btnProcessOrder.setFocusable(false);
+		btnProcessOrder.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		panel.add(btnProcessOrder);
 		
 		tableSetup();
 	}
