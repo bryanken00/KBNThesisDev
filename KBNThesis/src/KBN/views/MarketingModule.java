@@ -81,7 +81,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	//KBN Products
 	private KBNProducts kbnProd;
-	private PopUpPRODIMG popupKBNProd;
 	private String kbnProdButtonChecker = "Products";
 	
 	private RebrandingProd rebrandingProd;
@@ -200,7 +199,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dashboard1.orderList.setViewportView(opdDashboard);
 		// KBNProducts
 		kbnProd = new KBNProducts();
-		popupKBNProd = new PopUpPRODIMG();
 		
 		rebrandingProd = new RebrandingProd();
 		custAccount = new CustomerAccount();
@@ -620,11 +618,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rightClick.setVisible(true);
 				rightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
 			}
-			if(e.getButton() == MouseEvent.BUTTON1) {
-				int row = kbnProd.table.getSelectedRow();
-				String prodID = (String) kbnProd.table.getValueAt(row, 0);
-				kbnProdClickFunc(prodID);
-			}
 		}
 		if(e.getSource() == cp.lblOrders) {
 			cp.scrollOrderPanel.setViewportView(cpsp);
@@ -782,10 +775,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(rs.next())
 				link += rs.getString(1);
 			
-			if(!popupKBNProd.isVisible())
-				popupKBNProd.setVisible(true);
-			
-			popupKBNProd.setLink(link);
 		}catch(Exception e1) {
 			JOptionPane.showMessageDialog(null, "KBNProd TableClick ERROR: " + e1.getMessage());
 		}
@@ -1486,7 +1475,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
     }
     
 	private void KBNPanelFuncArchive() {
-		popupKBNProd.setVisible(false);
 		rightClick.btnArchive.setText("Restore");
 		kbnProdButtonChecker = "Archive";
 		setVisiblePanel();
