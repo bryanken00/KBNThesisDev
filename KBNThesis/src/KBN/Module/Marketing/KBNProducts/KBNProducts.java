@@ -127,6 +127,9 @@ public class KBNProducts extends JPanel implements MouseListener {
         String columnIdentifiers[] = {"ProdID", "Product Name", "Categories", "Quantity", "Sold"};
         main.setColumnIdentifiers(columnIdentifiers);
 		table.setModel(main);
+        Font cellFont = new Font("Arial", Font.PLAIN, 14);
+        table.setFont(cellFont);
+		table.setRowHeight(30);
 		
 		sorter = new TableRowSorter<>(main);
 	    // Custom comparator for Quantity column

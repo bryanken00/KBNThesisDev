@@ -69,6 +69,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 
 
 public class MarketingModule extends JFrame implements ActionListener, MouseListener, KeyListener{
@@ -248,6 +249,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		preRegStatus();
 		
 		marketingButtons();
+		
 	}
 	
 	private void objComponent() {

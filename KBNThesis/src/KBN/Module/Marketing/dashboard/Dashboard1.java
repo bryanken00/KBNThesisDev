@@ -5,6 +5,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.Font;
@@ -258,9 +259,27 @@ public class Dashboard1 extends JPanel {
 		tableHigh = new JTable();
 		panelCritLevel.setViewportView(tableHigh);
 		
-		tLow = new DefaultTableModel();
-		tMid = new DefaultTableModel();
-		tHigh = new DefaultTableModel();
+		tLow = new DefaultTableModel(tableLow.getRowCount(), tableLow.getColumnCount()) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make all cells non-editable
+                return false;
+            }
+        };
+		tMid = new DefaultTableModel(tableMid.getRowCount(), tableMid.getColumnCount()) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make all cells non-editable
+                return false;
+            }
+        };
+		tHigh = new DefaultTableModel(tableHigh.getRowCount(), tableHigh.getColumnCount()) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make all cells non-editable
+                return false;
+            }
+        };
 		tableLow.setTableHeader(null);
 		tableMid.setTableHeader(null);
 		tableHigh.setTableHeader(null);
@@ -276,6 +295,14 @@ public class Dashboard1 extends JPanel {
 		tableMid.setModel(tMid);
 		tHigh.setColumnIdentifiers(column);
 		tableHigh.setModel(tHigh);
+		
+        Font cellFont = new Font("Arial", Font.PLAIN, 14);
+        tableLow.setFont(cellFont);
+        tableMid.setFont(cellFont);
+        tableHigh.setFont(cellFont);
+        tableLow.setRowHeight(30);
+        tableMid.setRowHeight(30);
+        tableHigh.setRowHeight(30);
 	}
 	
 	static class CustomScrollBarUI extends BasicScrollBarUI {
