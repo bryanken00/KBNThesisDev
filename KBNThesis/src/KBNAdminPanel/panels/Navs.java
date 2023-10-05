@@ -4,19 +4,29 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-public class Navs extends JPanel {
+import KBN.views.MarketingModule;
+
+public class Navs extends JPanel implements MouseListener{
 	
 	public JButton btnSalesReport;
 	public JButton btnAudit;
 	public JButton btnForecasting;
 	public JButton btnEmployeeList;
 	public JLabel lblUsername;
+	public JButton btnListOfCourier;
+	
+	private JButton btnChecker;
 
 	public Navs() {
 		setBackground(new Color(255, 255, 255));
@@ -35,7 +45,7 @@ public class Navs extends JPanel {
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(0, 221, 255, 278);
+		panel.setBounds(0, 221, 255, 339);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -84,6 +94,16 @@ public class Navs extends JPanel {
 		btnSalesReport.setHorizontalTextPosition(JLabel.CENTER);
 		btnSalesReport.setVerticalTextPosition(JLabel.CENTER);
 		
+		btnListOfCourier = new JButton("List of Courier Rider ");
+		btnListOfCourier.setVerticalTextPosition(SwingConstants.CENTER);
+		btnListOfCourier.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnListOfCourier.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnListOfCourier.setFocusable(false);
+		btnListOfCourier.setBorderPainted(false);
+		btnListOfCourier.setBackground(Color.WHITE);
+		btnListOfCourier.setBounds(10, 275, 241, 35);
+		panel.add(btnListOfCourier);
+		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setBounds(10, 663, 241, 13);
 		add(separator_2);
@@ -93,5 +113,54 @@ public class Navs extends JPanel {
 		lblUsername.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 15));
 		lblUsername.setBounds(10, 670, 241, 40);
 		add(lblUsername);
+		
+		btnSalesReport.addMouseListener(this);
+		btnAudit.addMouseListener(this);
+		btnForecasting.addMouseListener(this);
+		btnEmployeeList.addMouseListener(this);
+		btnListOfCourier.addMouseListener(this);
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if(e.getComponent() instanceof JButton) {
+			
+			btnSalesReport.setIcon(null);
+			btnAudit.setIcon(null);
+			btnForecasting.setIcon(null);
+			btnEmployeeList.setIcon(null);
+			btnListOfCourier.setIcon(null);
+			
+			Component c = e.getComponent();
+			btnChecker = (JButton) e.getComponent();
+			if(btnChecker == c)
+				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+			
+		}else
+			return;
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

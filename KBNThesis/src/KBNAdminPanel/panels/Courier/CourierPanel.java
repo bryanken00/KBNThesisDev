@@ -1,9 +1,10 @@
-package KBNAdminPanel.panels.Employee;
+package KBNAdminPanel.panels.Courier;
 
 import java.awt.Color;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
@@ -11,15 +12,18 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
-public class EmployeePanel extends JPanel {
+public class CourierPanel extends JPanel {
 	
 	public JTextField txtSearchBar;
 	public JButton btnSearch;
 	public JButton btnCreate;
-	public JPanel container;
+	public JTable table;
+	public DefaultTableModel main;
+	private String[] columnDefaultData;
 
-	public EmployeePanel() {
+	public CourierPanel() {
 		setBounds(0, 0, 1009, 721);
 		setLayout(null);
 
@@ -36,14 +40,14 @@ public class EmployeePanel extends JPanel {
 		panel.add(header);
 		header.setLayout(null);
 		
-		JLabel lblEmployeeList = new JLabel("Employee List");
+		JLabel lblEmployeeList = new JLabel("Courier List");
 		lblEmployeeList.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEmployeeList.setFont(new Font("Tahoma", Font.PLAIN, 24));
 		lblEmployeeList.setBounds(10, 11, 235, 31);
 		header.add(lblEmployeeList);
 		
 		btnSearch = new JButton("");
-		btnSearch.setIcon(new ImageIcon(EmployeePanel.class.getResource("/KBNAdminPanel/resources/search.png")));
+		btnSearch.setIcon(new ImageIcon(CourierPanel.class.getResource("/KBNAdminPanel/resources/search.png")));
 		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnSearch.setOpaque(false);
 		btnSearch.setFocusable(false);
@@ -65,13 +69,23 @@ public class EmployeePanel extends JPanel {
 		btnCreate.setBounds(856, 11, 103, 31);
 		header.add(btnCreate);
 		
-
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 75, 969, 613);
+		panel.add(scrollPane);
 		
-		container = new JPanel();
-		container.setBackground(new Color(255, 255, 255));
-		container.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		container.setBounds(10, 75, 969, 613);
-		panel.add(container);
-		container.setLayout(null);
+		table = new JTable();
+		scrollPane.setViewportView(table);
+		
+		tableSetup();
+	}
+	
+	private void tableSetup() {
+		main = new DefaultTableModel();
+		columnDefaultData = new String[] {"CourierID", "Full Name", "Address", "Contact"};
+		main.setColumnIdentifiers(columnDefaultData);
+		table.setModel(main);
+		
+		//Designing
+		table.setRowHeight(30);
 	}
 }

@@ -488,7 +488,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 			try {
 				//Genarating RefNumber
 				String ref = "";
-				String sqlRefGen = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+				String sqlRefGen = "SELECT COUNT(OrderRefNumber) FROM tblorderstatus";
 				st.execute(sqlRefGen);
 				rs = st.getResultSet();
 				if(rs.next())

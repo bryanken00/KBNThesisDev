@@ -1070,6 +1070,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(rs.next())
 				lastDay = rs.getInt(1);
 			
+			if(lastDay == 0)
+				lastDay = 1;
+			
 			double percentage = (today / lastDay) * 100;
 			int randOFF = (int)Math.round(percentage);
 			
@@ -1119,6 +1122,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(rs.next())
 				lastWeek = rs.getInt(1);
 			
+			if(lastWeek == 0)
+				lastWeek = 1;
+			
 			
 			double percentage = (thisWeek / lastWeek) * 100;
 			int randOFF = (int)Math.round(percentage);
@@ -1128,8 +1134,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 			if(randOFF > 100)
 				randOFF = 100;
-			
-//			System.out.println(randOFF);
 			
 			dashboard1.lblWeeklyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			
@@ -1171,6 +1175,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(rs.next())
 				lastMonth = rs.getInt(1);
 			
+			if(lastMonth == 0)
+				lastMonth = 1;
+			
 			
 			double percentage = (thisMonth / lastMonth) * 100;
 			int randOFF = (int)Math.round(percentage);
@@ -1181,7 +1188,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(randOFF > 100)
 				randOFF = 100;
 			
-//			System.out.println(randOFF);
+			System.out.println(thisMonth);
+			System.out.println(lastMonth);
+			
 			
 			dashboard1.lblMonthlyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			
@@ -1223,6 +1232,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(rs.next())
 				lastYear = rs.getInt(1);
 			
+			if(lastYear == 0)
+				lastYear = 1;
+			
 			
 			double percentage = (thisYear / lastYear) * 100;
 			int randOFF = (int)Math.round(percentage);
@@ -1232,8 +1244,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 			if(randOFF > 100)
 				randOFF = 100;
-			
-//			System.out.println(randOFF);
 			
 			dashboard1.lblYearlyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
 			

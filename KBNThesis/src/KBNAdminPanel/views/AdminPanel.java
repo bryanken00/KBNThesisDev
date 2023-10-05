@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
@@ -35,6 +37,8 @@ import KBN.views.MarketingModule;
 import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.SalesReportPanel;
+import KBNAdminPanel.panels.Courier.CourierPanel;
+import KBNAdminPanel.panels.Courier.RightClick;
 import KBNAdminPanel.panels.Employee.EmployeeCreate;
 import KBNAdminPanel.panels.Employee.EmployeeList;
 import KBNAdminPanel.panels.Employee.EmployeeListGenerator;
@@ -46,7 +50,7 @@ import KBNAdminPanel.panels.Forecast.barGen;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-public class AdminPanel extends JFrame implements ActionListener, MouseListener, ItemListener{
+public class AdminPanel extends JFrame implements ActionListener , ItemListener, MouseListener, KeyListener{
 	
 	//Class
 	private Navs navs;
@@ -72,6 +76,10 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	private boolean isUpdateEmpInfo = false;
 	
 	private JButton btnChecker;
+	
+	// Courier
+	private CourierPanel courierPanel;
+	private RightClick courierRightClick;
 	
 	
 	//Database
@@ -121,6 +129,10 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         empPanel = new EmployeePanel();
         empList = new EmployeeList();
         empCreate = new EmployeeCreate();
+        courierPanel = new CourierPanel();
+        courierRightClick = new RightClick();
+        
+        
         
         // Database
         dbConn = new DbConnection();
@@ -135,7 +147,9 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
         
         // Date
 		currentDate = LocalDate.now();
-        
+
+        contentPane.add(courierRightClick);
+        courierRightClick.setVisible(false);
         // Components
 		components();
 		
@@ -151,6 +165,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		container.add(forecast);
 		container.add(empPanel);
 		container.add(empCreate);
+		container.add(courierPanel);
 		
 		empPanel.container.add(empList);
 		
@@ -166,6 +181,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		forecast.setVisible(false);
 		empPanel.setVisible(false);
 		empCreate.setVisible(false);
+		courierPanel.setVisible(false);
 	}
 	
 	private void actList() {
@@ -173,13 +189,17 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		navs.btnAudit.addActionListener(this);
 		navs.btnForecasting.addActionListener(this);
 		navs.btnEmployeeList.addActionListener(this);
+		navs.btnListOfCourier.addActionListener(this);
 		
-		//Mouse
-		navs.btnSalesReport.addMouseListener(this);
-		navs.btnAudit.addMouseListener(this);
-		navs.btnForecasting.addMouseListener(this);
-		navs.btnEmployeeList.addMouseListener(this);
+		// Mouse Right Click
+		courierPanel.table.addMouseListener(this);
+		// Courier Right Click
+		courierRightClick.btnEdit.addActionListener(this);
+		courierRightClick.btnView.addActionListener(this);
 		
+		
+		// Key Listener
+		courierPanel.table.addKeyListener(this);
 		
 		//Forecast
 		forecast.product1.addItemListener(this);
@@ -445,7 +465,152 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			JOptionPane.showMessageDialog(null, "Error ClearTextField: " + e.getMessage());
 		}
 	}
+	
+	// Register Employee
+	private void registerEmployee() {
+		try {
+			String FirstName = empCreate.txtFirstName.getText();
+			String LastName = empCreate.txtLastName.getText();
+			String MiddleName = empCreate.txtMiddleName.getText();
+			String Address = empCreate.txtAddress.getText();
+			
+//			//convertion
+			Date inputdate = empCreate.birthDate.getDate();
+			String Birthdate = "";
+			if(inputdate != null) {
+			    SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			    Birthdate = outputDateFormat.format(inputdate);
+			}
+		    
+		    String Age = empCreate.txtAge.getText();
+		    String Gender = empCreate.cbGender.getSelectedItem().toString();
+		    String Email = empCreate.txtEmailAdd.getText();
+		    String Contact = empCreate.txtContact.getText();
+		    
+		    String Username = empCreate.txtUsername.getText();
+		    char[] passwordChars = empCreate.txtPassword.getPassword();
+		    String password = new String(passwordChars);
+		    char[] confirmPasswordChars = empCreate.txtConfirmPassword.getPassword();
+		    String ConfirmPassword = new String(confirmPasswordChars);
+		    String Type = empCreate.cbAccType.getSelectedItem().toString();
+		    String Department = empCreate.cbDepartment.getSelectedItem().toString();
+		    String Position = empCreate.cbPosition.getSelectedItem().toString();
+		    
+		    // Checking username if exist
+		    if(verifyEmployeeRegister.equals("Not Verified")) {
+		    	JOptionPane.showMessageDialog(null, "Please verify Username first");
+		    	return;
+		    }
+		    
+		    // check inputs if have null value
+		    empCreateChecker();
+		    if(EmpCreateCheck)
+		    	return;
+		    
+		    if(!password.equals(ConfirmPassword)) {
+		    	JOptionPane.showMessageDialog(null, "Password not match!");
+		    	return;
+		    }
+		    if(!isUpdateEmpInfo) {
+			    String getAccountID = "SELECT COUNT(AccountID) FROM tblAccount";
+			    st.execute(getAccountID);
+			    rs = st.getResultSet();
+			    int accID = 0;
+			    if(rs.next())
+			    	accID = rs.getInt(1) + 1;
+			    String insertAcc = "INSERT INTO tblAccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
+			    String insertAccInfo = "INSERT INTO tblaccountinfo(AccountID,FirstName,MiddleName,LastName,Address,Birthdate,Age,Gender,EmailAdd,Contact) VALUES('" + accID + "','" + FirstName + "','" + MiddleName + "','" + LastName + "','" + Address + "','" + Birthdate + "','" + Age + "','" + Gender + "','" + Email + "','" + Contact + "');";
+			    
+			    int insertAcc_1 = st.executeUpdate(insertAcc);
+			    int insertAccInfo_1 = 0;
+			    
+			    if (insertAcc_1 > 0) 
+			    	insertAccInfo_1 = st.executeUpdate(insertAccInfo);
+			    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
+			    	JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
+			    else {
+			    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
+			    }
+		    } else {
+		    	String accID = accoudIdEmpUpdate;
+		    	
+		    	String SQLUpdateAccInfo = "Update tblaccountinfo\r\n"
+		    			+ "SET FirstName = '" + FirstName + "',\r\n"
+		    			+ "MiddleName = '" + MiddleName + "',\r\n"
+		    			+ "LastName = '" + LastName + "',\r\n"
+		    			+ "Address = '" + Address + "',\r\n"
+		    			+ "Birthdate = '" + Birthdate + "',\r\n"
+		    			+ "Age = '" + Age + "',\r\n"
+		    			+ "Gender = '" + Gender + "',\r\n"
+		    			+ "EmailAdd = '" + Email + "',\r\n"
+		    			+ "Contact = '" + Contact + "'\r\n"
+		    			+ "WHERE AccountID = '" + accID + "';";
+		    	
+		    	String SQLUpdateAcc = "UPDATE tblaccount\r\n"
+		    			+ "SET Username = '" + Username + "',\r\n"
+		    			+ "Password = '" + password + "',\r\n"
+		    			+ "accType = '" + Type + "',\r\n"
+		    			+ "Department = '" + Department + "',\r\n"
+		    			+ "Position = '" + Position + "'\r\n"
+		    			+ "WHERE AccountID = '" + accID + "';";
+		    	
+			    int insertAcc_1 = st.executeUpdate(SQLUpdateAcc);
+			    int insertAccInfo_1 = 0;
+			    if (insertAcc_1 > 0) 
+			    	insertAccInfo_1 = st.executeUpdate(SQLUpdateAccInfo);
+			    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
+			    	JOptionPane.showMessageDialog(null, "Account Update successfully.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+			    else {
+			    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
+			    }
+			    
 
+		        empGen = new EmployeeListGenerator();
+				empList.scrollPane.setViewportView(empGen);
+				panelVisible();
+				setEmployeeCount();
+				empPanel.setVisible(true);
+		    }
+	    	isUpdateEmpInfo = false;
+		    clearInputFields();
+		    
+		} catch (Exception e2) {
+			JOptionPane.showMessageDialog(null, "ERROR empCreate.btnRegister: " + e2.getMessage());
+		}
+	}
+
+	// Verify Username
+	private void verifyUsername() {
+		try {
+			String Username = empCreate.txtUsername.getText();
+			
+			if(Username.length() < 6) {
+				JOptionPane.showMessageDialog(null, "The username must be 6 to 20 letters.");
+				return;
+			}
+			
+			ArrayList arrAccount = new ArrayList<>();
+			String SQL = "SELECT Username FROM tblaccount";
+			
+			st.execute(SQL);
+			rs = st.getResultSet();
+			while(rs.next())
+				arrAccount.add(rs.getString(1));
+			
+			if(arrAccount.contains(Username))
+				verifyEmployeeRegister = "Already Exist";
+			else
+				verifyEmployeeRegister = "Verified";
+			
+			if(verifyEmployeeRegister.equals("Verified")) {
+				empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/check-mark.png")));
+			}else {
+				empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/close.png")));
+			}
+		} catch (Exception e2) {
+			JOptionPane.showMessageDialog(null, "ERROR empCreate.btnVerify: " + e2.getMessage());
+		}
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == navs.btnSalesReport) {
@@ -502,147 +667,11 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 			empCreate.setVisible(true);
 		}
 		if(e.getSource() == empCreate.btnVerify) {
-			try {
-				String Username = empCreate.txtUsername.getText();
-				
-				if(Username.length() < 6) {
-					JOptionPane.showMessageDialog(null, "The username must be 6 to 20 letters.");
-					return;
-				}
-				
-				ArrayList arrAccount = new ArrayList<>();
-				String SQL = "SELECT Username FROM tblaccount";
-				
-				st.execute(SQL);
-				rs = st.getResultSet();
-				while(rs.next())
-					arrAccount.add(rs.getString(1));
-				
-				if(arrAccount.contains(Username))
-					verifyEmployeeRegister = "Already Exist";
-				else
-					verifyEmployeeRegister = "Verified";
-				
-				if(verifyEmployeeRegister.equals("Verified")) {
-					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/check-mark.png")));
-				}else {
-					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/close.png")));
-				}
-			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(null, "ERROR empCreate.btnVerify: " + e2.getMessage());
-			}
+			verifyUsername();
 		}
 		
 		if(e.getSource() == empCreate.btnRegister) {
-			try {
-				String FirstName = empCreate.txtFirstName.getText();
-				String LastName = empCreate.txtLastName.getText();
-				String MiddleName = empCreate.txtMiddleName.getText();
-				String Address = empCreate.txtAddress.getText();
-				
-//				//convertion
-				Date inputdate = empCreate.birthDate.getDate();
-				String Birthdate = "";
-				if(inputdate != null) {
-				    SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				    Birthdate = outputDateFormat.format(inputdate);
-				}
-			    
-			    String Age = empCreate.txtAge.getText();
-			    String Gender = empCreate.cbGender.getSelectedItem().toString();
-			    String Email = empCreate.txtEmailAdd.getText();
-			    String Contact = empCreate.txtContact.getText();
-			    
-			    String Username = empCreate.txtUsername.getText();
-			    char[] passwordChars = empCreate.txtPassword.getPassword();
-			    String password = new String(passwordChars);
-			    char[] confirmPasswordChars = empCreate.txtConfirmPassword.getPassword();
-			    String ConfirmPassword = new String(confirmPasswordChars);
-			    String Type = empCreate.cbAccType.getSelectedItem().toString();
-			    String Department = empCreate.cbDepartment.getSelectedItem().toString();
-			    String Position = empCreate.cbPosition.getSelectedItem().toString();
-			    
-			    // Checking username if exist
-			    if(verifyEmployeeRegister.equals("Not Verified")) {
-			    	JOptionPane.showMessageDialog(null, "Please verify Username first");
-			    	return;
-			    }
-			    
-			    // check inputs if have null value
-			    empCreateChecker();
-			    if(EmpCreateCheck)
-			    	return;
-			    
-			    if(!password.equals(ConfirmPassword)) {
-			    	JOptionPane.showMessageDialog(null, "Password not match!");
-			    	return;
-			    }
-			    if(!isUpdateEmpInfo) {
-				    String getAccountID = "SELECT COUNT(AccountID) FROM tblAccount";
-				    st.execute(getAccountID);
-				    rs = st.getResultSet();
-				    int accID = 0;
-				    if(rs.next())
-				    	accID = rs.getInt(1) + 1;
-				    String insertAcc = "INSERT INTO tblAccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
-				    String insertAccInfo = "INSERT INTO tblaccountinfo(AccountID,FirstName,MiddleName,LastName,Address,Birthdate,Age,Gender,EmailAdd,Contact) VALUES('" + accID + "','" + FirstName + "','" + MiddleName + "','" + LastName + "','" + Address + "','" + Birthdate + "','" + Age + "','" + Gender + "','" + Email + "','" + Contact + "');";
-				    
-				    int insertAcc_1 = st.executeUpdate(insertAcc);
-				    int insertAccInfo_1 = 0;
-				    
-				    if (insertAcc_1 > 0) 
-				    	insertAccInfo_1 = st.executeUpdate(insertAccInfo);
-				    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
-				    	JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
-				    else {
-				    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
-				    }
-			    } else {
-			    	String accID = accoudIdEmpUpdate;
-			    	
-			    	String SQLUpdateAccInfo = "Update tblaccountinfo\r\n"
-			    			+ "SET FirstName = '" + FirstName + "',\r\n"
-			    			+ "MiddleName = '" + MiddleName + "',\r\n"
-			    			+ "LastName = '" + LastName + "',\r\n"
-			    			+ "Address = '" + Address + "',\r\n"
-			    			+ "Birthdate = '" + Birthdate + "',\r\n"
-			    			+ "Age = '" + Age + "',\r\n"
-			    			+ "Gender = '" + Gender + "',\r\n"
-			    			+ "EmailAdd = '" + Email + "',\r\n"
-			    			+ "Contact = '" + Contact + "'\r\n"
-			    			+ "WHERE AccountID = '" + accID + "';";
-			    	
-			    	String SQLUpdateAcc = "UPDATE tblaccount\r\n"
-			    			+ "SET Username = '" + Username + "',\r\n"
-			    			+ "Password = '" + password + "',\r\n"
-			    			+ "accType = '" + Type + "',\r\n"
-			    			+ "Department = '" + Department + "',\r\n"
-			    			+ "Position = '" + Position + "'\r\n"
-			    			+ "WHERE AccountID = '" + accID + "';";
-			    	
-				    int insertAcc_1 = st.executeUpdate(SQLUpdateAcc);
-				    int insertAccInfo_1 = 0;
-				    if (insertAcc_1 > 0) 
-				    	insertAccInfo_1 = st.executeUpdate(SQLUpdateAccInfo);
-				    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
-				    	JOptionPane.showMessageDialog(null, "Account Update successfully.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
-				    else {
-				    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
-				    }
-				    
-
-			        empGen = new EmployeeListGenerator();
-					empList.scrollPane.setViewportView(empGen);
-					panelVisible();
-					setEmployeeCount();
-					empPanel.setVisible(true);
-			    }
-		    	isUpdateEmpInfo = false;
-			    clearInputFields();
-			    
-			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(null, "ERROR empCreate.btnRegister: " + e2.getMessage());
-			}
+			registerEmployee();
 		}
 		
 		if(e.getSource() == empCreate.btnShowPassword) {
@@ -654,6 +683,7 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 		        empCreate.btnShowPassword.setText("Hide");
 		    }
 		}
+		
 		if(e.getSource() == empCreate.btnShowConfirmPassword) {
 		    if (empCreate.txtConfirmPassword.getEchoChar() == 0) {
 		        empCreate.txtConfirmPassword.setEchoChar('*');
@@ -697,48 +727,34 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        	JOptionPane.showMessageDialog(null, "Error EmpListEdit: " + e1.getMessage());
 			}
 	    }
-		
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if(e.getComponent() instanceof JButton) {
-			
-			navs.btnSalesReport.setIcon(null);
-			navs.btnAudit.setIcon(null);
-			navs.btnForecasting.setIcon(null);
-			navs.btnEmployeeList.setIcon(null);
-			
-			Component c = e.getComponent();
-			btnChecker = (JButton) e.getComponent();
-			if(btnChecker == c)
-				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
-			
-		}else
-			return;
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+	    
+	    // Courier List
+	    if(e.getSource() == navs.btnListOfCourier) {
+			panelVisible();
+			courierPanel.setVisible(true);
+			try {
+				courierPanel.main.setRowCount(0);
+				String courierCount = "SELECT COUNT(CourierID) FROM tblcourierinformation;";
+				String sql = "SELECT CourierID, CONCAT(Firstname, ' ',  LastName) AS FullName, Address, Email, ContactNo FROM tblcourierinformation;";
+				
+				st.execute(sql);
+				
+				rs = st.getResultSet();
+				
+				ArrayList temp = new ArrayList<>();
+				while(rs.next()) {
+					temp.add(rs.getString(1));
+					temp.add(rs.getString(2));
+					temp.add(rs.getString(3));
+					temp.add(rs.getString(4));
+					temp.add(rs.getString(5));
+					courierPanel.main.addRow(temp.toArray());
+					temp.clear();
+				}
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "Error navs.btnListOfCourier: " + e2.getMessage());
+			}
+	    }
 		
 	}
 
@@ -864,5 +880,62 @@ public class AdminPanel extends JFrame implements ActionListener, MouseListener,
 	        }
 	        
 	    }
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getButton() == MouseEvent.BUTTON3) {
+			if(e.getSource() == courierPanel.table) {
+				courierRightClick.setVisible(true);
+				int x = 265 + e.getX();
+				int y = 110 + e.getY();
+				courierRightClick.setBounds(x, y, 150, 61);
+			}
+		}
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == 27) {
+			courierRightClick.setVisible(false);
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

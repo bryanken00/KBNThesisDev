@@ -9,7 +9,6 @@ public class DbConnection {
 	private Connection con = null;
 	
 	//database
-//	private static String url = "jdbc:mysql://localhost:3306/kbnskinessentialdatabase";
 	private static String url = "jdbc:mysql://localhost:3306/kbndatabase";
 	private static String username = "root";
 	private static String password = "";
