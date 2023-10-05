@@ -31,6 +31,7 @@ import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
 import KBN.Module.Warehouse.ProcessOrder.onDelivery;
 import KBN.Module.Warehouse.RawMatsList.ArchiveRightClick;
 import KBN.Module.Warehouse.RawMatsList.RawMaterials;
+import KBN.Module.Warehouse.RawMatsList.genQRCode;
 import KBN.Module.Warehouse.Summary.SummaryPanel;
 import KBN.Module.Warehouse.Summary.exportTable;
 import KBN.Module.Warehouse.nav.WarehouseNav;
@@ -53,6 +54,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private ProcessOrder procOrder;
 	private ProcessOrderData procOrderData;
 	private onDelivery onDeliver;
+	
+	// QR Code Generator
+	private genQRCode genQR;
 	
 	// Account
 	private dataSetter dataSet;
@@ -148,7 +152,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         procOrder = new ProcessOrder();
         onDeliver = new onDelivery();
         
-
+        // QR Code
+        genQR = new genQRCode();
         
         // Nav Panel
         panelNav.add(wNav);
@@ -403,6 +408,23 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth";
 		rawMatsTable(sql);
         rawMats.setVisible(true);
+	}
+	
+	// QR Code Generator
+	private void generateQRCode() {
+		String MN = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 2) + "";
+		String CN = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 3) + "";
+		String S = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 1) + "";
+		String itemDate = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 4) + "";
+		String Volume = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 5) + "";
+		
+		String QRCodeName = MN + " " + itemDate +".png";
+		String url = "http://localhost/webdevelopment/thesis1_website/warehouse/?MN=" + MN + "&CN=" + CN + "&S=" + S + "&date=" + itemDate+"&tv=" + Volume;
+		try {
+			genQR.gettingURL(url, QRCodeName);
+		}catch (Exception e1) {
+			JOptionPane.showMessageDialog(null, "ERROR QRCODE: " + e1.getMessage());
+		}
 	}
 	
 	// Archive List Panel
@@ -924,6 +946,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		// Navs
 		if(e.getSource() == wNav.btnRawMats)
 			wNavRawMatsFunc();
+			
+			// QR Code
+			if(e.getSource() == wNav.btnQRCode || e.getSource() == rightClickRawMats.btnQRGen)
+				generateQRCode();
 		
 			// Raw Mats 
 			if(e.getSource() == rawMats.rawMatsCategory)
