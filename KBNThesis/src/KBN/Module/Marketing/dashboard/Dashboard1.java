@@ -36,11 +36,9 @@ public class Dashboard1 extends JPanel {
 	public JLabel lblYearlyPercent;
 	public JScrollPane panelOutofStock;
 	public JScrollPane panelSufficentStock;
-	public JScrollPane panelCritLevel;
 	public JLabel lblTimeDiff;
 	public JTable tableLow;
 	public JTable tableMid;
-	public JTable tableHigh;
 	public DefaultTableModel tLow;
 	public DefaultTableModel tMid;
 	public DefaultTableModel tHigh;
@@ -191,9 +189,9 @@ public class Dashboard1 extends JPanel {
 		panelStocks.setLayout(null);
 		
 		JPanel paneOutofStock = new JPanel();
+		paneOutofStock.setBounds(435, 192, 196, 180);
 		paneOutofStock.setBackground(Color.WHITE);
 		paneOutofStock.setBorder(border);
-		paneOutofStock.setBounds(13, 11, 196, 358);
 		panelStocks.add(paneOutofStock);
 		paneOutofStock.setLayout(null);
 		
@@ -205,7 +203,7 @@ public class Dashboard1 extends JPanel {
 		
 		panelOutofStock = new JScrollPane();
 		panelOutofStock.setBorder(border);
-		panelOutofStock.setBounds(0, 42, 196, 316);
+		panelOutofStock.setBounds(0, 42, 196, 138);
 		verticalScrollbar = panelOutofStock.getVerticalScrollBar();
         verticalScrollbar.setUI(new CustomScrollBarUI());
 		paneOutofStock.add(panelOutofStock);
@@ -214,9 +212,9 @@ public class Dashboard1 extends JPanel {
 		panelOutofStock.setViewportView(tableLow);
 		
 		JPanel panelSufficient = new JPanel();
+		panelSufficient.setBounds(435, 6, 196, 180);
 		panelSufficient.setBackground(Color.WHITE);
 		panelSufficient.setBorder(border);
-		panelSufficient.setBounds(222, 11, 196, 358);
 		panelStocks.add(panelSufficient);
 		panelSufficient.setLayout(null);
 		
@@ -228,36 +226,14 @@ public class Dashboard1 extends JPanel {
 		
 		panelSufficentStock = new JScrollPane();
 		panelSufficentStock.setBorder(border);
-		panelSufficentStock.setBounds(0, 42, 196, 316);
+		panelSufficentStock.setBounds(0, 42, 196, 138);
 		verticalScrollbar = panelSufficentStock.getVerticalScrollBar();
         verticalScrollbar.setUI(new CustomScrollBarUI());
 		panelSufficient.add(panelSufficentStock);
 		
 		tableMid = new JTable();
 		panelSufficentStock.setViewportView(tableMid);
-		
-		JPanel panelCriticalLevel = new JPanel();
-		panelCriticalLevel.setBackground(Color.WHITE);
-		panelCriticalLevel.setBorder(border);
-		panelCriticalLevel.setBounds(431, 11, 196, 358);
-		panelStocks.add(panelCriticalLevel);
-		panelCriticalLevel.setLayout(null);
-		
-		JLabel lblNewLabel_1_2 = new JLabel("Well-Stocked");
-		lblNewLabel_1_2.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1_2.setFont(new Font("Tahoma", Font.BOLD, 15));
-		lblNewLabel_1_2.setBounds(0, 0, 196, 42);
-		panelCriticalLevel.add(lblNewLabel_1_2);
-		
-		panelCritLevel = new JScrollPane();
-		panelCritLevel.setBorder(border);
-		panelCritLevel.setBounds(0, 42, 196, 316);
-		verticalScrollbar = panelCritLevel.getVerticalScrollBar();
         verticalScrollbar.setUI(new CustomScrollBarUI());
-		panelCriticalLevel.add(panelCritLevel);
-		
-		tableHigh = new JTable();
-		panelCritLevel.setViewportView(tableHigh);
 		
 		tLow = new DefaultTableModel(tableLow.getRowCount(), tableLow.getColumnCount()) {
             @Override
@@ -273,16 +249,46 @@ public class Dashboard1 extends JPanel {
                 return false;
             }
         };
-		tHigh = new DefaultTableModel(tableHigh.getRowCount(), tableHigh.getColumnCount()) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                // Make all cells non-editable
-                return false;
-            }
-        };
 		tableLow.setTableHeader(null);
 		tableMid.setTableHeader(null);
-		tableHigh.setTableHeader(null);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel.setBounds(10, 6, 397, 180);
+		panelStocks.add(panel);
+		panel.setLayout(null);
+		
+		JPanel title = new JPanel();
+		title.setBackground(new Color(255, 255, 255));
+		title.setBorder(new LineBorder(new Color(0, 0, 0)));
+		title.setBounds(0, 0, 397, 42);
+		panel.add(title);
+		title.setLayout(null);
+		
+		JLabel lblNewLabel_1_1_1 = new JLabel("Top-Selling Product");
+		lblNewLabel_1_1_1.setBounds(0, 0, 397, 42);
+		title.add(lblNewLabel_1_1_1);
+		lblNewLabel_1_1_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel_1.setBounds(10, 192, 397, 180);
+		panelStocks.add(panel_1);
+		panel_1.setLayout(null);
+		
+		JPanel title2 = new JPanel();
+		title2.setBackground(new Color(255, 255, 255));
+		title2.setBorder(new LineBorder(new Color(0, 0, 0)));
+		title2.setBounds(0, 0, 397, 42);
+		panel_1.add(title2);
+		title2.setLayout(null);
+		
+		JLabel lblNewLabel_1_2 = new JLabel("Least Popular Product");
+		lblNewLabel_1_2.setBounds(0, 0, 397, 42);
+		title2.add(lblNewLabel_1_2);
+		lblNewLabel_1_2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1_2.setFont(new Font("Tahoma", Font.BOLD, 15));
 		
 		table();
 	}
@@ -293,16 +299,12 @@ public class Dashboard1 extends JPanel {
 		tableLow.setModel(tLow);
 		tMid.setColumnIdentifiers(column);
 		tableMid.setModel(tMid);
-		tHigh.setColumnIdentifiers(column);
-		tableHigh.setModel(tHigh);
 		
         Font cellFont = new Font("Arial", Font.PLAIN, 14);
         tableLow.setFont(cellFont);
         tableMid.setFont(cellFont);
-        tableHigh.setFont(cellFont);
         tableLow.setRowHeight(30);
         tableMid.setRowHeight(30);
-        tableHigh.setRowHeight(30);
 	}
 	
 	static class CustomScrollBarUI extends BasicScrollBarUI {

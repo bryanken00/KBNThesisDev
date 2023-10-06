@@ -139,8 +139,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private JLabel lblUsername;
 	private JButton btnKbn;
 	private JButton btnRebranding;
-	private JButton btnRawMaterials;
-	private JButton btnPackingMaterials;
+	private JButton btnCanncelledOrder;
+	private JButton btnConfirmation;
 	private JButton btnCustomerAccount;
 	private JButton btnClientProfile;
 	private JButton btnOrdering;
@@ -308,37 +308,28 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnRebranding.setBounds(10, 214, 241, 35);
 		panelButton.add(btnRebranding);
 		
-		btnRawMaterials = new JButton("Raw Materials");
-		btnRawMaterials.setEnabled(false);
-		btnRawMaterials.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnRawMaterials.setFocusable(false);
-		btnRawMaterials.setBorderPainted(false);
-		btnRawMaterials.setBackground(Color.WHITE);
-		btnRawMaterials.setBounds(10, 284, 241, 35);
-		panelButton.add(btnRawMaterials);
+		btnCanncelledOrder = new JButton("Cancelled Order");
+		btnCanncelledOrder.setEnabled(false);
+		btnCanncelledOrder.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnCanncelledOrder.setFocusable(false);
+		btnCanncelledOrder.setBorderPainted(false);
+		btnCanncelledOrder.setBackground(Color.WHITE);
+		btnCanncelledOrder.setBounds(10, 508, 241, 35);
+		panelButton.add(btnCanncelledOrder);
 		
-		btnPackingMaterials = new JButton("Packing Materials");
-		btnPackingMaterials.setEnabled(false);
-		btnPackingMaterials.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnPackingMaterials.setFocusable(false);
-		btnPackingMaterials.setBorderPainted(false);
-		btnPackingMaterials.setBackground(Color.WHITE);
-		btnPackingMaterials.setBounds(10, 330, 241, 35);
-		panelButton.add(btnPackingMaterials);
-		
-		JLabel lblMaterials = new JLabel("Materials");
-		lblMaterials.setBounds(10, 266, 235, 13);
-		panelButton.add(lblMaterials);
+		btnConfirmation = new JButton("Confirmation Products");
+		btnConfirmation.setEnabled(false);
+		btnConfirmation.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnConfirmation.setFocusable(false);
+		btnConfirmation.setBorderPainted(false);
+		btnConfirmation.setBackground(Color.WHITE);
+		btnConfirmation.setBounds(10, 370, 241, 35);
+		panelButton.add(btnConfirmation);
 		
 		JSeparator separator_1_1 = new JSeparator();
 		separator_1_1.setForeground(Color.BLACK);
-		separator_1_1.setBounds(16, 260, 222, 13);
+		separator_1_1.setBounds(16, 260, 222, 7);
 		panelButton.add(separator_1_1);
-		
-		JSeparator separator_1_1_1 = new JSeparator();
-		separator_1_1_1.setForeground(Color.BLACK);
-		separator_1_1_1.setBounds(16, 376, 222, 13);
-		panelButton.add(separator_1_1_1);
 		
 		
 		btnCustomerAccount = new JButton("Customer Account");
@@ -347,7 +338,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnCustomerAccount.setFocusable(false);
 		btnCustomerAccount.setBorderPainted(false);
 		btnCustomerAccount.setBackground(Color.WHITE);
-		btnCustomerAccount.setBounds(10, 387, 241, 35);
+		btnCustomerAccount.setBounds(10, 278, 241, 35);
 		panelButton.add(btnCustomerAccount);
 		
 		btnClientProfile = new JButton("Client Profile");
@@ -356,7 +347,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnClientProfile.setFocusable(false);
 		btnClientProfile.setBorderPainted(false);
 		btnClientProfile.setBackground(Color.WHITE);
-		btnClientProfile.setBounds(10, 433, 241, 35);
+		btnClientProfile.setBounds(10, 324, 241, 35);
 		panelButton.add(btnClientProfile);
 		
 		btnOrdering = new JButton("Ordering");
@@ -365,7 +356,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnOrdering.setFocusable(false);
 		btnOrdering.setBorderPainted(false);
 		btnOrdering.setBackground(Color.WHITE);
-		btnOrdering.setBounds(10, 479, 241, 35);
+		btnOrdering.setBounds(10, 416, 241, 35);
 		panelButton.add(btnOrdering);
 		
 		btnDeliveryStatus = new JButton("Delivery Status");
@@ -374,7 +365,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDeliveryStatus.setFocusable(false);
 		btnDeliveryStatus.setBorderPainted(false);
 		btnDeliveryStatus.setBackground(Color.WHITE);
-		btnDeliveryStatus.setBounds(10, 525, 241, 35);
+		btnDeliveryStatus.setBounds(10, 462, 241, 35);
 		panelButton.add(btnDeliveryStatus);
 		
 		btnReturnProducts = new JButton("Return Products");
@@ -383,7 +374,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnReturnProducts.setFocusable(false);
 		btnReturnProducts.setBorderPainted(false);
 		btnReturnProducts.setBackground(Color.WHITE);
-		btnReturnProducts.setBounds(10, 571, 241, 35);
+		btnReturnProducts.setBounds(10, 554, 241, 35);
 		panelButton.add(btnReturnProducts);
 		
 		btnAuditTrail = new JButton("Audit Trail");
@@ -392,7 +383,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnAuditTrail.setFocusable(false);
 		btnAuditTrail.setBorderPainted(false);
 		btnAuditTrail.setBackground(Color.WHITE);
-		btnAuditTrail.setBounds(10, 617, 241, 35);
+		btnAuditTrail.setBounds(10, 600, 241, 35);
 		panelButton.add(btnAuditTrail);
 		
 		JSeparator separator_2 = new JSeparator();
@@ -417,16 +408,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			btnKbn.setEnabled(true);
 			btnRebranding.setEnabled(true);
 			
-			btnPackingMaterials.setEnabled(true);
-			btnRawMaterials.setEnabled(true);
+			btnConfirmation.setEnabled(true);
+			btnCanncelledOrder.setEnabled(true);
 			btnOrdering.setEnabled(true);
 			
 		}else if(AccountLevel.equals("Admin--") || AccountLevel.equals("Admin-Marketing-All")) {
 			btnKbn.setEnabled(true);
 			btnRebranding.setEnabled(true);
 			
-			btnPackingMaterials.setEnabled(true);
-			btnRawMaterials.setEnabled(true);
+			btnConfirmation.setEnabled(true);
+			btnCanncelledOrder.setEnabled(true);
 			
 			btnCustomerAccount.setEnabled(true);
 			btnClientProfile.setEnabled(true);
@@ -441,8 +432,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDashboard.setBackground(Color.WHITE);
 		btnKbn.setBackground(Color.WHITE);
 		btnRebranding.setBackground(Color.WHITE);
-		btnRawMaterials.setBackground(Color.WHITE);
-		btnPackingMaterials.setBackground(Color.WHITE);
+		btnCanncelledOrder.setBackground(Color.WHITE);
+		btnConfirmation.setBackground(Color.WHITE);
 		btnCustomerAccount.setBackground(Color.WHITE);
 		btnClientProfile.setBackground(Color.WHITE);
 		btnOrdering.setBackground(Color.WHITE);
@@ -455,8 +446,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDashboard.addActionListener(this);
 		btnKbn.addActionListener(this);
 		btnRebranding.addActionListener(this);
-		btnRawMaterials.addActionListener(this);
-		btnPackingMaterials.addActionListener(this);
+		btnCanncelledOrder.addActionListener(this);
+		btnConfirmation.addActionListener(this);
 		btnCustomerAccount.addActionListener(this);
 		btnClientProfile.addActionListener(this);
 		btnOrdering.addActionListener(this);
@@ -467,8 +458,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDashboard.addMouseListener(this);
 		btnKbn.addMouseListener(this);
 		btnRebranding.addMouseListener(this);
-		btnRawMaterials.addMouseListener(this);
-		btnPackingMaterials.addMouseListener(this);
+		btnCanncelledOrder.addMouseListener(this);
+		btnConfirmation.addMouseListener(this);
 		btnCustomerAccount.addMouseListener(this);
 		btnClientProfile.addMouseListener(this);
 		btnOrdering.addMouseListener(this);
@@ -639,8 +630,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			btnDashboard.setIcon(null);
 			btnKbn.setIcon(null);
 			btnRebranding.setIcon(null);
-			btnRawMaterials.setIcon(null);
-			btnPackingMaterials.setIcon(null);
+			btnCanncelledOrder.setIcon(null);
+			btnConfirmation.setIcon(null);
 			btnCustomerAccount.setIcon(null);
 			btnClientProfile.setIcon(null);
 			btnOrdering.setIcon(null);
@@ -1246,7 +1237,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void outStock() {
 		try {
 			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
-			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume < 1";
+			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume < 1 LIMIT 5";
 			
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1257,14 +1248,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				lowStock.clear();
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "lowStock ERROR: " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "out of Stock ERROR: " + e.getMessage());
 		}
 	}
 	
 	private void lowStock() {
 		try {
 			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
-			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume > 0 AND todayCurrentVolume < 20000";
+			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume > 0 AND todayCurrentVolume < 20000 LIMIT 5";
 			
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1279,23 +1270,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-	private void normalStock() {
-		try {
-			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
-			+ "FROM tblcurrentmonth AS a WHERE todayCurrentVolume > 20000";
-			
-			st.execute(sql);
-			rs = st.getResultSet();
-			ArrayList lowStock = new ArrayList<>();
-			while(rs.next()) {
-				lowStock.add(rs.getString(1));
-				dashboard1.tHigh.addRow(lowStock.toArray());
-				lowStock.clear();
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "lowStock ERROR: " + e.getMessage());
-		}
-	}
+
 	
 	private void dashboard1() {
 		orderCounterDashboard(); // get orderCount
@@ -1307,7 +1282,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		yearlyDashboard();
 		outStock();
 		lowStock();
-		normalStock();
 	}
 	
 	private void orderCounterSearch(String search) {

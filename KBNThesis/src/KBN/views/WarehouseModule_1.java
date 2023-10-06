@@ -30,6 +30,7 @@ import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
 import KBN.Module.Warehouse.ProcessOrder.onDelivery;
 import KBN.Module.Warehouse.RawMatsList.ArchiveRightClick;
+import KBN.Module.Warehouse.RawMatsList.ManualAdd;
 import KBN.Module.Warehouse.RawMatsList.RawMaterials;
 import KBN.Module.Warehouse.RawMatsList.genQRCode;
 import KBN.Module.Warehouse.Summary.SummaryPanel;
@@ -54,6 +55,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private ProcessOrder procOrder;
 	private ProcessOrderData procOrderData;
 	private onDelivery onDeliver;
+	private ManualAdd manual;
 	
 	// QR Code Generator
 	private genQRCode genQR;
@@ -154,6 +156,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         
         // QR Code
         genQR = new genQRCode();
+        // Add Item
+        manual = new ManualAdd();
         
         // Nav Panel
         panelNav.add(wNav);
@@ -425,6 +429,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}catch (Exception e1) {
 			JOptionPane.showMessageDialog(null, "ERROR QRCODE: " + e1.getMessage());
 		}
+	}
+	
+	//Manual Add Item
+	private void manualAddItem() {
+		manual.setVisible(true);
 	}
 	
 	// Archive List Panel
@@ -950,6 +959,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			// QR Code
 			if(e.getSource() == wNav.btnQRCode || e.getSource() == rightClickRawMats.btnQRGen)
 				generateQRCode();
+			if(e.getSource() == wNav.btnAddItem)
+				manualAddItem();
 		
 			// Raw Mats 
 			if(e.getSource() == rawMats.rawMatsCategory)
