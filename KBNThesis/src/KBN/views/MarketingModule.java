@@ -828,6 +828,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			        + "\n"
 			        + "  COMMIT;\n"
 			        + "END;";
+			
+			System.out.println(Archive);
 
 			Restore = "CREATE PROCEDURE InsertAndDeleteWithRollback()\n"
 			        + "BEGIN\n"

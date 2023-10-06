@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,8 @@ import KBN.commons.dataSetter;
 
 import java.awt.Color;
 import javax.swing.border.LineBorder;
+
+import com.toedter.calendar.JDateChooser;
 
 public class WarehouseModule_1 extends JFrame implements ActionListener, MouseListener, KeyListener  {
 
@@ -438,16 +441,101 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	}
 	
 	private void manualAddSubmit() {
-		try {		
+		try {
 			manual.txtMaterialName.setBorder(new LineBorder(new Color(0, 0, 0)));
 			manual.txtCodeName.setBorder(new LineBorder(new Color(0, 0, 0)));
 			manual.txtSupplier.setBorder(new LineBorder(new Color(0, 0, 0)));
 			manual.txtReleasedVolume.setBorder(new LineBorder(new Color(0, 0, 0)));
 			manual.dateNow.setBorder(new LineBorder(new Color(0, 0, 0)));
 			
-			if(manual.txtMaterialName.getText().equals("") || manual.txtCodeName.getText().equals("") || manual.txtSupplier.getText().equals("") || manual.txtReleasedVolume.getText().equals("") || manual.dateNow.getDate() == null) {
-				printingError("Please Complete the form");
-				return;
+//			if(manual.txtMaterialName.getText().equals("") || manual.txtCodeName.getText().equals("") || manual.txtSupplier.getText().equals("") || manual.txtReleasedVolume.getText().equals("") || manual.dateNow.getDate() == null) {
+//				printingError("Please Complete the form");
+//				return;
+//			}
+			
+
+			
+			String MaterialName = manual.txtMaterialName.getText();
+			String CodeName = manual.txtCodeName.getText();
+			String Supplier = manual.txtSupplier.getText();
+			String Vol = manual.txtReleasedVolume.getText();
+			
+
+			Date selectedDate = manual.dateNow.getDate();
+			
+            LocalDateTime now = LocalDateTime.now();
+
+            // Extract the date and time components
+            Date datePart = selectedDate;
+            Date timePart = java.sql.Timestamp.valueOf(now);
+
+            // Format date and time components separately
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+            String formattedDate = dateFormat.format(datePart);
+            String formattedTime = timeFormat.format(timePart);
+
+            // Combine the formatted date and time
+            String dateSelected = formattedDate + " " + formattedTime;
+			
+			// Checker
+			String sql = "SELECT * FROM tblcurrentmonth WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE(DATE_TODAY) = '" + formattedDate + "'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int checker = 0;
+			
+			System.out.println(sql);
+			while(rs.next())
+				checker++;
+			
+			String dropDelimiter = "DROP PROCEDURE IF EXISTS addRawMaterialConsume;";
+			st.execute(dropDelimiter);
+			
+			if(checker == 0) {
+				
+				String sqlInsert = "INSERT INTO tblcurrentmonth(MATERIAL_NAME, CODE_NAME, SUPPLIER, todayCurrentVolume, RECEIVED_VOLUME, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, DATE_TODAY, CATEGORIES) "
+						+ "SELECT MATERIAL_NAME, CODE_NAME, SUPPLIER, (todayCurrentVolume-" + Vol +"), RECEIVED_VOLUME, APPEARANCE, " + Vol + ", REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, '" + dateSelected + "', CATEGORIES "
+						+ "FROM tblcurrentmonth WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' "
+						+ "ORDER BY DATE_TODAY DESC LIMIT 1;";
+
+//				System.out.println(sqlInsert);
+				
+				String sqlUpdate = "UPDATE tblcurrentmonth "
+						+ "SET todayCurrentVolume = todayCurrentVolume - " + Vol + " "
+						+ "WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY >= '" + formattedDate + "';";
+				
+				System.out.println(sqlUpdate);
+				
+				String sqlUpdate2 =  "UPDATE tblcurrentmonth "
+						+ "SET RELEASED_VOLUME = RELEASED_VOLUME + " + Vol + " "
+						+ "WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY = '" + formattedDate + "';";
+
+//				System.out.println(sqlInsert);
+				
+				st.execute(sqlUpdate);
+				st.execute(sqlUpdate2);
+				st.execute(sqlInsert);
+				
+
+				
+				printingError("Raw Material Consume Added!");
+				manual.dispose();
+			}
+			else {
+				String sqlUpdate = "UPDATE tblcurrentmonth "
+						+ "SET todayCurrentVolume = todayCurrentVolume - " + Vol + " "
+						+ "WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE(DATE_TODAY) >= '" + formattedDate + "';";
+				String sqlUpdate2 =  "UPDATE tblcurrentmonth "
+						+ "SET RELEASED_VOLUME = RELEASED_VOLUME + " + Vol + " "
+						+ "WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE(DATE_TODAY) = '" + formattedDate + "';";
+				st.execute(sqlUpdate);
+				st.execute(sqlUpdate2);
+				
+				System.out.println(sqlUpdate2);
+				
+				printingError("Raw Material Consume Updated!");
+				manual.dispose();
 			}
 				
 		} catch (Exception e) {
