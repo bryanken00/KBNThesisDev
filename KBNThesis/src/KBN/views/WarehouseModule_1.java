@@ -255,6 +255,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		
 		// wNav
 		wNav.btnAddItem.addActionListener(this);
+			manual.btnSubmit.addActionListener(this);
 		wNav.btnQRCode.addActionListener(this);
 		
 		wNav.btnRawMats.addActionListener(this);
@@ -434,6 +435,24 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	//Manual Add Item
 	private void manualAddItem() {
 		manual.setVisible(true);
+	}
+	
+	private void manualAddSubmit() {
+		try {		
+			manual.txtMaterialName.setBorder(new LineBorder(new Color(0, 0, 0)));
+			manual.txtCodeName.setBorder(new LineBorder(new Color(0, 0, 0)));
+			manual.txtSupplier.setBorder(new LineBorder(new Color(0, 0, 0)));
+			manual.txtReleasedVolume.setBorder(new LineBorder(new Color(0, 0, 0)));
+			manual.dateNow.setBorder(new LineBorder(new Color(0, 0, 0)));
+			
+			if(manual.txtMaterialName.getText().equals("") || manual.txtCodeName.getText().equals("") || manual.txtSupplier.getText().equals("") || manual.txtReleasedVolume.getText().equals("") || manual.dateNow.getDate() == null) {
+				printingError("Please Complete the form");
+				return;
+			}
+				
+		} catch (Exception e) {
+			printingError("Error manualAddSubmit: " + e.getMessage());
+		}
 	}
 	
 	// Archive List Panel
@@ -961,6 +980,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				generateQRCode();
 			if(e.getSource() == wNav.btnAddItem)
 				manualAddItem();
+			
+			if(e.getSource() == manual.btnSubmit)
+				manualAddSubmit();
 		
 			// Raw Mats 
 			if(e.getSource() == rawMats.rawMatsCategory)

@@ -14,17 +14,21 @@ import javax.swing.border.LineBorder;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
 
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 
-public class ManualAdd extends JDialog {
+public class ManualAdd extends JDialog implements ActionListener{
 	public JTextField txtMaterialName;
 	public JTextField txtCodeName;
 	public JTextField txtSupplier;
 	public JTextField txtReleasedVolume;
 	public JDateChooser dateNow;
+	public JButton btnSubmit;
 
 	public ManualAdd() {
 		setResizable(false);
@@ -93,6 +97,7 @@ public class ManualAdd extends JDialog {
 		panel.add(lblDateRelease);
 		
 		dateNow = new JDateChooser();
+//		dateNow.setDate(new Date());
 		dateNow.setBorder(new LineBorder(new Color(0, 0, 0)));
 		dateNow.setBounds(37, 307, 339, 34);
 		panel.add(dateNow);
@@ -108,12 +113,45 @@ public class ManualAdd extends JDialog {
 		txtReleasedVolume.setBounds(37, 377, 339, 34);
 		panel.add(txtReleasedVolume);
 		
-		JButton btnSubmit = new JButton("Submit");
+		btnSubmit = new JButton("Submit");
 		btnSubmit.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnSubmit.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSubmit.setFocusable(false);
 		btnSubmit.setBackground(Color.WHITE);
 		btnSubmit.setBounds(254, 432, 122, 35);
+		btnSubmit.addActionListener(this);
 		panel.add(btnSubmit);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		//default
+		txtMaterialName.setBorder(new LineBorder(new Color(0, 0, 0)));
+		txtCodeName.setBorder(new LineBorder(new Color(0, 0, 0)));
+		txtSupplier.setBorder(new LineBorder(new Color(0, 0, 0)));
+		txtReleasedVolume.setBorder(new LineBorder(new Color(0, 0, 0)));
+		dateNow.setBorder(new LineBorder(new Color(0, 0, 0)));
+		
+		if(e.getSource() == btnSubmit) {
+			if(txtMaterialName.getText().equals(""))
+				txtMaterialName.setBorder(new LineBorder(new Color(255, 3, 3)));
+			
+			if(txtCodeName.getText().equals(""))
+				txtCodeName.setBorder(new LineBorder(new Color(255, 3, 3)));
+			
+			if(txtSupplier.getText().equals(""))
+				txtSupplier.setBorder(new LineBorder(new Color(255, 3, 3)));
+			
+			if(txtReleasedVolume.getText().equals(""))
+				txtReleasedVolume.setBorder(new LineBorder(new Color(255, 3, 3)));
+			
+			if(txtSupplier.getText().equals(""))
+				txtSupplier.setBorder(new LineBorder(new Color(255, 3, 3)));
+			
+			if (dateNow.getDate() == null)
+				dateNow.setBorder(new LineBorder(new Color(255, 3, 3)));
+			
+		}
 	}
 }
