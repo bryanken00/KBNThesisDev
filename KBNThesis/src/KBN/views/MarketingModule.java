@@ -598,7 +598,25 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}else {
 			orderPanel.table.removeAll();
 		}
+		
+		if(orderHistory.btnProcessOrder != null) {
+			orderPanel.table.removeAll();
+			for (int i = 0; i < orderHistory.btnProcessOrder.length; i++) {
+				if (e.getSource() == orderHistory.btnProcessOrder[i]) {
+					refNum = orderHistory.lblRefNumber[i].getText();
+					orderPanelFunc();
+                    orderPanel.main.setRowCount(0);
+                    orderPanel.table.setModel(orderPanel.main);
+                    orderClickIdentifier = "cust";
+                    panelDataSetter();
+                    orderClickIdentifier = "";
+			        break;
+			    }
+			}
+		}
 	}
+	
+
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -613,12 +631,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			}
 		}
 		if(e.getSource() == cp.lblOrders) {
+			cpsp = new ClientProfileScrollablePanel();
 			cp.scrollOrderPanel.setViewportView(cpsp);
+			
+			// OrderList printing
 			clientProfileOrderListRefresher(uID, custN,custB);
+			clientProfileOrderListActionList();
 		}
 		if(e.getSource() == cp.lblOrderHistory) {
+			orderHistory = new OrderHistory();
 			cp.scrollOrderPanel.setViewportView(orderHistory);
 			clientProfileOrderHistoryRefresher(uID, custN,custB);
+			clientProfileOrderHistoryActionlist();
 		}
 		if(e.getSource() == cp.lblProducts) {
 			cp.scrollOrderPanel.setViewportView(rp);
@@ -740,7 +764,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.add(orderPanel);
 		panelTab.add(cp);
 		dashboard1.setVisible(true);
-		cp.scrollOrderPanel.setViewportView(cpsp);
 	}
 	
 	private void setUsername() {
@@ -1385,9 +1408,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-	private void clientProfileOrderListRemoveActionlist() {
-		for(int i = 0; i < ClientProfileCounter; i++) {
-			cpsp.btnProcessOrder[i].removeActionListener(this);
+	private void clientProfileOrderHistoryActionlist() {
+		for(int i = 0; i < ClientProfileCounterHistory; i++) {
+			orderHistory.btnProcessOrder[i].addActionListener(this);
 		}
 	}
 	
@@ -1717,8 +1740,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				return;
 			
 			clientProfileChecker = AccType;
-			
 			clientProfileFunc();
+
+			cpsp = new ClientProfileScrollablePanel();
+			cp.scrollOrderPanel.setViewportView(cpsp);
+			
+			// OrderList printing
+			clientProfileOrderListRefresher(uID, custN,custB);
+			clientProfileOrderListActionList();
 			
 			String SQLAccountInfo = "SELECT Email, Number, Address, Discount FROM tblcustomerinformation WHERE userID = '" + uID + "'";
 			st.execute(SQLAccountInfo);
@@ -1742,14 +1771,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        ClientProfileMonthly(uID);
 	        
 	        ClientProfileYearly(uID);
-	        
-			// OrderList printing
-			clientProfileOrderListRefresher(uID, custN,custB);
-			
-
-			clientProfileOrderListRemoveActionlist();
-			
-			clientProfileOrderListActionList();
 			
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error custAccountClientProfileFunc: " + e.getMessage());
