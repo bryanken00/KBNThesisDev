@@ -43,10 +43,14 @@ public class Dashboard1 extends JPanel {
 	public DefaultTableModel tMid;
 	public DefaultTableModel tHigh;
 	
-	JScrollBar verticalScrollbar;
+	private JScrollBar verticalScrollbar;
+	public JTable tableTopSelling;
+	public JTable tableLeastSelling;
+	public DefaultTableModel maintableTopSelling;
+	public DefaultTableModel maintableLeastSelling;
 
 	public Dashboard1() {
-		setBorder(new LineBorder(Color.WHITE, 1, true));
+		setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		setBackground(Color.WHITE);
 		setBounds(0, 0, 989, 699);
 		setLayout(null);
@@ -249,6 +253,23 @@ public class Dashboard1 extends JPanel {
                 return false;
             }
         };
+        
+
+    	maintableTopSelling = new DefaultTableModel(tableLow.getRowCount(), tableLow.getColumnCount()) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make all cells non-editable
+                return false;
+            }
+        };
+    	maintableLeastSelling = new DefaultTableModel(tableLow.getRowCount(), tableLow.getColumnCount()) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make all cells non-editable
+                return false;
+            }
+        };
+    	
 		tableLow.setTableHeader(null);
 		tableMid.setTableHeader(null);
 		
@@ -271,6 +292,14 @@ public class Dashboard1 extends JPanel {
 		lblNewLabel_1_1_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.BOLD, 15));
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(0, 41, 397, 139);
+		scrollPane.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel.add(scrollPane);
+		
+		tableTopSelling = new JTable();
+		scrollPane.setViewportView(tableTopSelling);
+		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_1.setBounds(10, 192, 397, 180);
@@ -290,6 +319,14 @@ public class Dashboard1 extends JPanel {
 		lblNewLabel_1_2.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1_2.setFont(new Font("Tahoma", Font.BOLD, 15));
 		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBorder(new LineBorder(new Color(0, 0, 0)));
+		scrollPane_1.setBounds(0, 41, 397, 139);
+		panel_1.add(scrollPane_1);
+		
+		tableLeastSelling = new JTable();
+		scrollPane_1.setViewportView(tableLeastSelling);
+		
 		table();
 	}
 	
@@ -305,6 +342,13 @@ public class Dashboard1 extends JPanel {
         tableMid.setFont(cellFont);
         tableLow.setRowHeight(30);
         tableMid.setRowHeight(30);
+        
+        //Top and Least
+        String [] ColumnTopLeast = {"Product Name", "Sold"};
+        maintableTopSelling.setColumnIdentifiers(ColumnTopLeast);
+    	maintableLeastSelling.setColumnIdentifiers(ColumnTopLeast);
+    	tableTopSelling.setModel(maintableTopSelling);
+    	tableLeastSelling.setModel(maintableLeastSelling);
 	}
 	
 	static class CustomScrollBarUI extends BasicScrollBarUI {

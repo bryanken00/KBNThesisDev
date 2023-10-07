@@ -1295,7 +1295,42 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
-
+	private void topSell() {
+		
+		// Specific Date;
+		String SQL = "SELECT CONCAT(a.ProductName, ' (', a.volume, ')') AS product, SUM(a.Quantity) AS Sold\r\n"
+				+ "FROM tblordercheckoutdata AS A\r\n"
+				+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+				+ "WHERE b.OrderDate >= '2023/09/01'\r\n"
+				+ "GROUP BY a.OrderRefNumber, product\r\n"
+				+ "ORDER BY Quantity DESC\r\n"
+				+ "LIMIT 5";
+		
+		try {
+			st.execute(SQL);
+			rs = st.getResultSet();
+			ArrayList temp = new ArrayList<>();
+			while(rs.next()) {
+				temp.add(rs.getString(1));
+				temp.add(rs.getString(2));
+				dashboard1.maintableTopSelling.addRow(temp.toArray());
+				System.out.println(temp.toString());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error topSell: " + e.getMessage());
+		}
+	}
+	private void leastSell() {
+		
+		// All Time
+		String SQL = "SELECT CONCAT(a.ProductName, ' (', a.volume, ')') AS product, SUM(a.Quantity) AS Quantity\r\n"
+				+ "FROM tblordercheckoutdata AS A\r\n"
+				+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+				+ "GROUP BY a.OrderRefNumber, product\r\n"
+				+ "ORDER BY Quantity ASC\r\n"
+				+ "LIMIT 5";
+	}
 	
 	private void dashboard1() {
 		orderCounterDashboard(); // get orderCount
@@ -1307,6 +1342,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		yearlyDashboard();
 		outStock();
 		lowStock();
+		
+		topSell();
+		leastSell();
 	}
 	
 	private void orderCounterSearch(String search) {
