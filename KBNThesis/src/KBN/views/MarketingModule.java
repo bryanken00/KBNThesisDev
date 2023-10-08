@@ -42,6 +42,7 @@ import KBN.Module.Marketing.KBNProducts.ProductDetails;
 import KBN.Module.Marketing.KBNProducts.RightClick;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
+import KBN.Module.Marketing.OrderingPanel.OrderingCancel;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
 import KBN.Module.Marketing.OrderingPanel.onDelivery;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
@@ -90,7 +91,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private DeliveryStatus delStatus;
 	private CustomerCreateAccount custCreateAccount;
 	private OrderingPanel orderPanel;
-	private OrderingPanel cancelOrderPanel;
+	private OrderingCancel cancelOrderPanel;
 	private preRegister preReg;
 	private preRegList preRegisList;
 	private RightClick rightClick;
@@ -217,7 +218,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		// orderingPanel
 		orderPanel = new OrderingPanel();
-		cancelOrderPanel = new OrderingPanel();
+		cancelOrderPanel = new OrderingCancel();
 		onDeliver = new onDelivery();
 		
 		preReg = new preRegister();
@@ -482,6 +483,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanel.orderLPanel.lblInstruction.addMouseListener(this);
 		onDeliver.btnConfirm.addActionListener(this);
 		orderPanel.orderLPanel.btnSearch.addActionListener(this);
+		cancelOrderPanel.orderLPanel.btnSearch.addActionListener(this);
 		
 		//CustomerAccount Panel
 		custAccount.btnCreate.addActionListener(this);
@@ -562,7 +564,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			setDeliveryRider();
 		if(e.getSource() == orderPanel.orderLPanel.btnSearch)
 			orderPanelSearch();
-			
+		if(e.getSource() == cancelOrderPanel.orderLPanel.btnSearch)
+			cancelorderPanelFuncSearch();
 		
 		//inside Panel 
 		if(e.getSource() == custAccount.btnCreate)
@@ -1389,6 +1392,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	
 	private void setOrderListDataSearch(String search) {
 		try {
 			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE a.OrderRefNumber LIKE '%" + search + "%'";
@@ -1411,6 +1415,57 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
 		}
 	}
+	
+	private void cancelorderCounterSearch(String search) {
+		try {
+			cancelorderBTNClickCount++;
+			String sql = "SELECT COUNT(a.OrderRefNumber) \n"
+					+ "FROM tblorderarchive AS a \n"
+					+ "JOIN tblOrderStatus AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE (b.status = 'Cancelled' OR b.status = 'Expired') AND a.OrderRefNumber LIKE '%" + search + "%';";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				CancelOrderCount = rs.getInt(1);
+			cancelOrderPanel.orderLPanel.opd = new OrderListPanelData();
+			cancelOrderPanel.orderLPanel.scrollPane.setViewportView(cancelOrderPanel.orderLPanel.opd);
+			cancelOrderPanel.orderLPanel.opd.iOrderCount(CancelOrderCount);
+			cancelsetOrderListDataSearch(search);
+			cancelorderPanelMouseList();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error cancelorderCounterSearch: " + e.getMessage());
+		}
+	}
+	
+	
+	private void cancelsetOrderListDataSearch(String search) {
+		try {
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status \n"
+					+ "FROM tblorderarchive AS a \n"
+					+ "JOIN tblcustomerinformation AS b \n"
+					+ "ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+					+ "WHERE (c.status = 'Cancelled' OR c.status = 'Expired') AND  a.OrderRefNumber LIKE '%" + search + "%';";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				cancelOrderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
+				cancelOrderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				cancelOrderPanel.orderLPanel.opd.lblStatus[i].setText(rs.getString(5));
+				//status indicator
+				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
+				cancelOrderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
+				cancelOrderPanel.orderLPanel.opd.lblOrderStatusColor[i].revalidate();
+				cancelOrderPanel.orderLPanel.opd.lblOrderStatusColor[i].repaint();
+				i++;
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR cancelsetOrderListDataSearch: " + e.getMessage());
+		}
+	}
+
 	
 	private void orderCounter() {
 		try {
@@ -1460,8 +1515,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			cancelorderBTNClickCount++;
 			String sql = "SELECT COUNT(a.OrderRefNumber) \n"
-					+ "FROM tblordercheckoutdataarchive AS a \n"
-					+ "JOIN tblOrderStatus AS b ON a.OrderRefNumber = b.OrderRefNumber WHERE b.status = 'Cancelled';";
+					+ "FROM tblorderarchive AS a \n"
+					+ "JOIN tblOrderStatus AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE b.status = 'Cancelled' OR b.status = 'Expired';";
+			System.out.println(sql);
 			
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1484,7 +1541,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblorderarchive AS a \n"
 					+ "JOIN tblcustomerinformation AS b \n"
 					+ "ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
-					+ "WHERE c.status = 'Cancelled';";
+					+ "WHERE c.status = 'Cancelled' OR c.status = 'Expired';";
 			
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1707,6 +1764,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		cancelOrderPanel.setVisible(true);
 		cancelclearOrderPanelMouseListeners();
 		CancelorderCounter();
+	}
+	
+	private void cancelorderPanelFuncSearch() {
+		setVisiblePanel();
+		cancelOrderPanel.setVisible(true);
+		cancelclearOrderPanelMouseListeners();
+		cancelorderCounterSearch(cancelOrderPanel.orderLPanel.txtSearchBar.getText());
 	}
 	
 	// Client Profile
@@ -2268,7 +2332,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                     CancelOrderListIndexClicked = i;
                     cancelOrderPanel.main.setRowCount(0);
                     cancelOrderPanel.table.setModel(cancelOrderPanel.main);
-                    System.out.println(CancelOrderListIndexClicked);
 //                    cancelpanelDataSetter();
                     return;
                 }

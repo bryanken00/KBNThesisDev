@@ -43,5 +43,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="src/KBN/resources/libraries/core-3.3.0.jar"/>
 	<classpathentry kind="lib" path="src/KBN/resources/libraries/javase-3.3.0.jar"/>
+	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
