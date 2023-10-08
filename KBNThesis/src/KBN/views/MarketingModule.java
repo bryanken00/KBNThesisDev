@@ -163,6 +163,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private int OrderListIndexClicked;
 	private int CancelOrderListIndexClicked;
 	private String orderClickIdentifier = "";
+	private String cancelorderClickIdentifier = "";
 	
 	private int OrderCount = 0; // Order List	
 	private int CancelOrderCount = 0; // Order List
@@ -864,7 +865,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			        + "  COMMIT;\n"
 			        + "END;";
 			
-			System.out.println(Archive);
 
 			Restore = "CREATE PROCEDURE InsertAndDeleteWithRollback()\n"
 			        + "BEGIN\n"
@@ -1207,8 +1207,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			if(randOFF > 100)
 				randOFF = 100;
 			
-			System.out.println(thisMonth);
-			System.out.println(lastMonth);
 			
 			
 			dashboard1.lblMonthlyPercent.setIcon(new ImageIcon(Dashboard1.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/" + randOFF + ".png")));
@@ -1518,7 +1516,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblorderarchive AS a \n"
 					+ "JOIN tblOrderStatus AS b ON a.OrderRefNumber = b.OrderRefNumber "
 					+ "WHERE b.status = 'Cancelled' OR b.status = 'Expired';";
-			System.out.println(sql);
+
 			
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -2332,7 +2330,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                     CancelOrderListIndexClicked = i;
                     cancelOrderPanel.main.setRowCount(0);
                     cancelOrderPanel.table.setModel(cancelOrderPanel.main);
-//                    cancelpanelDataSetter();
+                    cancelpanelDataSetter();
                     return;
                 }
             }
@@ -2448,11 +2446,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void cancelpanelDataSetter() {
 		try {
-			if(!orderClickIdentifier.equals("cust"))
-				refNum = this.orderPanel.orderLPanel.opd.lblRefNumber[OrderListIndexClicked].getText();
-	        orderPanel.lblRefNum.setText(refNum);
-	        orderPanel.lblCustName.setText(this.orderPanel.orderLPanel.opd.lblName[OrderListIndexClicked].getText());
-	        String sql = "SELECT a.OrderRefNumber, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, a.Address, c.Discount FROM tblordercheckout AS a JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber JOIN tblcustomerinformation AS c ON a.UserID = c.UserID WHERE a.OrderRefNumber = '" + refNum + "'";
+			refNum = this.cancelOrderPanel.orderLPanel.opd.lblRefNumber[CancelOrderListIndexClicked].getText();
+			cancelOrderPanel.lblRef.setText(refNum);
+			cancelOrderPanel.lblCustName.setText(this.cancelOrderPanel.orderLPanel.opd.lblName[CancelOrderListIndexClicked].getText());
+	        String sql = "SELECT a.OrderRefNumber, a.OrderDate, b.ProductName, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, a.Address, c.Discount, d.CancelDate "
+	        		+ "FROM tblorderarchive AS a "
+	        		+ "JOIN tblordercheckoutdataarchive AS b ON a.OrderRefNumber = b.OrderRefNumber "
+	        		+ "JOIN tblcustomerinformation AS c ON a.UserID = c.UserID "
+	        		+ "JOIN tblcancelledorder AS d ON d.OrderRefNumber = a.OrderRefNumber "
+	        		+ "WHERE a.OrderRefNumber = '" + refNum + "'";
 	        st.execute(sql);
 	        rs = st.getResultSet();
 	        ArrayList tableData = new ArrayList<>();
@@ -2463,14 +2465,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        while(rs.next()) {
 	            Date date = inputFormat.parse(rs.getString(2));
 	            String outputDate = outputFormat.format(date);
-	        	orderPanel.lblOrderD.setText(outputDate);
-	        	orderPanel.lblAdd.setText(rs.getString(7));
+	            cancelOrderPanel.lblOrderD.setText(outputDate);
+	            cancelOrderPanel.lblAdd.setText(rs.getString(7));
+	            date = inputFormat.parse(rs.getString(9));
+	            outputDate = outputFormat.format(date);
+	            cancelOrderPanel.lblCancelledDate.setText(outputDate);
 	        	tableData.add(rs.getString(3));
 	        	tableData.add(rs.getString(4));
 	        	tableData.add(rs.getString(5));
 	        	tableData.add(rs.getString(8));
 	        	tableData.add(rs.getString(6));
-	        	orderPanel.main.addRow(tableData.toArray());
+	        	cancelOrderPanel.main.addRow(tableData.toArray());
 	        	tableData.clear();
 	        	TotalQuantity += Integer.parseInt(rs.getString(4));
 	        	TotalDiscount += Integer.parseInt(rs.getString(8));
@@ -2478,17 +2483,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        }
 	        
 
-	        int TotalItem = orderPanel.table.getRowCount();
+	        int TotalItem = cancelOrderPanel.table.getRowCount();
 	        
-	        orderPanel.lblItemCount.setText("Item: " + TotalItem);
-	        orderPanel.lblQuantityCount.setText("Total Quantity: " + TotalQuantity);
-	        orderPanel.lblDiscount.setText("Total Discount: " + TotalItem);
-	        orderPanel.lblTotalAmount.setText("Total Amount: " + TotalAmount);
-	  
-	        orderStatusSetter();
+	        cancelOrderPanel.lblItemCount.setText("Item: " + TotalItem);
+	        cancelOrderPanel.lblQuantityCount.setText("Total Quantity: " + TotalQuantity);
+	        cancelOrderPanel.lblDiscount.setText("Total Discount: " + TotalItem);
+	        cancelOrderPanel.lblTotalAmount.setText("Total Amount: " + TotalAmount);
 	        
 		}catch (Exception e) {
-			JOptionPane.showConfirmDialog(null, "ERROR panelDataSetter: " + e.getMessage());
+			JOptionPane.showConfirmDialog(null, "ERROR cancelpanelDataSetter: " + e.getMessage());
 		}
 	}
 	
