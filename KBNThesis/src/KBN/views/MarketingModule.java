@@ -33,6 +33,8 @@ import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
 import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
+import KBN.Module.Marketing.ConfirmationProduct.ConfirmationListPanel;
+import KBN.Module.Marketing.ConfirmationProduct.ConfirmationListPanelData;
 import KBN.Module.Marketing.ConfirmationProduct.ConfirmationPanel;
 import KBN.Module.Marketing.Customer.CustomerAccount;
 import KBN.Module.Marketing.Customer.CustomerCreateAccount;
@@ -112,6 +114,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	//prod Confirmation
 	private ConfirmationPanel confirmationPanel;
+	private ConfirmationListPanel confirmListPanel;
+	private ConfirmationListPanelData confirmListPanelData;
+	
+	private int confirmationCounter = 0;
 	
 	// Object
 	private Statement st;
@@ -207,6 +213,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         
         // Declaration
         dbConn = new DbConnection();
+        try {
+            st = dbConn.getConnection().createStatement();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error ST: " + e.getMessage());
+		}
 		dashboard1 = new Dashboard1();
 		opdDashboard = new OrderListPanelData();
 		dashboard1.orderList.setViewportView(opdDashboard);
@@ -1004,7 +1015,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void orderCounterDashboard() {
 		try {
-			st = dbConn.getConnection().createStatement();
 			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1390,7 +1400,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderCounterSearch(String search) {
 		try {
 			orderBTNClickCount++;
-			st = dbConn.getConnection().createStatement();
 			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout WHERE OrderRefNumber LIKE '%" + search + "%'";
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1601,7 +1610,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderCounter() {
 		try {
 			orderBTNClickCount++;
-			st = dbConn.getConnection().createStatement();
 			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -1747,8 +1755,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             List<Integer> scores = new ArrayList<Integer>();
             List<String> date = new ArrayList<String>();
             int max = 0;
-    		
-    		st = dbConn.getConnection().createStatement();
 
     		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
     				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
@@ -1908,6 +1914,24 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void confrimationPanelFunc(){
 		setVisiblePanel();
 		confirmationPanel.setVisible(true);
+		ConfirmPanelReset();
+		confirmationCounter();
+		confirmListPanelData.iConfirmationCount(confirmationCounter);
+	}
+	
+	private void ConfirmPanelReset() {
+		confirmListPanel = new ConfirmationListPanel();
+		confirmListPanelData = new ConfirmationListPanelData();
+		confirmationPanel.confirmPanel.add(confirmListPanel);
+		confirmListPanel.scrollPane.setViewportView(confirmListPanelData);
+	}
+	
+	private void confirmationCounter() {
+		try {
+			confirmationCounter = 10;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error confirmationCounter: " + e.getMessage());
+		}
 	}
 	
 	// Client Profile
@@ -2040,7 +2064,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccountFunc() {
 		try {
 			custAccount.main.setRowCount(0);
-            st = dbConn.getConnection().createStatement();
 			String sql = "SELECT userID, Firstname, Lastname, Email, Number, Description, AccountType FROM tblcustomerinformation ORDER BY AccountType DESC";
 			st.execute(sql);
 			
@@ -2115,7 +2138,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void custAccountSearchFunc(String search) {
 		try {
 			custAccount.main.setRowCount(0);
-            st = dbConn.getConnection().createStatement();
 			String sql = "SELECT userID, Firstname, Lastname, Email, Number, Description, AccountType FROM tblcustomerinformation WHERE CONCAT(Firstname, Lastname) LIKE '%" + search + "%';";
 			st.execute(sql);
 			
