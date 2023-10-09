@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 import javax.swing.JTextPane;
 import javax.swing.JEditorPane;
+import javax.swing.JComboBox;
 
 public class OrderingCancel extends JPanel {
 	
@@ -45,7 +46,8 @@ public class OrderingCancel extends JPanel {
 	public JLabel lblOrderD;
 	public JLabel lblCancelledDate;
 	public JLabel lblAdd;
-	private JEditorPane cancelReason;
+	public JEditorPane cancelReason;
+	public JComboBox cbCategory;
 
     public OrderingCancel() {
 		setBackground(new Color(255, 255, 255));
@@ -169,6 +171,13 @@ public class OrderingCancel extends JPanel {
         JTableHeader header = table.getTableHeader();
         header.setBackground(Color.WHITE); // Background
         header.setForeground(Color.BLACK); // Text
+        orderLPanel.lblTimeDiff.setVisible(false);
+        
+        String[] cat = {"All", "Expired", "Cancelled"};
+        
+        cbCategory = new JComboBox(cat);
+        cbCategory.setBounds(10, 49, 260, 28);
+        orderLPanel.add(cbCategory);
     }
     
     
