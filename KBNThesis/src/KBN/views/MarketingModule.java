@@ -2026,15 +2026,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				int completed = st.executeUpdate(UpdateSQL);
 				
 				for(int i = 0; i < confirmationPanel.table.getRowCount(); i++) {
-					for(int j = 0; j < 3; j++) {
-						String SQLUpdateProduct = "UPDATE tblproducts \n"
-								+ "SET Quantity = Quantity + " + confirmationPanel.table.getValueAt(i, 2) + " \n"
-								+ "WHERE prodName = '" + confirmationPanel.table.getValueAt(i, 0) + "' AND prodVolume = '" + confirmationPanel.table.getValueAt(i, 1) + "'";
-						st.execute(SQLUpdateProduct);
-					}
+					String SQLUpdateProduct = "UPDATE tblproducts \n"
+							+ "SET Quantity = Quantity + " + confirmationPanel.table.getValueAt(i, 2) + " \n"
+							+ "WHERE prodName = '" + confirmationPanel.table.getValueAt(i, 0) + "' AND prodVolume = '" + confirmationPanel.table.getValueAt(i, 1) + "'";
+					st.execute(SQLUpdateProduct);
+						
+					System.out.println(confirmationPanel.table.getValueAt(i, 2));
 				}
-				
-
+				confirmationPanel.btnConfirm.setVisible(false);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Error confirmButtonFunc: " + e.getMessage());
 			}

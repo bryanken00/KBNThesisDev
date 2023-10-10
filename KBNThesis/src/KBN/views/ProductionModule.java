@@ -116,6 +116,8 @@ public class ProductionModule extends JFrame implements ActionListener{
 
         addItem = new AddItemProduction();
         
+        KBNDetailsData = new KBNDataViewDetailsData();
+        
         
         
         panelNav.add(nav);
@@ -166,8 +168,22 @@ public class ProductionModule extends JFrame implements ActionListener{
 		userName = dataSet.getUsername();
 	}
 	
+	// Navs Color
+	private void navColor() {
+		nav.btnArchiveList.setBackground(new Color(255, 255, 255));
+		nav.btnKBNProduct.setBackground(new Color(255, 255, 255));
+		nav.btnRebrandingProduct.setBackground(new Color(255, 255, 255));
+
+		nav.btnArchiveList.setForeground(new Color(0, 0, 0));
+		nav.btnKBNProduct.setForeground(new Color(0, 0, 0));
+		nav.btnRebrandingProduct.setForeground(new Color(0, 0, 0));
+	}
+	
 	// KBN Data
 	private void kbnDataFunc() {
+		navColor();
+		nav.btnKBNProduct.setBackground(new Color(8, 104, 0));
+		nav.btnKBNProduct.setForeground(new Color(255, 255,255));
         defaultPanel();
         kbnMain.setVisible(true);
         kbnData = new KBNData();
@@ -356,8 +372,18 @@ public class ProductionModule extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		
 		// Navs
-			if(e.getSource() == nav.btnKBNProduct) {
+			if(e.getSource() == nav.btnKBNProduct)
 				kbnDataFunc();
+			
+			if(e.getSource() == nav.btnRebrandingProduct) {
+				navColor();
+				nav.btnRebrandingProduct.setBackground(new Color(8, 104, 0));
+				nav.btnRebrandingProduct.setForeground(new Color(255, 255,255));
+			}
+			if(e.getSource() == nav.btnArchiveList) {
+				navColor();
+				nav.btnArchiveList.setBackground(new Color(8, 104, 0));
+				nav.btnArchiveList.setForeground(new Color(255, 255,255));
 			}
 			
 			if(e.getSource() == nav.btnAddItem) {
@@ -379,12 +405,15 @@ public class ProductionModule extends JFrame implements ActionListener{
 			}
 			
 		// Tracking
-			if(KBNDetailsData.btnDelete != null || KBNDetailsData.btnDelete.length != 0) {
-				for(int i = 0; i < KBNDetailsData.btnDelete.length; i++)
-					if(e.getSource() == KBNDetailsData.btnDelete[i]) {
-						deleteDetails(i);
-						break;
+			if(KBNDetailsData.btnDelete != null) {
+				if(KBNDetailsData.btnDelete.length != 0) {
+					for(int i = 0; i < KBNDetailsData.btnDelete.length; i++) {
+						if(e.getSource() == KBNDetailsData.btnDelete[i]) {
+							deleteDetails(i);
+							break;
+						}
 					}
+				}
 			}
 	}
 }

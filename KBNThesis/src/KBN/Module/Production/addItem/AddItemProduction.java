@@ -144,7 +144,7 @@ public class AddItemProduction extends JDialog implements ActionListener {
 		lblQuantity.setBounds(19, 11, 157, 29);
 		panel_2.add(lblQuantity);
 		
-		txtQuantity = new JTextField("0");
+		txtQuantity = new JTextField("1");
 		txtQuantity.setColumns(10);
 		txtQuantity.setBounds(19, 51, 388, 29);
 		txtQuantity.addKeyListener(new KeyAdapter() {
