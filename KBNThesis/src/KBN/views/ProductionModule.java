@@ -289,7 +289,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 	        
 	        KBNDetailsData.prodCount(count);
 	        
-	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity \n"
+	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM \n"
 	        		+ "FROM tblconfirmationproduct AS a \n"
 	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
 	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
@@ -302,6 +302,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 	        	KBNDetailsData.lblProductName[i].setText(rs.getString(2));
 	        	KBNDetailsData.lblVariant[i].setText(rs.getString(3));
 	        	KBNDetailsData.lblQuantity[i].setText(rs.getString(4));
+	        	KBNDetailsData.lblTime[i].setText(rs.getString(5));
 		        if(!kbnData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
 		        	KBNDetailsData.btnDelete[i].setVisible(false);
 	        	i++;

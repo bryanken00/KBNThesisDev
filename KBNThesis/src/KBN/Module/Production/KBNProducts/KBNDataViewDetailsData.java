@@ -17,12 +17,14 @@ public class KBNDataViewDetailsData extends JPanel {
 	public JLabel[] lblVariant;
 	public JLabel[] lblQuantity;
 	public JButton[] btnDelete;
+	public JLabel[] lblTime;
 	
 	public String[] productID;
-	
+
 	private JLabel[] lblProdName;
 	private JLabel[] lblVariant_1;
 	private JLabel[] lblQuantity_1;
+	private JLabel[] lblTime_;
 	
 	private int iCount;
 	
@@ -46,12 +48,14 @@ public class KBNDataViewDetailsData extends JPanel {
 		lblVariant = new JLabel[iCount];
 		lblQuantity = new JLabel[iCount];
 		btnDelete = new JButton[iCount];
+		lblTime = new JLabel[iCount];
 		
 		productID = new String[iCount];
 		
 		lblProdName = new JLabel[iCount];
 		lblVariant_1 = new JLabel[iCount];
 		lblQuantity_1 = new JLabel[iCount];
+		lblTime_ = new JLabel[iCount];
 		
 		
 		for(int i = 0; i < iCount; i++)
@@ -64,7 +68,7 @@ public class KBNDataViewDetailsData extends JPanel {
 			y = 102*i;
 		
 		panel[i] = new JPanel();
-		panel[i].setBounds(10, y, 583, 82);
+		panel[i].setBounds(10, y, 633, 82);
 		panel[i].setBackground(new Color(255, 255, 255));
 		panel[i].setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		add(panel[i]);
@@ -110,8 +114,21 @@ public class KBNDataViewDetailsData extends JPanel {
 		btnDelete[i].setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnDelete[i].setFocusable(false);
 		btnDelete[i].setBorder(new LineBorder(new Color(75, 119, 71, 180), 1, true));
+		btnDelete[i].setForeground(new Color(255, 255, 255));
 		btnDelete[i].setBackground(new Color(123,156,121));
-		btnDelete[i].setBounds(415, 18, 158, 46);
+		btnDelete[i].setBounds(516, 18, 107, 46);
 		panel[i].add(btnDelete[i]);
+		
+		lblTime_[i] = new JLabel("Time:");
+		lblTime_[i].setHorizontalAlignment(SwingConstants.CENTER);
+		lblTime_[i].setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblTime_[i].setBounds(415, 11, 91, 20);
+		panel[i].add(lblTime_[i]);
+		
+		lblTime[i] = new JLabel("0");
+		lblTime[i].setHorizontalAlignment(SwingConstants.CENTER);
+		lblTime[i].setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTime[i].setBounds(415, 44, 91, 20);
+		panel[i].add(lblTime[i]);
 	}
 }

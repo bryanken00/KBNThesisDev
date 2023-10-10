@@ -24,12 +24,14 @@ public class KBNDataViewDetailsDataBAK extends JPanel {
 	private JLabel lblQuantity_2;
 	private JLabel lblQuantity_3;
 	private JButton btnDelete_1;
+	private JLabel lblTime_;
+	private JLabel lblTime;
 	public KBNDataViewDetailsDataBAK() {
-		setBounds(0, 0, 603, 414);
+		setBounds(0, 0, 653, 414);
 		setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(10, 11, 583, 82);
+		panel.setBounds(10, 11, 633, 82);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -74,8 +76,20 @@ public class KBNDataViewDetailsDataBAK extends JPanel {
 		btnDelete.setFocusable(false);
 		btnDelete.setBorder(new LineBorder(new Color(75, 119, 71, 180), 1, true));
 		btnDelete.setBackground(new Color(75, 119, 71, 180));
-		btnDelete.setBounds(415, 18, 158, 46);
+		btnDelete.setBounds(516, 18, 107, 46);
 		panel.add(btnDelete);
+		
+		lblTime_ = new JLabel("Time:");
+		lblTime_.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTime_.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblTime_.setBounds(415, 14, 91, 20);
+		panel.add(lblTime_);
+		
+		lblTime = new JLabel("0");
+		lblTime.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTime.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTime.setBounds(415, 48, 91, 20);
+		panel.add(lblTime);
 		
 		panel_1 = new JPanel();
 		panel_1.setLayout(null);
@@ -123,7 +137,7 @@ public class KBNDataViewDetailsDataBAK extends JPanel {
 		btnDelete_1.setFocusable(false);
 		btnDelete_1.setBorder(new LineBorder(new Color(75, 119, 71, 180), 1, true));
 		btnDelete_1.setBackground(new Color(75, 119, 71, 180));
-		btnDelete_1.setBounds(415, 18, 158, 46);
+		btnDelete_1.setBounds(466, 18, 107, 46);
 		panel_1.add(btnDelete_1);
 	}
 }
