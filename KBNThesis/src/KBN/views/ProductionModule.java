@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -51,7 +53,8 @@ public class ProductionModule extends JFrame implements ActionListener{
 		
 		// Strings
 			// Acc Level
-			private String AccountLevel = ""; 
+			private String AccountLevel = "";
+			private String userName = "";
 
 	private JPanel contentPane;
 	private JPanel panelNav;
@@ -149,6 +152,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 		dataSet = new dataSetter();
 		nav.lblUsername.setText(dataSet.getUsername());
 		AccountLevel = dataSet.getAccLevel();
+		userName = dataSet.getUsername();
 	}
 	
 	// KBN Data
@@ -157,17 +161,100 @@ public class ProductionModule extends JFrame implements ActionListener{
         kbnMain.setVisible(true);
         kbnData = new KBNData();
         kbnMain.container.setViewportView(kbnData);
-        kbnDataCounter();
+        kbnDataCounter_();
         kbnDataButtons();
+        kbnDataPanelGenerator();
+        
 	}
 	
-	private void kbnDataCounter() {
-		
+	private void kbnDataCounter_() {
+		try {
+			String SQL = "SELECT COUNT(TrackingID) FROM tblconfirmationtracking";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			if(rs.next())
+				kbnDataCounter = rs.getInt(1);
+			
+			kbnData.iCountKBNProducts(kbnDataCounter);
+		} catch (Exception e) {
+			JMessage("Error kbnDataCounter: " + e.getMessage());
+		}
 	}
 	
 	private void kbnDataButtons() {
 		for(int i = 0; i < kbnDataCounter; i++) {
 			kbnData.btnViewDetails[i].addActionListener(this);
+		}
+	}
+	
+	private void kbnDataPanelGenerator() {
+		try {
+			String SQL = "SELECT a.TrackingID, DATE_FORMAT(a.DateAdded, '%Y-%m-%d') AS FormattedDateAdded, a.Status, a.AddedBy \n"
+					+ "FROM tblconfirmationtracking AS a";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				kbnData.lblTrackingID[i].setText(rs.getString(1));
+				kbnData.lblDate[i].setText(rs.getString(2));
+				kbnData.lblStatus[i].setText(rs.getString(3));
+				i++;
+			}
+		} catch (Exception e) {
+			JMessage("Error kbnDataPanelGenerator: " + e.getMessage());
+		}
+	}
+	
+	// Add Item
+	
+	private void AddItemFuncKBN() {
+		try {
+			if(addItem.checker.equals("Verified")) {
+				String prodName = addItem.txtProductName.getText();
+				String variant = addItem.cbVariant.getSelectedItem() + "";
+				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
+				
+		        LocalDate currentDate = LocalDate.now();
+		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		        String formattedDate = currentDate.format(formatter);
+		        
+				String checker = "SELECT TrackingID "
+						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"'";
+				
+				int checker__ = 0;
+				st.execute(checker);
+				rs = st.getResultSet();
+				if(rs.next()) {
+					checker__++;
+				}
+				
+				if(checker__ == 0) {
+					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy) VALUES(NOW(),'PENDING','" + userName + "');";
+					st.execute(SQLTracking);
+				}
+				
+				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity,TimeAdded) \n"
+						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME \n"
+						+ "FROM tblconfirmationtracking AS a \n"
+						+ "JOIN tblproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
+						+ "GROUP BY b.prodName, b.prodVolume;";
+				
+
+				st.execute(SQLConfirmDATA);
+				JMessage("Product Added!");
+				addItem.txtProductName.setText("");
+				addItem.cbVariant.removeAllItems();
+				addItem.txtQuantity.setText("0");
+				addItem.checker = "Not-Verified";
+				if(addItem.closeChecker.isSelected()) {
+					addItem.dispose();
+					kbnDataFunc();
+				}
+			}else {
+				JMessage("Please Verify first");
+			}
+		} catch (Exception e) {
+			JMessage("Error btnAddItem: " + e.getMessage());
 		}
 	}
 	
@@ -177,11 +264,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 			addItem.setVisible(true);
 		}
 		if(e.getSource() == addItem.btnAddItem) {
-			if(addItem.checker.equals("Verified")) {
-				
-			}else {
-				JMessage("Please Verify first");
-			}
+			AddItemFuncKBN();
 		}
 	}
 }
