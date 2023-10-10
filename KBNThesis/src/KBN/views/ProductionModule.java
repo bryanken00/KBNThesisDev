@@ -19,6 +19,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import KBN.Module.Production.KBNProducts.KBNData;
+import KBN.Module.Production.KBNProducts.KBNDataViewDetails;
+import KBN.Module.Production.KBNProducts.KBNDataViewDetailsData;
 import KBN.Module.Production.KBNProducts.KBNPanelMain;
 import KBN.Module.Production.Navs.ProductionNav;
 import KBN.Module.Production.addItem.AddItemProduction;
@@ -45,6 +47,9 @@ public class ProductionModule extends JFrame implements ActionListener{
 		private KBNPanelMain kbnMain;
 		// KBN PanelGenerator
 		private KBNData kbnData;
+			// Tracking
+			private KBNDataViewDetails trackView;
+			private KBNDataViewDetailsData KBNDetailsData;
 		private int kbnDataCounter;
 		
 		// Add Item
@@ -101,8 +106,12 @@ public class ProductionModule extends JFrame implements ActionListener{
         
         // Class
         nav = new ProductionNav();
+
+		trackView = new KBNDataViewDetails();
+		
         kbnMain = new KBNPanelMain();
         kbnData = new KBNData();
+
         addItem = new AddItemProduction();
         
         
@@ -123,7 +132,6 @@ public class ProductionModule extends JFrame implements ActionListener{
 	// Default Panel
 	private void defaultPanel() {
 		kbnMain.setVisible(false);
-		kbnData.setVisible(false);
 	}
 
 	// Action Listener
@@ -247,8 +255,8 @@ public class ProductionModule extends JFrame implements ActionListener{
 				addItem.txtQuantity.setText("0");
 				addItem.checker = "Not-Verified";
 				if(addItem.closeChecker.isSelected()) {
-					addItem.dispose();
 					kbnDataFunc();
+					addItem.dispose();
 				}
 			}else {
 				JMessage("Please Verify first");
@@ -258,13 +266,81 @@ public class ProductionModule extends JFrame implements ActionListener{
 		}
 	}
 	
+	// View Details Data
+	private void viewDetails(int index) {
+		try {
+			String trackingID = kbnData.lblTrackingID[index].getText();
+	        trackView.lblTrackingID.setText("Tracking ID: " + trackingID);
+	        
+	        KBNDetailsData = new KBNDataViewDetailsData();
+	        trackView.scrollPane.setViewportView(KBNDetailsData);
+	        
+	        String SQLCount = "SELECT COUNT(a.ProductName) \n"
+	        		+ "FROM tblconfirmationproduct AS a \n"
+	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        
+	        st.execute(SQLCount);
+	        rs = st.getResultSet();
+	        
+	        int count = 0;
+	        if(rs.next())
+	        	count = rs.getInt(1);
+	        
+	        KBNDetailsData.prodCount(count);
+	        
+	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity \n"
+	        		+ "FROM tblconfirmationproduct AS a \n"
+	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        
+	        st.execute(SQL);
+	        rs = st.getResultSet();
+	        int i = 0;
+	        while(rs.next()) {
+	        	KBNDetailsData.productID[i] = rs.getString(1);
+	        	KBNDetailsData.lblProductName[i].setText(rs.getString(2));
+	        	KBNDetailsData.lblVariant[i].setText(rs.getString(3));
+	        	KBNDetailsData.lblQuantity[i].setText(rs.getString(4));
+		        if(!kbnData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
+		        	KBNDetailsData.btnDelete[i].setVisible(false);
+	        	i++;
+	        }
+	        
+	        
+	        
+			trackView.setVisible(true);
+			trackView.revalidate();
+		} catch (Exception e) {
+			JMessage("Error viewDetails: " + e.getMessage());
+		}
+
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == nav.btnAddItem) {
-			addItem.setVisible(true);
-		}
-		if(e.getSource() == addItem.btnAddItem) {
-			AddItemFuncKBN();
-		}
+		
+		// Navs
+			if(e.getSource() == nav.btnKBNProduct) {
+				kbnDataFunc();
+			}
+			
+			if(e.getSource() == nav.btnAddItem) {
+				addItem.setVisible(true);
+			}
+			
+			if(e.getSource() == addItem.btnAddItem) {
+				AddItemFuncKBN();
+			}
+		
+		// KBNData Buttons
+			if(kbnData.btnViewDetails != null) {
+				for(int i = 0; i < kbnData.btnViewDetails.length; i++) {
+					if(e.getSource() == kbnData.btnViewDetails[i]) {
+						viewDetails(i);
+						break;
+					}
+				}
+			}
 	}
 }

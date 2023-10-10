@@ -26,6 +26,7 @@ public class KBNData extends JPanel {
 
 	public KBNData() {
 		setBounds(0, 0, 969, 616);
+		setBackground(new Color(255, 255, 255));
 		setLayout(null);
 	}
 	
@@ -55,6 +56,7 @@ public class KBNData extends JPanel {
 			y = 102*index;
 		
 		panel[index] = new JPanel();
+		panel[index].setBackground(new Color(255, 255, 255));
 		panel[index].setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel[index].setBounds(10, y, 949, 80);
 		panel[index].setLayout(null);
