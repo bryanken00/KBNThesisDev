@@ -19,6 +19,7 @@ import javax.swing.border.LineBorder;
 import KBN.Module.Production.KBNProducts.KBNData;
 import KBN.Module.Production.KBNProducts.KBNPanelMain;
 import KBN.Module.Production.Navs.ProductionNav;
+import KBN.Module.Production.addItem.AddItemProduction;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 
@@ -42,11 +43,15 @@ public class ProductionModule extends JFrame implements ActionListener{
 		private KBNPanelMain kbnMain;
 		// KBN PanelGenerator
 		private KBNData kbnData;
+		private int kbnDataCounter;
+		
+		// Add Item
+		private AddItemProduction addItem;
 		
 		
-	// Strings
-		// Acc Level
-		String AccountLevel = ""; 
+		// Strings
+			// Acc Level
+			private String AccountLevel = ""; 
 
 	private JPanel contentPane;
 	private JPanel panelNav;
@@ -95,48 +100,88 @@ public class ProductionModule extends JFrame implements ActionListener{
         nav = new ProductionNav();
         kbnMain = new KBNPanelMain();
         kbnData = new KBNData();
+        addItem = new AddItemProduction();
         
         
         
         panelNav.add(nav);
         container.add(kbnMain);
         kbnMain.container.setViewportView(kbnData);
-        kbnData.iCountKBNProducts(10);
         defaultPanel();
         kbnMain.setVisible(true);
         
         // Defaults
         setUsername();
         setActionList();
+        kbnDataFunc();
 	}
 	
 
-	
+	// Default Panel
 	private void defaultPanel() {
 		kbnMain.setVisible(false);
+		kbnData.setVisible(false);
 	}
 
-	
+	// Action Listener
 	private void setActionList() {
-		nav.btnKBNProduct.addActionListener(this);
+		
+		// Navs
+		nav.btnAddItem.addActionListener(this);
 		nav.btnArchiveList.addActionListener(this);
 		nav.btnKBNProduct.addActionListener(this);
 		nav.btnRebrandingProduct.addActionListener(this);
+		
+		// KBN
+		kbnMain.btnSearch.addActionListener(this);
+		
+		// Add Item
+		addItem.btnAddItem.addActionListener(this);
 	}
-
+	
+	// Popup Message
 	private void JMessage(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
 	
+	// Setting Up Username
 	private void setUsername() {
 		dataSet = new dataSetter();
 		nav.lblUsername.setText(dataSet.getUsername());
 		AccountLevel = dataSet.getAccLevel();
 	}
 	
+	// KBN Data
+	private void kbnDataFunc() {
+        defaultPanel();
+        kbnMain.setVisible(true);
+        kbnData = new KBNData();
+        kbnMain.container.setViewportView(kbnData);
+        kbnDataCounter();
+        kbnDataButtons();
+	}
+	
+	private void kbnDataCounter() {
+		
+	}
+	
+	private void kbnDataButtons() {
+		for(int i = 0; i < kbnDataCounter; i++) {
+			kbnData.btnViewDetails[i].addActionListener(this);
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(e.getSource() == nav.btnAddItem) {
+			addItem.setVisible(true);
+		}
+		if(e.getSource() == addItem.btnAddItem) {
+			if(addItem.checker.equals("Verified")) {
+				
+			}else {
+				JMessage("Please Verify first");
+			}
+		}
 	}
 }

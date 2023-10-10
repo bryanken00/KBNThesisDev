@@ -17,7 +17,7 @@ public class KBNData extends JPanel {
 	public JLabel[] lblTrackingID;
 	public JLabel[] lblDate;
 	public JLabel[] lblStatus;
-	private JButton[] btnViewDetails;
+	public JButton[] btnViewDetails;
 	private JLabel[] lblTracking;
 	private JLabel[] lblDateAdded;
 	private JLabel[] lblStatus_;
