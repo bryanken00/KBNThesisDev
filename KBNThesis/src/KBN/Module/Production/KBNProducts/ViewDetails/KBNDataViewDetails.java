@@ -1,4 +1,4 @@
-package KBN.Module.Production.KBNProducts;
+package KBN.Module.Production.KBNProducts.ViewDetails;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

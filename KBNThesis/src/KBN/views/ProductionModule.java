@@ -19,9 +19,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import KBN.Module.Production.KBNProducts.KBNData;
-import KBN.Module.Production.KBNProducts.KBNDataViewDetails;
-import KBN.Module.Production.KBNProducts.KBNDataViewDetailsData;
 import KBN.Module.Production.KBNProducts.KBNPanelMain;
+import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetails;
+import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetailsData;
 import KBN.Module.Production.Navs.ProductionNav;
 import KBN.Module.Production.addItem.AddItemProduction;
 import KBN.commons.DbConnection;
@@ -50,6 +50,8 @@ public class ProductionModule extends JFrame implements ActionListener{
 			// Tracking
 			private KBNDataViewDetails trackView;
 			private KBNDataViewDetailsData KBNDetailsData;
+			//
+			private int trackingIndex = 0;
 		private int kbnDataCounter;
 		
 		// Add Item
@@ -148,6 +150,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 		
 		// Add Item
 		addItem.btnAddItem.addActionListener(this);
+		
 	}
 	
 	// Popup Message
@@ -227,7 +230,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 		        String formattedDate = currentDate.format(formatter);
 		        
 				String checker = "SELECT TrackingID "
-						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"'";
+						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING'";
 				
 				int checker__ = 0;
 				st.execute(checker);
@@ -269,6 +272,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 	// View Details Data
 	private void viewDetails(int index) {
 		try {
+			trackingIndex = index;
 			String trackingID = kbnData.lblTrackingID[index].getText();
 	        trackView.lblTrackingID.setText("Tracking ID: " + trackingID);
 	        
@@ -289,7 +293,7 @@ public class ProductionModule extends JFrame implements ActionListener{
 	        
 	        KBNDetailsData.prodCount(count);
 	        
-	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM \n"
+	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM, b.TrackingID \n"
 	        		+ "FROM tblconfirmationproduct AS a \n"
 	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
 	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
@@ -303,12 +307,14 @@ public class ProductionModule extends JFrame implements ActionListener{
 	        	KBNDetailsData.lblVariant[i].setText(rs.getString(3));
 	        	KBNDetailsData.lblQuantity[i].setText(rs.getString(4));
 	        	KBNDetailsData.lblTime[i].setText(rs.getString(5));
+
+		        KBNDetailsData.TrackingID = rs.getString(6);
 		        if(!kbnData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
 		        	KBNDetailsData.btnDelete[i].setVisible(false);
+		     	KBNDetailsData.btnDelete[i].addActionListener(this);
 	        	i++;
+
 	        }
-	        
-	        
 	        
 			trackView.setVisible(true);
 			trackView.revalidate();
@@ -316,6 +322,34 @@ public class ProductionModule extends JFrame implements ActionListener{
 			JMessage("Error viewDetails: " + e.getMessage());
 		}
 
+	}
+	
+	private void deleteDetails(int index) {
+		try {
+			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + KBNDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
+			if (dialogResult == JOptionPane.YES_OPTION) {
+				if(KBNDetailsData.productID.length == 1) {
+					String SQLDelete1 = "DELETE FROM tblconfirmationtracking WHERE TrackingID = '" + KBNDetailsData.TrackingID + "'";
+					st.execute(SQLDelete1);
+					
+					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'";
+					st.execute(SQLDelete);
+					
+					viewDetails(trackingIndex);
+					kbnDataFunc();
+					trackView.dispose();
+				}else {
+					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'";
+					st.execute(SQLDelete);
+					viewDetails(trackingIndex);
+				}
+			}else {
+				
+			}
+
+		} catch (Exception e) {
+			JMessage("Error deleteDetails: " + e.getMessage());
+		}
 	}
 	
 	@Override
@@ -342,6 +376,15 @@ public class ProductionModule extends JFrame implements ActionListener{
 						break;
 					}
 				}
+			}
+			
+		// Tracking
+			if(KBNDetailsData.btnDelete != null || KBNDetailsData.btnDelete.length != 0) {
+				for(int i = 0; i < KBNDetailsData.btnDelete.length; i++)
+					if(e.getSource() == KBNDetailsData.btnDelete[i]) {
+						deleteDetails(i);
+						break;
+					}
 			}
 	}
 }

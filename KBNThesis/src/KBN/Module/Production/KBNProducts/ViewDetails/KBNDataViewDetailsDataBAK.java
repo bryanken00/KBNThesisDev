@@ -1,4 +1,4 @@
-package KBN.Module.Production.KBNProducts;
+package KBN.Module.Production.KBNProducts.ViewDetails;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;

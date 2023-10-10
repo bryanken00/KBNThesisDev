@@ -1,4 +1,4 @@
-package KBN.Module.Production.KBNProducts;
+package KBN.Module.Production.KBNProducts.ViewDetails;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -20,6 +20,7 @@ public class KBNDataViewDetailsData extends JPanel {
 	public JLabel[] lblTime;
 	
 	public String[] productID;
+	public String TrackingID;
 
 	private JLabel[] lblProdName;
 	private JLabel[] lblVariant_1;
@@ -51,6 +52,7 @@ public class KBNDataViewDetailsData extends JPanel {
 		lblTime = new JLabel[iCount];
 		
 		productID = new String[iCount];
+		TrackingID = "";
 		
 		lblProdName = new JLabel[iCount];
 		lblVariant_1 = new JLabel[iCount];
