@@ -10,16 +10,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 public class ConfirmationListPanelData extends JPanel {
 	
-	public JSeparator[] separator;
-	public JPanel[] orderList;
-	public JLabel[] lblOrderStatusColor;
+
+	public JPanel[] confirmList;
+	public JLabel[] lblOrderStatus;
 	public JLabel[] lblTotalProducts;
 	public JLabel[] lblTotalItems;
 	public JLabel[] lblDate;
+	public String[] TrackingID;
 	
+	private JSeparator[] separator;
 	private JLabel[] lblTotalProduct;
 	private JLabel[] lblTotalItem;
 
@@ -39,9 +42,10 @@ public class ConfirmationListPanelData extends JPanel {
 	private void settingUp() {
 		
 		this.setPreferredSize(new Dimension(2, 100*ConfirmationCount));
+		TrackingID = new String[ConfirmationCount];
 		separator = new JSeparator[ConfirmationCount];
-		orderList = new JPanel[ConfirmationCount];
-		lblOrderStatusColor = new JLabel[ConfirmationCount];
+		confirmList = new JPanel[ConfirmationCount];
+		lblOrderStatus = new JLabel[ConfirmationCount];
 		lblTotalProducts = new JLabel[ConfirmationCount];
 		lblTotalItems = new JLabel[ConfirmationCount];
 		lblDate = new JLabel[ConfirmationCount];
@@ -59,49 +63,54 @@ public class ConfirmationListPanelData extends JPanel {
 		if(i > 0)
 			y = 100*i;
 		
-		orderList[i] = new JPanel();
-		orderList[i].setBackground(Color.WHITE);
-		orderList[i].setBounds(0, y, 302, 100);
-		orderList[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		orderList[i].setLayout(null);
-		add(orderList[i]);
+		confirmList[i] = new JPanel();
+		confirmList[i].setBackground(Color.WHITE);
+		confirmList[i].setBounds(0, y, 302, 100);
+		confirmList[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		confirmList[i].setLayout(null);
+		add(confirmList[i]);
 		
 		lblDate[i] = new JLabel();
 		lblDate[i].setText("10/08/2023");
 		lblDate[i].setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblDate[i].setBounds(10, 11, 101, 14);
-		orderList[i].add(lblDate[i]);
+		confirmList[i].add(lblDate[i]);
 
 		lblTotalProduct[i] = new JLabel();
 		lblTotalProduct[i].setText("Total Products ");
 		lblTotalProduct[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTotalProduct[i].setBounds(10, 47, 136, 22);
-		orderList[i].add(lblTotalProduct[i]);
+		confirmList[i].add(lblTotalProduct[i]);
 
 		lblTotalProducts[i] = new JLabel();
 		lblTotalProducts[i].setText("Order Status ");
 		lblTotalProducts[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTotalProducts[i].setBounds(182, 47, 108, 22);
-		orderList[i].add(lblTotalProducts[i]);
+		confirmList[i].add(lblTotalProducts[i]);
 
 		lblTotalItem[i] = new JLabel();
 		lblTotalItem[i].setText("Total Item:");
 		lblTotalItem[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTotalItem[i].setBounds(10, 69, 108, 22);
-		orderList[i].add(lblTotalItem[i]);
+		confirmList[i].add(lblTotalItem[i]);
 
 		lblTotalItems[i] = new JLabel();
 		lblTotalItems[i].setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblTotalItems[i].setBounds(182, 69, 108, 22);
-		orderList[i].add(lblTotalItems[i]);
+		confirmList[i].add(lblTotalItems[i]);
 
-		lblOrderStatusColor[i] = new JLabel();
-		lblOrderStatusColor[i].setBounds(246, 11, 46, 15);
-		orderList[i].add(lblOrderStatusColor[i]);
+		lblOrderStatus[i] = new JLabel();
+		lblOrderStatus[i].setBounds(182, 11, 108, 22);
+		confirmList[i].add(lblOrderStatus[i]);
 		
 		separator[i] = new JSeparator();
 		separator[i].setBounds(11, 36, 280, 7);
-		orderList[i].add(separator[i]);
+		confirmList[i].add(separator[i]);
 		
+		
+
+		lblTotalProducts[i].setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTotalItems[i].setHorizontalAlignment(SwingConstants.RIGHT);
+		lblOrderStatus[i].setHorizontalAlignment(SwingConstants.RIGHT);
 	}
 }

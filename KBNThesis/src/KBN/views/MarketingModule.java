@@ -174,11 +174,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private int OrderListIndexClicked;
 	private int CancelOrderListIndexClicked;
+	private int ConfirmProductList;
 	private String orderClickIdentifier = "";
 	private String cancelorderClickIdentifier = "";
 	
 	private int OrderCount = 0; // Order List	
-	private int CancelOrderCount = 0; // Order List
+	private int CancelOrderCount = 0; // Cancel Order List
 	private int OrderCountDash = 0; // Order List
 	private int orderBTNClickCount = 0;
 	private int cancelorderBTNClickCount = 0;
@@ -241,6 +242,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		// Confirmation Panel
 		confirmationPanel = new ConfirmationPanel();
+		confirmListPanel = new ConfirmationListPanel();
+		confirmationPanel.confirmPanel.add(confirmListPanel);
 		
 		preReg = new preRegister();
 		// Start Right Click
@@ -538,6 +541,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		delStatus.btnCompleted.addActionListener(this);
 		delStatus.btnSearch.addActionListener(this);
 		
+		// Confirmation Product
+		confirmationPanel.btnConfirm.addActionListener(this);
+		
 	}
 	
 	@Override
@@ -613,6 +619,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// Confirmation Panel
 		if(e.getSource() == btnConfirmation)
 			confrimationPanelFunc();
+		if(e.getSource() == confirmationPanel.btnConfirm)
+			confirmButtonFunc();
 		
 		// Client Profile
 		if(e.getSource() == btnClientProfile)
@@ -1914,26 +1922,125 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void confrimationPanelFunc(){
 		setVisiblePanel();
 		confirmationPanel.setVisible(true);
-		ConfirmPanelReset();
+		ConfirmProductPanelRemoveMouseListeners();
 		confirmationCounter();
-		confirmListPanelData.iConfirmationCount(confirmationCounter);
 	}
-	
-	private void ConfirmPanelReset() {
-		confirmListPanel = new ConfirmationListPanel();
-		confirmListPanelData = new ConfirmationListPanelData();
-		confirmationPanel.confirmPanel.add(confirmListPanel);
-		confirmListPanel.scrollPane.setViewportView(confirmListPanelData);
+	private void ConfirmProductPanelRemoveMouseListeners() {
+		if(confirmationCounter > 0) {
+		    for (int i = 0; i < confirmationCounter; i++) {
+		    	this.confirmListPanelData.confirmList[i].addMouseListener(this);
+		    }
+		}
 	}
 	
 	private void confirmationCounter() {
 		try {
-			confirmationCounter = 10;
+			String SQLCounter = "SELECT COUNT(a.TrackingID)\n"
+					+ "FROM tblconfirmationtracking AS a;";
+			
+			st.execute(SQLCounter);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				confirmationCounter = rs.getInt(1);
+			
+			confirmListPanelData = new ConfirmationListPanelData();
+			confirmListPanel.scrollPane.setViewportView(confirmListPanelData);
+			
+			confirmListPanelData.iConfirmationCount(confirmationCounter);
+			
+			ConfirmPanelSetData();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error confirmationCounter: " + e.getMessage());
 		}
 	}
 	
+	private void ConfirmPanelSetData() {
+		try {
+			String SQL = "SELECT a.TrackingID, a.DateAdded, a.Status, COUNT(b.TrackingID), SUM(b.ProductQuantity) \n"
+					+ "FROM tblconfirmationtracking AS a \n"
+					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
+					+ "GROUP BY a.TrackingID;";
+			
+			st.execute(SQL);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				confirmListPanelData.TrackingID[i] = rs.getString(1);
+				confirmListPanelData.lblDate[i].setText(rs.getString(2));
+				confirmListPanelData.lblOrderStatus[i].setText(rs.getString(3));
+				confirmListPanelData.lblTotalProducts[i].setText(rs.getString(4));
+				confirmListPanelData.lblTotalItems[i].setText(rs.getString(5));
+				i++;
+			}
+
+			ConfirmPanelAddActionlist();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error confirmationCounter: " + e.getMessage());
+		}
+	}
+	
+	private void ConfirmPanelAddActionlist() {
+		for(int i = 0; i < confirmListPanelData.confirmList.length; i++)
+			this.confirmListPanelData.confirmList[i].addMouseListener(this);
+	};
+	
+	private void confirmClickData() {
+		String TrackingID = confirmListPanelData.TrackingID[ConfirmProductList];
+		try {
+			String SQL = "SELECT a.AddedBy, a.DateAdded, b.ProductName, b.ProductVariant, b.ProductQuantity \n"
+					+ "FROM tblconfirmationtracking AS a \n"
+					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
+					+ "WHERE a.TrackingID = '" + TrackingID + "';";
+			confirmationPanel.lblTrackingID.setText(TrackingID);
+			confirmationPanel.lblTotalQuantity.setText("Total Quantity: " + confirmListPanelData.lblTotalItems[ConfirmProductList].getText());
+			confirmationPanel.lblTotalItem.setText("Total Item: " + confirmListPanelData.lblTotalItems[ConfirmProductList].getText());
+			
+			st.execute(SQL);
+			rs = st.getResultSet();
+			
+			ArrayList temp = new ArrayList<>();
+			while(rs.next()) {
+				confirmationPanel.lblInputted.setText(rs.getString(1));
+				confirmationPanel.lblDateInputted.setText(rs.getString(2));
+				temp.add(rs.getString(3));
+				temp.add(rs.getString(4));
+				temp.add(rs.getString(5));
+				confirmationPanel.main.addRow(temp.toArray());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error confirmClickData: " + e.getMessage());
+		}
+	}
+	
+	// Confirm Button - ConfirmationPanel
+	private void confirmButtonFunc() {
+		String TrackingID = confirmListPanelData.TrackingID[ConfirmProductList];
+		int dialogResult = JOptionPane.showConfirmDialog(null, "The data in the table is correct?", "Confirmation", JOptionPane.YES_NO_OPTION);
+		if (dialogResult == JOptionPane.YES_OPTION) {
+			try {
+				String UpdateSQL = "UPDATE tblconfirmationtracking \n"
+						+ "SET Status = 'COMPLETED' \n"
+						+ "WHERE TrackingID = '" + TrackingID + "';";
+				int completed = st.executeUpdate(UpdateSQL);
+				
+				for(int i = 0; i < confirmationPanel.table.getRowCount(); i++) {
+					for(int j = 0; j < 3; j++) {
+						String SQLUpdateProduct = "UPDATE tblproducts \n"
+								+ "SET Quantity = Quantity + " + confirmationPanel.table.getValueAt(i, 2) + " \n"
+								+ "WHERE prodName = '" + confirmationPanel.table.getValueAt(i, 0) + "' AND prodVolume = '" + confirmationPanel.table.getValueAt(i, 1) + "'";
+						st.execute(SQLUpdateProduct);
+					}
+				}
+				
+
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Error confirmButtonFunc: " + e.getMessage());
+			}
+		}
+
+	}
 	// Client Profile
 	private void clientProfileFunc() {
 		if("".equals(clientProfileChecker))
@@ -2459,12 +2566,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         Component clickedComponent = e.getComponent();
         Component clickedComponent1 = e.getComponent();
         Component clickedComponent2 = e.getComponent();
+        Component clickedComponent3 = e.getComponent();
 //        orderCounter();
         preRegStatus();
 
+        // Pre Reg
         if (clickedComponent instanceof JPanel) {
-
-            // Pre Reg
             for (int i = 0; i < rowCount; i++) {
                 if (clickedComponent == preReg.preReg.panel[i]) {
                     preRegDataSetter(i);
@@ -2472,9 +2579,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                 }
             }
         }
-        
+
+    	// OrderList
         if(clickedComponent1 instanceof JPanel) {
-        	// OrderList
             for (int i = 0; i < OrderCount; i++) {
                 if (clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
                     OrderListIndexClicked = i;
@@ -2485,9 +2592,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                 }
             }
         }
-        
+
+    	// CancelOrderList
         if(clickedComponent2 instanceof JPanel) {
-        	// OrderList
             for (int i = 0; i < CancelOrderCount; i++) {
                 if (clickedComponent == cancelOrderPanel.orderLPanel.opd.orderList[i]) {
                     CancelOrderListIndexClicked = i;
@@ -2498,6 +2605,23 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                 }
             }
         }
+        
+        // ConfirmPanel
+        if(clickedComponent3 instanceof JPanel) {
+            for (int i = 0; i < confirmationCounter; i++) {
+                if (clickedComponent == confirmListPanelData.confirmList[i]) {
+                	ConfirmProductList = i;
+                	confirmationPanel.main.setRowCount(0);
+                	confirmationPanel.btnConfirm.setVisible(true);
+                	if(confirmListPanelData.lblOrderStatus[i].getText().equals("COMPLETED"))
+                    	confirmationPanel.btnConfirm.setVisible(false);
+                	confirmClickData();
+                    return;
+                }
+            }
+        }
+        
+        
         
 
         
