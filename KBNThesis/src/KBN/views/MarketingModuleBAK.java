@@ -37,7 +37,6 @@ import KBN.Module.Marketing.Delivery.DeliveryStatus;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
 import KBN.Module.Marketing.KBNProducts.KBNProducts;
-import KBN.Module.Marketing.KBNProducts.PopUpPRODIMG;
 import KBN.Module.Marketing.KBNProducts.ProductDetails;
 import KBN.Module.Marketing.KBNProducts.RightClick;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
