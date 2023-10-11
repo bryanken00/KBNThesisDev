@@ -48,53 +48,56 @@ public class RebrandingProd extends JPanel implements MouseListener {
 		scrollPane.setBounds(26, 146, 933, 511);
 		add(scrollPane);
 		
+		JPanel panel = new JPanel();
+		panel.setBackground(new Color(104,140,92));
+		panel.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		panel.setBounds(26, 38, 933, 78);
+		add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblNewLabel_1 = new JLabel("List:");
+		lblNewLabel_1.setForeground(new Color(255, 255, 255));
+		lblNewLabel_1.setBounds(29, 23, 55, 33);
+		panel.add(lblNewLabel_1);
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 18));
+		
+		btnProducts = new JButton("Products");
+		btnProducts.setBounds(87, 23, 114, 33);
+		panel.add(btnProducts);
+		btnProducts.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnProducts.setFocusable(false);
+		btnProducts.setBackground(Color.WHITE);
+		btnProducts.setBorder(new LineBorder(new Color(0, 0, 0)));
+		
+		btnArchive = new JButton("Archive");
+		btnArchive.setBounds(224, 21, 114, 35);
+		panel.add(btnArchive);
+		btnArchive.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnArchive.setFocusable(false);
+		btnArchive.setBackground(Color.WHITE);
+		btnArchive.setBorder(new LineBorder(new Color(0, 0, 0)));
+		
+		JSeparator separator = new JSeparator();
+		separator.setBounds(212, 23, 48, 33);
+		panel.add(separator);
+		separator.setOrientation(SwingConstants.VERTICAL);
+		
 		txtSearchBar = new JTextField();
-		txtSearchBar.setBounds(684, 61, 200, 32);
+		txtSearchBar.setBounds(658, 23, 200, 32);
+		panel.add(txtSearchBar);
 		txtSearchBar.setText("Search by Product Name");
 		txtSearchBar.setForeground(Color.GRAY);
 		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setColumns(10);
-		add(txtSearchBar);
-		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(26, 38, 933, 78);
-		lblNewLabel.setIcon(new ImageIcon(RebrandingProd.class.getResource("/KBN/resources/Marketing/menuKBN.png")));
-		add(lblNewLabel);
-		
-		btnProducts = new JButton("Products");
-		btnProducts.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnProducts.setFocusable(false);
-		btnProducts.setBackground(Color.WHITE);
-		btnProducts.setBounds(113, 61, 114, 33);
-		btnProducts.setBorder(new LineBorder(new Color(0, 0, 0)));
-		add(btnProducts);
-		
-		btnArchive = new JButton("Archive");
-		btnArchive.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnArchive.setFocusable(false);
-		btnArchive.setBackground(Color.WHITE);
-		btnArchive.setBounds(250, 59, 114, 35);
-		btnArchive.setBorder(new LineBorder(new Color(0, 0, 0)));
-		add(btnArchive);
-		
-		JLabel lblNewLabel_1 = new JLabel("List:");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblNewLabel_1.setBounds(55, 61, 55, 33);
-		add(lblNewLabel_1);
-		
-		JSeparator separator = new JSeparator();
-		separator.setOrientation(SwingConstants.VERTICAL);
-		separator.setBounds(238, 61, 48, 33);
-		add(separator);
 		
 		btnSearch = new JButton("");
+		btnSearch.setBounds(858, 23, 32, 32);
+		panel.add(btnSearch);
 		btnSearch.setIcon(new ImageIcon(RebrandingProd.class.getResource("/KBN/resources/CustAccount/search.png")));
 		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSearch.setFocusable(false);
 		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnSearch.setBackground(Color.WHITE);
-		btnSearch.setBounds(884, 61, 32, 32);
-		add(btnSearch);
 	}
 	
 	

@@ -49,6 +49,7 @@ import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingCancel;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
 import KBN.Module.Marketing.OrderingPanel.onDelivery;
+import KBN.Module.Marketing.RebrandingProducts.ClientProducts;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
 import KBN.Module.Marketing.RebrandingProducts.panelGenerator;
 import KBN.Module.Marketing.dashboard.Dashboard;
@@ -94,7 +95,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private RebrandingProd rebrandingProd;
 	private panelGenerator rebrandingPanelGen;
 		private int rebrandingClientCount = 0;
-		private int rebrandingClientProductCount = 0;
+		
+	private ClientProducts clientProductList;
 	
 	
 	private CustomerAccount custAccount;
@@ -215,8 +217,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         // Date Formatter
         inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        sqlTimeDiff = "SELECT TIMESTAMPDIFF(HOUR, NOW(), OrderDate) AS HoursDifference, TIMESTAMPDIFF(MINUTE, OrderDate, NOW()) AS MinutesDifference FROM tblordercheckout ORDER BY OrderDate DESC LIMIT 1";
-        
+//        sqlTimeDiff = "SELECT TIMESTAMPDIFF(HOUR, NOW(), OrderDate) AS HoursDifference, TIMESTAMPDIFF(MINUTE, OrderDate, NOW()) AS MinutesDifference FROM tblordercheckout ORDER BY OrderDate DESC LIMIT 1";
+        sqlTimeDiff = "SELECT TIMESTAMPDIFF(HOUR, NOW(), a.OrderDate) AS HoursDifference, TIMESTAMPDIFF(MINUTE, a.OrderDate, NOW()) AS MinutesDifference\r\n"
+        		+ "FROM tblordercheckout AS a\r\n"
+        		+ "JOIN tblorderstatus As b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+        		+ "WHERE b.Status = 'toPay'\r\n"
+        		+ "ORDER BY OrderDate DESC LIMIT 1;";
         
         // Declaration
         dbConn = new DbConnection();
@@ -233,6 +239,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		rebrandingProd = new RebrandingProd();
 		rebrandingPanelGen = new panelGenerator();
+    	clientProductList = new ClientProducts();
 		
 		
 		custAccount = new CustomerAccount();
@@ -838,22 +845,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dashboard1.setVisible(true);
 	}
 	
-	private void kbnProdClickFunc(String prodID) {
-		try {
-			if(kbnProdButtonChecker.equals("Archive"))
-				return;
-			String SQL = "SELECT prodIMG FROM tblproducts WHERE prodID = '" + prodID + "'";
-			st.execute(SQL);
-			rs = st.getResultSet();
-			String link = "http://localhost/webdevelopment/thesis1_website/Products/resources/";
-			if(rs.next())
-				link += rs.getString(1);
-			
-		}catch(Exception e1) {
-			JOptionPane.showMessageDialog(null, "KBNProd TableClick ERROR: " + e1.getMessage());
-		}
-	}
-	
 	private void addItem() {
 		prodDetails.btnSave.setText("Save");
 		prodDetails.cbSetter();
@@ -1032,7 +1023,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void orderCounterDashboard() {
 		try {
-			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+//			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblorderstatus WHERE status = 'toPay'";
 			st.execute(sql);
 			rs = st.getResultSet();
 			
@@ -1048,7 +1040,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void setOrderListDataDashboard() {
 		try {
-			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE c.status != 'Cancelled' AND c.status != 'Expired'";
+//			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE c.status != 'Cancelled' AND c.status != 'Expired'";
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblOrderCheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE c.status = 'toPay'";
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -1911,9 +1904,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rebrandingClientCount = rs.getInt(1);
 			
 			rebrandingPanelGen.setCount(rebrandingClientCount);
+			rebrandingClickablePanel();
+			
 			rebrandingSettingUpPanelData();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error rebrandClientCount: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandingClickablePanel() {
+		for(int i = 0; i < rebrandingClientCount; i++) {
+			rebrandingPanelGen.panel[i].addMouseListener(this);
 		}
 	}
 	
@@ -1924,7 +1925,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID "
 			+ "GROUP BY a.userID;";
 
-			System.out.println(sql);
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -2629,6 +2629,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         Component clickedComponent1 = e.getComponent();
         Component clickedComponent2 = e.getComponent();
         Component clickedComponent3 = e.getComponent();
+        Component clickedComponent4 = e.getComponent();
 //        orderCounter();
         preRegStatus();
 
@@ -2682,6 +2683,39 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                 }
             }
         }
+        
+        // Rebranding
+        if(clickedComponent4 instanceof JPanel) {
+            for (int i = 0; i < rebrandingClientCount; i++) {
+                if (clickedComponent == rebrandingPanelGen.panel[i]) {
+                	String rebrandingUID = rebrandingPanelGen.userID[i];
+                	try {
+						String sql = "SELECT prodName, prodVolume, sold FROM tblrebrandingproducts WHERe userID = '" + rebrandingUID + "' ORDER BY sold DESC;";
+						
+						st.execute(sql);
+						rs = st.getResultSet();
+						
+						clientProductList.main.setRowCount(0);
+						
+						ArrayList temp = new ArrayList<>();
+						
+						while(rs.next()) {
+							temp.add(rs.getString(1));
+							temp.add(rs.getString(2));
+							temp.add(rs.getString(3));
+							clientProductList.main.addRow(temp.toArray());
+							
+							temp.clear();
+						}
+                    	clientProductList.setVisible(true);
+					} catch (Exception e2) {
+						// TODO: handle exception
+					}
+                    return;
+                }
+            }
+        }
+        
         
         
         

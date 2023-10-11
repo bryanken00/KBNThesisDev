@@ -13,7 +13,6 @@ public class panelGeneratorBAK extends JPanel {
 	public JLabel lblOwnerName;
 	public JLabel lblProductBrand;
 	public JLabel lblProductTotal;
-	public JButton btnView;
 	
 	private JLabel lblOwner;
 	private JLabel lblBrand;
@@ -33,49 +32,48 @@ public class panelGeneratorBAK extends JPanel {
 		setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(new Color(255, 255, 255));
+		panel.setBackground(new Color(104,140,92));
 		panel.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panel.setBounds(10, 11, 913, 92);
 		add(panel);
 		panel.setLayout(null);
 		
 		lblOwner = new JLabel("Product Owner");
+		lblOwner.setForeground(new Color(255, 255, 255));
 		lblOwner.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblOwner.setBounds(94, 11, 161, 31);
+		lblOwner.setBounds(100, 11, 187, 31);
 		panel.add(lblOwner);
 		
 		lblProductNumber = new JLabel("Total Products");
+		lblProductNumber.setForeground(new Color(255, 255, 255));
 		lblProductNumber.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblProductNumber.setBounds(478, 11, 161, 31);
+		lblProductNumber.setBounds(624, 11, 161, 31);
 		panel.add(lblProductNumber);
 		
 		lblBrand = new JLabel("Brand");
+		lblBrand.setForeground(new Color(255, 255, 255));
 		lblBrand.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblBrand.setBounds(324, 11, 85, 31);
+		lblBrand.setBounds(378, 11, 85, 31);
 		panel.add(lblBrand);
 		
-		btnView = new JButton("View Products");
-		btnView.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnView.setFocusable(false);
-		btnView.setBorder(new LineBorder(new Color(75, 119, 71, 180), 1, true));
-		btnView.setBackground(new Color(75, 119, 71, 180));
-		btnView.setBounds(708, 20, 161, 46);
-		panel.add(btnView);
-		
 		lblOwnerName = new JLabel("Product Owner");
+		lblOwnerName.setForeground(new Color(255, 255, 255));
 		lblOwnerName.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblOwnerName.setBounds(94, 53, 161, 31);
+		lblOwnerName.setBounds(104, 53, 221, 31);
 		panel.add(lblOwnerName);
 		
 		lblProductBrand = new JLabel("BrandX");
+		lblProductBrand.setForeground(new Color(255, 255, 255));
 		lblProductBrand.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblProductBrand.setBounds(324, 53, 85, 31);
+		lblProductBrand.setBounds(378, 53, 187, 31);
 		panel.add(lblProductBrand);
 		
 		lblProductTotal = new JLabel("0");
+		lblProductTotal.setForeground(new Color(255, 255, 255));
 		lblProductTotal.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblProductTotal.setBounds(478, 53, 161, 31);
+		lblProductTotal.setBounds(624, 53, 126, 31);
 		panel.add(lblProductTotal);
+		
 		
 		panel_1 = new JPanel();
 		panel_1.setLayout(null);

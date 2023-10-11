@@ -21,8 +21,6 @@ public class panelGenerator extends JPanel {
 	private JLabel[] lblBrand;
 	private JLabel[] lblProductNumber;
 	
-	public JButton[] btnView;
-	
 	private int prodCount = 0;
 	public String[] userID;
 	
@@ -39,7 +37,7 @@ public class panelGenerator extends JPanel {
 	
 	private void settingUP() {
 		this.setPreferredSize(new Dimension(2, 114*prodCount));
-		
+
 		panel = new JPanel[prodCount];
 
 		lblOwnerName = new JLabel[prodCount];
@@ -48,8 +46,6 @@ public class panelGenerator extends JPanel {
 		lblOwner = new JLabel[prodCount];
 		lblBrand = new JLabel[prodCount];
 		lblProductNumber = new JLabel[prodCount];
-		
-		btnView = new JButton[prodCount];
 		
 		userID = new String[prodCount];
 		for(int i = 0; i < prodCount; i++)
@@ -63,49 +59,47 @@ public class panelGenerator extends JPanel {
 			y = 114*i;
 		
 		panel[i] = new JPanel();
-		panel[i].setBackground(new Color(255, 255, 255));
+		panel[i].setBackground(new Color(75, 119, 71));
 		panel[i].setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panel[i].setBounds(10, y, 913, 92);
-		add(panel[i]);
 		panel[i].setLayout(null);
+		add(panel[i]);
 		
 		lblOwner[i] = new JLabel("Product Owner");
+		lblOwner[i].setForeground(new Color(255, 255, 255));
 		lblOwner[i].setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblOwner[i].setBounds(10, 11, 161, 31);
+		lblOwner[i].setBounds(100, 11, 187, 31);
 		panel[i].add(lblOwner[i]);
 		
 		lblProductNumber[i] = new JLabel("Total Products");
+		lblProductNumber[i].setForeground(new Color(255, 255, 255));
 		lblProductNumber[i].setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblProductNumber[i].setBounds(478, 11, 161, 31);
+		lblProductNumber[i].setBounds(624, 11, 161, 31);
 		panel[i].add(lblProductNumber[i]);
 		
 		lblBrand[i] = new JLabel("Brand");
+		lblBrand[i].setForeground(new Color(255, 255, 255));
 		lblBrand[i].setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblBrand[i].setBounds(215, 11, 69, 31);
+		lblBrand[i].setBounds(378, 11, 85, 31);
 		panel[i].add(lblBrand[i]);
 		
-		btnView[i] = new JButton("View Products");
-		btnView[i].setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnView[i].setFocusable(false);
-		btnView[i].setBorder(new LineBorder(new Color(75, 119, 71, 180), 1, true));
-		btnView[i].setBackground(new Color(104,140,92));
-		btnView[i].setForeground(new Color(255, 255, 255));
-		btnView[i].setBounds(708, 20, 161, 46);
-		panel[i].add(btnView[i]);
-		
 		lblOwnerName[i] = new JLabel("Product Owner");
+		lblOwnerName[i].setForeground(new Color(255, 255, 255));
 		lblOwnerName[i].setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblOwnerName[i].setBounds(10, 53, 195, 31);
+		lblOwnerName[i].setBounds(104, 53, 221, 31);
 		panel[i].add(lblOwnerName[i]);
 		
 		lblProductBrand[i] = new JLabel("BrandX");
+		lblProductBrand[i].setForeground(new Color(255, 255, 255));
 		lblProductBrand[i].setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblProductBrand[i].setBounds(215, 53, 195, 31);
+		lblProductBrand[i].setBounds(378, 53, 187, 31);
 		panel[i].add(lblProductBrand[i]);
 		
 		lblProductTotal[i] = new JLabel("0");
+		lblProductTotal[i].setForeground(new Color(255, 255, 255));
 		lblProductTotal[i].setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblProductTotal[i].setBounds(478, 53, 161, 31);
+		lblProductTotal[i].setBounds(624, 53, 126, 31);
 		panel[i].add(lblProductTotal[i]);
+		
 	}
 }

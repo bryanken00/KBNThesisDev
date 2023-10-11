@@ -169,7 +169,7 @@ public class Dashboard1 extends JPanel {
 		lblTimeDiff.setBounds(10, 53, 300, 19);
 		panelOrderList.add(lblTimeDiff);
 		
-		JLabel lblNewLabel = new JLabel("Order List");
+		JLabel lblNewLabel = new JLabel("New Order");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblNewLabel.setBounds(10, 11, 119, 40);
 		panelOrderList.add(lblNewLabel);
@@ -340,8 +340,12 @@ public class Dashboard1 extends JPanel {
         Font cellFont = new Font("Arial", Font.PLAIN, 14);
         tableLow.setFont(cellFont);
         tableMid.setFont(cellFont);
+        tableTopSelling.setFont(cellFont);
+        tableLeastSelling.setFont(cellFont);
         tableLow.setRowHeight(30);
         tableMid.setRowHeight(30);
+        tableTopSelling.setRowHeight(30);
+        tableLeastSelling.setRowHeight(30);
         
         //Top and Least
         String [] ColumnTopLeast = {"Product Name", "Sold"};
