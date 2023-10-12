@@ -28,8 +28,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import KBN.Module.Marketing.AuditTrail;
 import KBN.Module.Marketing.ModuleSelectionMarketing;
+import KBN.Module.Marketing.AuditTrail.AuditTrail;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
@@ -894,11 +894,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void addItem() {
 		prodDetails.btnSave.setText("Save");
 		prodDetails.cbSetter();
+        prodDetails.setUserID(lblUsername.getText());
+        prodDetails.clearInputs();
         prodDetails.setVisible(true);
 	}
 	
 	private void prodDetailsFunc() {
 		prodDetails.btnSave.setText("Update");
+        prodDetails.setUserID(lblUsername.getText());
+        prodDetails.clearInputs();
 	    if (kbnProd.table.getSelectedRow() != -1) {
 	        String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
 	        prodDetails.ProductDetails(ID);
@@ -912,6 +916,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		String dropDelimiter = "DROP PROCEDURE IF EXISTS InsertAndDeleteWithRollback;";
 		try {
 			String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
+			String prodName = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 1) + "";
 			String Archive = "";
 			String Restore = "";
 			Archive = "CREATE PROCEDURE InsertAndDeleteWithRollback()\n"
@@ -983,10 +988,16 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String proccessIfNoError = "CALL InsertAndDeleteWithRollback();";
 
 			st.execute(dropDelimiter);
-			if(kbnProdButtonChecker.equals("Products"))
+			if(kbnProdButtonChecker.equals("Products")) {
 				st.execute(Archive);
-			if(kbnProdButtonChecker.equals("Archive"))
+				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + lblUsername.getText() + "','KBN Product Archive - " + prodName + "');";
+				st.execute(AuditTrail);
+			}
+			if(kbnProdButtonChecker.equals("Archive")) {
 				st.execute(Restore);
+				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + lblUsername.getText() + "','KBN Product Restore - " + prodName + "');";
+				st.execute(AuditTrail);
+			}
 			
 			//final execute if 2 query is no error
 			st.execute(proccessIfNoError);

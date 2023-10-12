@@ -71,6 +71,8 @@ public class ProductDetails extends JDialog implements ActionListener{
 	private JTextPane txtManual;
 	public JButton btnSave;
 	private JButton btnAddImg;
+	
+	private String userID = "";
 
 	public ProductDetails() {
 		setResizable(false);
@@ -226,6 +228,10 @@ public class ProductDetails extends JDialog implements ActionListener{
 		DataSetters();
 	}
 	
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+	
 	public void cbSetter() {
 		try {
 			String cbSQL = "SELECT * FROM tblproductcategories";
@@ -338,7 +344,8 @@ public class ProductDetails extends JDialog implements ActionListener{
 					+ howtouse + "');";
 			
 			st.execute(SQLInsert);
-			
+			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product Added - " + prodName + "(" + prodVol + ")');";
+			st.execute(AuditTrail);
 			JOptionPane.showMessageDialog(null, "Product Added!");
 			clearInputs();
 			this.dispose();
@@ -374,7 +381,8 @@ public class ProductDetails extends JDialog implements ActionListener{
 					+ "WHERE prodID = '" + prodID + "';";
 			
 			st.execute(SQLUpdate);
-
+			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product -  " + prodName + "(" + prodVol + ")');";
+			st.execute(AuditTrail);
 			JOptionPane.showMessageDialog(null, "Product Updated!");
 			clearInputs();
 			this.dispose();
@@ -458,15 +466,17 @@ public class ProductDetails extends JDialog implements ActionListener{
             e.printStackTrace();
         }
     }
-	private void clearInputs() {
+	public void clearInputs() {
 		prodID = "";
 		imgPath = "";
 		txtProdName.setText("");
 		txtPrice.setText("");
 		txtVariant.setText("");
-		cbCategory.setSelectedIndex(0);
+		if(cbCategory != null)
+			cbCategory.setSelectedIndex(0);
 		txtDescription.setText("");
 		txtIngredients.setText("");
 		txtManual.setText("");
+		lblImg.setIcon(null);
 	}
 }
