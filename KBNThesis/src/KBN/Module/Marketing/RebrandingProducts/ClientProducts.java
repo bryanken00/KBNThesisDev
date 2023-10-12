@@ -20,7 +20,8 @@ import javax.swing.JTable;
 public class ClientProducts extends JDialog {
 	
 	public DefaultTableModel main;
-	private JTable table;
+	public JTable table;
+	public JButton btnAdd;
 	
 	public ClientProducts() {
 		setResizable(false);
@@ -52,6 +53,15 @@ public class ClientProducts extends JDialog {
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 21));
 		lblNewLabel.setBounds(10, 11, 168, 49);
 		panel.add(lblNewLabel);
+		
+		btnAdd = new JButton("Add");
+		btnAdd.setForeground(new Color(104,140,92));
+		btnAdd.setFont(new Font("MS Reference Sans Serif", Font.BOLD, 18));
+		btnAdd.setFocusable(false);
+		btnAdd.setBorderPainted(false);
+		btnAdd.setBackground(new Color(255, 255, 255));
+		btnAdd.setBounds(665, 15, 117, 40);
+		panel.add(btnAdd);
 
 		table = new JTable();
 		scrollPane.setViewportView(table);

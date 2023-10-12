@@ -652,6 +652,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		}
 		
 		if(e.getSource() == navs.btnEmployeeList) {
+			isUpdateEmpInfo = false;
 	        empGen = new EmployeeListGenerator();
 			empList.scrollPane.setViewportView(empGen);
 			
@@ -698,7 +699,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	    for (int i = 0; i < empCount; i++) {
 			try {
 		        if (e.getSource() == empGen.btnAction[i]) {
-		        	System.out.println("AccountID? " + accoudIdEmpUpdate);
 					empCreate.iconLabel.setIcon(new ImageIcon(EmployeeCreate.class.getResource("/KBNAdminPanel/resources/Employee/close.png")));
 				    clearInputFields();
 					panelVisible();

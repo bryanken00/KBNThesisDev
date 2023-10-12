@@ -48,6 +48,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 	private int logSuccess = 0;
 	
 	private String accLevel;
+	private String accID;
 	
 	private JPanel contentPane;
 	private JTextField txtUsername;
@@ -177,6 +178,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 			rs = st.getResultSet();
 			while(rs.next()) {
 				logSuccess += 1;
+				accID = rs.getString(1);
 				accLevel = rs.getString(4) + "-" + rs.getString(5) + "-" + rs.getString(6);
 			}
 		}catch (Exception e) {
@@ -192,6 +194,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 		if(logSuccess == 1) {
 			dataSet.setUsername(txtUsername.getText());
 			dataSet.setAccLevel(accLevel);
+			dataSet.setAccountID(accID);
 			modules.accLevelIdentifier(accLevel,txtUsername.getText());
 			modules.setVisible(true);
 			this.dispose();

@@ -50,6 +50,7 @@ import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingCancel;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
 import KBN.Module.Marketing.OrderingPanel.onDelivery;
+import KBN.Module.Marketing.RebrandingProducts.AddProduct;
 import KBN.Module.Marketing.RebrandingProducts.ClientProducts;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
 import KBN.Module.Marketing.RebrandingProducts.panelGenerator;
@@ -101,6 +102,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private RebrandingProd rebrandingProd;
 	private panelGenerator rebrandingPanelGen;
 		private int rebrandingClientCount = 0;
+	private AddProduct addProdRebranding;
+		private String rebrandingUserID = "";
 		
 	private ClientProducts clientProductList;
 	
@@ -160,6 +163,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	// Account Level
 	private String AccountLevel = "";
+	private String accountID = "";
 	
 	private JPanel contentPane;
 	private JPanel panelButton;
@@ -252,6 +256,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rebrandingProd = new RebrandingProd();
 		rebrandingPanelGen = new panelGenerator();
     	clientProductList = new ClientProducts();
+    	addProdRebranding = new AddProduct();
 		
 		
 		custAccount = new CustomerAccount();
@@ -549,6 +554,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		// Rebranding Client
 		rebrandingProd.btnSearch.addActionListener(this);
+		clientProductList.btnAdd.addActionListener(this);
 		
 		//KBNProducts Panel
 		kbnProd.btnProducts.addActionListener(this);
@@ -650,6 +656,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// Rebranding
 		if(e.getSource() == rebrandingProd.btnSearch) {
 			rebrandClientCountSearch(rebrandingProd.txtSearchBar.getText());
+		}
+		if(e.getSource() == clientProductList.btnAdd) {
+			addProdRebranding.clearFields();
+			addProdRebranding.setUserID(rebrandingUserID);
+			addProdRebranding.renderCategories();
+			addProdRebranding.setVisible(true);
 		}
 		
 		// Module Selection
@@ -881,6 +893,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		dataSet = new dataSetter();
 		lblUsername.setText(dataSet.getUsername());
 		AccountLevel = dataSet.getAccLevel();
+		accountID = dataSet.getAccountID();
 	}
 
 	
@@ -894,15 +907,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void addItem() {
 		prodDetails.btnSave.setText("Save");
 		prodDetails.cbSetter();
-        prodDetails.setUserID(lblUsername.getText());
+        prodDetails.setUserID(accountID);
         prodDetails.clearInputs();
         prodDetails.setVisible(true);
 	}
 	
 	private void prodDetailsFunc() {
 		prodDetails.btnSave.setText("Update");
-        prodDetails.setUserID(lblUsername.getText());
-        prodDetails.clearInputs();
+        prodDetails.setUserID(accountID);
+//        prodDetails.clearInputs();
 	    if (kbnProd.table.getSelectedRow() != -1) {
 	        String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
 	        prodDetails.ProductDetails(ID);
@@ -990,12 +1003,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			st.execute(dropDelimiter);
 			if(kbnProdButtonChecker.equals("Products")) {
 				st.execute(Archive);
-				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + lblUsername.getText() + "','KBN Product Archive - " + prodName + "');";
+				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Product Archive - " + prodName + "');";
 				st.execute(AuditTrail);
 			}
 			if(kbnProdButtonChecker.equals("Archive")) {
 				st.execute(Restore);
-				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + lblUsername.getText() + "','KBN Product Restore - " + prodName + "');";
+				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Product Restore - " + prodName + "');";
 				st.execute(AuditTrail);
 			}
 			
@@ -2043,6 +2056,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void AuditPanelFunc() {
 		setVisiblePanel();
 		auditTrail.setVisible(true);
+		
+		try {
+			String SQL = "";
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
+		}
 	}
 
 	private void orderPanelFunc() {
@@ -2788,6 +2807,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             for (int i = 0; i < rebrandingClientCount; i++) {
                 if (clickedComponent == rebrandingPanelGen.panel[i]) {
                 	String rebrandingUID = rebrandingPanelGen.userID[i];
+                	rebrandingUserID = rebrandingUID;
                 	try {
 						String sql = "SELECT prodName, prodVolume, sold FROM tblrebrandingproducts WHERe userID = '" + rebrandingUID + "' ORDER BY sold DESC;";
 						
