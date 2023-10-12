@@ -8,6 +8,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import KBN.commons.DbConnection;
+import KBN.commons.dataSetter;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -47,6 +48,7 @@ public class AddProduct extends JDialog implements ActionListener {
 	private DbConnection dbConn;
 	private Statement st;
 	private ResultSet rs;
+	private dataSetter dataSet;
 	
 	private JTextField txtProduct;
 	private JTextField txtPrice;
@@ -71,6 +73,7 @@ public class AddProduct extends JDialog implements ActionListener {
 		getContentPane().setLayout(null);
 		
 		dbConn = new DbConnection();
+		dataSet = new dataSetter();
 		
 		try {
 			st = dbConn.getConnection().createStatement();
@@ -357,6 +360,8 @@ public class AddProduct extends JDialog implements ActionListener {
 			String prodVariant = txtVariant.getText();
 			String prodPrice = txtPrice.getText();
 			String productCategory;
+			
+			String sqlProdName = prodName + " (" + prodVariant + ")";
 			if(addNew)
 				productCategory = txtNewCat.getText();
 			else
@@ -364,6 +369,8 @@ public class AddProduct extends JDialog implements ActionListener {
 			String SQLInsert = "INSERT INTO tblrebrandingproducts(userID, prodImg, prodName, prodVolume, prodPrice, prodCategory, Sold) "
 					+ "VALUES('" + rebrandingID + "','" + imgPath + "','" + prodName + "','" + prodVariant + "','" + prodPrice + "','" + productCategory + "','0');";
 			st.execute(SQLInsert);
+			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + dataSet.getAccountID() + "','Rebranding Add Product to " + rebrandingID + " - " + sqlProdName + "');";
+			st.execute(AuditTrail);
 			JOptionPane.showMessageDialog(null, "Product Added!");
 			
 			clearFields();
