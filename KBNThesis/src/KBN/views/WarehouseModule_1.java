@@ -26,7 +26,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Warehouse.Archive.ArchiveList;
+import KBN.Module.Warehouse.ModuleSelection.ModuleSelectionWarehouse;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
 import KBN.Module.Warehouse.ProcessOrder.onDelivery;
@@ -95,6 +97,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private JPanel contentPane;
 	private JPanel panelNav;
 	private JPanel container;
+	
+	
+	private ModuleSelectionWarehouse moduleSelection;
+	private MarketingModule marketingModule;
+	private ProductionModule productionModule;
 
 	public WarehouseModule_1() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -106,6 +113,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		setResizable(false);
 		setTitle("Warehouse Inventory");
 		setContentPane(contentPane);
+		
+        // Module
+    	moduleSelection = new ModuleSelectionWarehouse();
+		getContentPane().add(moduleSelection);
+		moduleSelection.setVisible(false);
 		
 		// Right Click
         rightClickRawMats = new ArchiveRightClick();
@@ -260,6 +272,12 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		wNav.btnAddItem.addActionListener(this);
 			manual.btnSubmit.addActionListener(this);
 		wNav.btnQRCode.addActionListener(this);
+		
+		// Module Selection
+		wNav.lblUsername.addMouseListener(this);
+		wNav.lblUsername.addKeyListener(this);
+		moduleSelection.btnMarketingModule.addActionListener(this);
+		moduleSelection.btnProductionModule.addActionListener(this);
 		
 		wNav.btnRawMats.addActionListener(this);
 		wNav.btnPackMats.addActionListener(this);
@@ -1084,6 +1102,18 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				// Raw Mats Right Click
 				if(e.getSource() == rightClickRawMats.btnArchive)
 					archiveItemFunc();
+				
+		// Module Selection
+			if(e.getSource() == moduleSelection.btnMarketingModule) {
+				marketingModule = new MarketingModule();
+				marketingModule.setVisible(true);
+				this.dispose();
+			}
+			if(e.getSource() == moduleSelection.btnProductionModule) {
+				productionModule = new ProductionModule();
+				productionModule.setVisible(true);
+				this.dispose();
+			}
 		
 		/// Archive List		
 		if(e.getSource() == wNav.btnArchiveList)
@@ -1158,6 +1188,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				panelOrderData(procOrderData.refNumber[i], procOrderData.userID[i]);
 			}
 		}
+		
+		if(e.getSource() == wNav.lblUsername) {
+			moduleSelection.setBounds(wNav.lblUsername.getX() + 30, wNav.lblUsername.getY() - 50, 270, 67);
+			moduleSelection.setVisible(true);
+		}
 	}
 
 	@Override
@@ -1195,7 +1230,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() == wNav.lblUsername) {
+			if(e.getKeyCode() == 27 || e.getSource() == moduleSelection) {
+				moduleSelection.setVisible(false);
+			}
+		}
 		
 	}
 

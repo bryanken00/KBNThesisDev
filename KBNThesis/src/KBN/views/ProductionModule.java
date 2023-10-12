@@ -6,7 +6,10 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -18,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import KBN.Module.Marketing.ModuleSelectionMarketing;
+import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Production.KBNProducts.KBNData;
 import KBN.Module.Production.KBNProducts.KBNPanelMain;
 import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetails;
@@ -27,7 +32,7 @@ import KBN.Module.Production.addItem.AddItemProduction;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 
-public class ProductionModule extends JFrame implements ActionListener{
+public class ProductionModule extends JFrame implements ActionListener, MouseListener, KeyListener{
 	
 	
 	// Class
@@ -57,6 +62,11 @@ public class ProductionModule extends JFrame implements ActionListener{
 		// Add Item
 		private AddItemProduction addItem;
 		
+		// Module Selection
+		private ModuleSelectionProduction moduleSelection;
+		private MarketingModule marketingModule;
+		private WarehouseModule_1 warehouseModule;
+		
 		
 		// Strings
 			// Acc Level
@@ -83,6 +93,11 @@ public class ProductionModule extends JFrame implements ActionListener{
         int x = (dim.width-w)/2;
         int y = (dim.height-h)/2;
         this.setLocation(x, y);
+        
+        // Module
+    	moduleSelection = new ModuleSelectionProduction();
+		getContentPane().add(moduleSelection);
+		moduleSelection.setVisible(false);
         
 		panelNav = new JPanel();
 		panelNav.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -118,6 +133,8 @@ public class ProductionModule extends JFrame implements ActionListener{
         
         KBNDetailsData = new KBNDataViewDetailsData();
         
+
+        
         
         
         panelNav.add(nav);
@@ -152,6 +169,14 @@ public class ProductionModule extends JFrame implements ActionListener{
 		
 		// Add Item
 		addItem.btnAddItem.addActionListener(this);
+		
+		
+		nav.lblUsername.addMouseListener(this);
+		nav.lblUsername.addKeyListener(this);
+		moduleSelection.addKeyListener(this);
+		moduleSelection.btnMarketingModule.addActionListener(this);
+		moduleSelection.btnWarehouseModule.addActionListener(this);
+		
 		
 	}
 	
@@ -393,6 +418,18 @@ public class ProductionModule extends JFrame implements ActionListener{
 			if(e.getSource() == addItem.btnAddItem) {
 				AddItemFuncKBN();
 			}
+			
+		// Module Selection
+			if(e.getSource() == moduleSelection.btnMarketingModule) {
+				marketingModule = new MarketingModule();
+				marketingModule.setVisible(true);
+				this.dispose();
+			}
+			if(e.getSource() == moduleSelection.btnWarehouseModule) {
+				warehouseModule = new WarehouseModule_1();
+				warehouseModule.setVisible(true);
+				this.dispose();
+			}
 		
 		// KBNData Buttons
 			if(kbnData.btnViewDetails != null) {
@@ -415,5 +452,68 @@ public class ProductionModule extends JFrame implements ActionListener{
 					}
 				}
 			}
+	}
+
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getSource() == nav.lblUsername) {
+			if(e.getKeyCode() == 27 || e.getSource() == moduleSelection) {
+				moduleSelection.setVisible(false);
+			}
+		}
+		
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource() == nav.lblUsername) {
+			moduleSelection.setBounds(nav.lblUsername.getX() + 30, nav.lblUsername.getY() - 50, 270, 67);
+			moduleSelection.setVisible(true);
+		}
+		
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

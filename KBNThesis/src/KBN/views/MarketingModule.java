@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import KBN.Module.Marketing.AuditTrail;
+import KBN.Module.Marketing.ModuleSelectionMarketing;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
@@ -87,6 +88,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private Dashboard1 dashboard1;
 	private OrderListPanelData opdDashboard;
 
+	// Module
+	private ProductionModule productionModule;
+	private WarehouseModule_1 warehouseModule;
+	private ModuleSelectionMarketing moduleSelection;
+	
 	//KBN Products
 	private KBNProducts kbnProd;
 	private String kbnProdButtonChecker = "Products";
@@ -213,6 +219,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         int x = (dim.width-w)/2;
         int y = (dim.height-h)/2;
         this.setLocation(x, y);
+        
+        // Modules
+    	moduleSelection = new ModuleSelectionMarketing();
+		getContentPane().add(moduleSelection);
+		moduleSelection.setVisible(false);
+    	
         
         // Date Formatter
         inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
@@ -535,6 +547,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		//KBN ProdMouseList
 		kbnProd.table.addMouseListener(this);
 		
+		// Rebranding Client
+		rebrandingProd.btnSearch.addActionListener(this);
+		
 		//KBNProducts Panel
 		kbnProd.btnProducts.addActionListener(this);
 		kbnProd.btnArchive.addActionListener(this);
@@ -546,6 +561,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rightClick.btnArchive.addActionListener(this);
 		rightClick.addKeyListener(this);
 		kbnProd.table.addKeyListener(this);
+		
+			// Module Selection
+		lblUsername.addMouseListener(this);
+		lblUsername.addKeyListener(this);
+		moduleSelection.addKeyListener(this);
+		moduleSelection.btnProductionModule.addActionListener(this);
+		moduleSelection.btnWarehouseModule.addActionListener(this);
+		
 		
 		// Client Profile
 		cp.lblOrderHistory.addMouseListener(this);
@@ -622,6 +645,23 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				custAccountSearchFunc(custAccount.txtSearchBar.getText());
 			else
 				custAccPanelFunc();
+		}
+		
+		// Rebranding
+		if(e.getSource() == rebrandingProd.btnSearch) {
+			rebrandClientCountSearch(rebrandingProd.txtSearchBar.getText());
+		}
+		
+		// Module Selection
+		if(e.getSource() == moduleSelection.btnProductionModule) {
+			productionModule = new ProductionModule();
+			productionModule.setVisible(true);
+			this.dispose();
+		}
+		if(e.getSource() == moduleSelection.btnWarehouseModule) {
+			warehouseModule = new WarehouseModule_1();
+			warehouseModule.setVisible(true);
+			this.dispose();
 		}
 		
 		//Right Click
@@ -790,6 +830,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == kbnProd.table || e.getSource() == rightClick) {
 			if(e.getKeyCode() == 27) {
 				rightClick.setVisible(false);
+			}
+		}
+		
+		if(e.getSource() == lblUsername) {
+			if(e.getKeyCode() == 27 || e.getSource() == moduleSelection) {
+				moduleSelection.setVisible(false);
 			}
 		}
 		
@@ -1878,21 +1924,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		setVisiblePanel();
 		rebrandingProd.setVisible(true);
 		rebrandClientCount();
-//		try {
-
-//			
-//			st.execute(sql);
-//			rs = st.getResultSet();
-//		} catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, "Error rebrandProdPanelFunc: " + e.getMessage());
-//		}
 	}
 	
 	private void rebrandClientCount() {
 		rebrandingPanelGen = new panelGenerator();
 		rebrandingProd.scrollPane.setViewportView(rebrandingPanelGen);
 		
-//		rebrandingClientCount
 		String SQLCounter = "SELECT COUNT(DISTINCT b.userID) \n"
 				+ "FROM tblrebrandingproducts AS b \n"
 				+ "WHERE b.userID IN (SELECT DISTINCT a.UserID FROM tblcustomerinformation AS a);";
@@ -1909,12 +1946,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rebrandingSettingUpPanelData();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error rebrandClientCount: " + e.getMessage());
-		}
-	}
-	
-	private void rebrandingClickablePanel() {
-		for(int i = 0; i < rebrandingClientCount; i++) {
-			rebrandingPanelGen.panel[i].addMouseListener(this);
 		}
 	}
 	
@@ -1937,6 +1968,58 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error rebrandingSettingUpPanelData: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandClientCountSearch(String search) {
+		rebrandingPanelGen = new panelGenerator();
+		rebrandingProd.scrollPane.setViewportView(rebrandingPanelGen);
+		
+		String SQLCounter = "SELECT COUNT(DISTINCT b.userID) \n"
+				+ "FROM tblrebrandingproducts AS b \n"
+				+ "WHERE b.userID IN (SELECT DISTINCT a.UserID FROM tblcustomerinformation AS a WHERE CONCAT(a.FirstName, ' ', a.LastName) LIKE '%" + search + "%');";
+		
+		try {
+			st.execute(SQLCounter);
+			rs = st.getResultSet();
+			if(rs.next())
+				rebrandingClientCount = rs.getInt(1);
+			
+			rebrandingPanelGen.setCount(rebrandingClientCount);
+			rebrandingClickablePanel();
+			
+			rebrandingSettingUpPanelDataSearch(search);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error rebrandClientCount: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandingSettingUpPanelDataSearch(String search) {
+		try {
+			String sql = "SELECT a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS Name, b.Description , COUNT(a.prodName) \n"
+			+ "FROM tblrebrandingproducts AS a \n"
+			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID "
+			+ "WHERE CONCAT(b.FirstName, ' ', b.LastName) LIKE '%" + search + "%' "
+			+ "GROUP BY a.userID;";
+
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				rebrandingPanelGen.userID[i] = rs.getString(1);
+				rebrandingPanelGen.lblOwnerName[i].setText(rs.getString(2));
+				rebrandingPanelGen.lblProductBrand[i].setText(rs.getString(3));
+				rebrandingPanelGen.lblProductTotal[i].setText(rs.getString(4));
+				i++;
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error rebrandingSettingUpPanelData: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandingClickablePanel() {
+		for(int i = 0; i < rebrandingClientCount; i++) {
+			rebrandingPanelGen.panel[i].addMouseListener(this);
 		}
 	}
 	
@@ -2624,6 +2707,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+
+		if(e.getSource() == lblUsername) {
+			moduleSelection.setBounds(lblUsername.getX() + 30, lblUsername.getY() - 50, 270, 67);
+			moduleSelection.setVisible(true);
+		}
 		
         Component clickedComponent = e.getComponent();
         Component clickedComponent1 = e.getComponent();

@@ -34,9 +34,6 @@ public class RebrandingProd extends JPanel implements MouseListener {
 	
 	public JScrollPane scrollPane;
 	public JTextField txtSearchBar;
-	
-	public JButton btnProducts;
-	public JButton btnArchive;
 	public JButton btnSearch;
 	
 	public RebrandingProd() {
@@ -61,31 +58,10 @@ public class RebrandingProd extends JPanel implements MouseListener {
 		panel.add(lblNewLabel_1);
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
-		btnProducts = new JButton("Products");
-		btnProducts.setBounds(87, 23, 114, 33);
-		panel.add(btnProducts);
-		btnProducts.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnProducts.setFocusable(false);
-		btnProducts.setBackground(Color.WHITE);
-		btnProducts.setBorder(new LineBorder(new Color(0, 0, 0)));
-		
-		btnArchive = new JButton("Archive");
-		btnArchive.setBounds(224, 21, 114, 35);
-		panel.add(btnArchive);
-		btnArchive.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnArchive.setFocusable(false);
-		btnArchive.setBackground(Color.WHITE);
-		btnArchive.setBorder(new LineBorder(new Color(0, 0, 0)));
-		
-		JSeparator separator = new JSeparator();
-		separator.setBounds(212, 23, 48, 33);
-		panel.add(separator);
-		separator.setOrientation(SwingConstants.VERTICAL);
-		
 		txtSearchBar = new JTextField();
 		txtSearchBar.setBounds(658, 23, 200, 32);
 		panel.add(txtSearchBar);
-		txtSearchBar.setText("Search by Product Name");
+		txtSearchBar.setText("Search by Owner Name, Brand");
 		txtSearchBar.setForeground(Color.GRAY);
 		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setColumns(10);
@@ -121,7 +97,7 @@ public class RebrandingProd extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		if(txtSearchBar.getText().equals("Search by Product Name"))
+		if(txtSearchBar.getText().equals("Search by Owner Name, Brand"))
 			txtSearchBar.setText("");
 		txtSearchBar.setForeground(Color.BLACK);
 		txtSearchBar.setFocusable(true);
@@ -131,7 +107,7 @@ public class RebrandingProd extends JPanel implements MouseListener {
 	@Override
 	public void mouseExited(MouseEvent e) {
 		if(txtSearchBar.getText().equals("")) {
-			txtSearchBar.setText("Search by Product Name");
+			txtSearchBar.setText("Search by Owner Name, Brand");
 			txtSearchBar.setForeground(Color.GRAY);
 		}
 		txtSearchBar.setFocusable(false);
