@@ -29,18 +29,18 @@ public class AuditTrail extends JPanel implements MouseListener {
 	
 	public AuditTrail() {
 		setBackground(new Color(255, 255, 255));
-        this.setBounds(0, 0, 989, 699);
+		this.setBounds(0, 0, 989, 699);
         setLayout(null);
         
         JPanel panel = new JPanel();
         panel.setBorder(new LineBorder(new Color(0, 0, 0)));
         panel.setBackground(new Color(255, 255, 255));
-        panel.setBounds(10, 11, 969, 677);
+        panel.setBounds(0, 0, 989, 699);
         add(panel);
         panel.setLayout(null);
         
         JPanel panel_1 = new JPanel();
-        panel_1.setBounds(10, 11, 933, 70);
+        panel_1.setBounds(10, 11, 969, 70);
         panel_1.setLayout(null);
         panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
         panel_1.setBackground(Color.WHITE);
@@ -49,7 +49,7 @@ public class AuditTrail extends JPanel implements MouseListener {
         txtSearchBar = new JTextField();
         txtSearchBar.setText("Search by User, Actions");
         txtSearchBar.setForeground(Color.GRAY);
-        txtSearchBar.setBounds(648, 20, 230, 29);
+        txtSearchBar.setBounds(681, 20, 230, 29);
         txtSearchBar.addMouseListener(this);
         panel_1.add(txtSearchBar);
         
@@ -59,7 +59,7 @@ public class AuditTrail extends JPanel implements MouseListener {
         btnSearch.setFocusable(false);
         btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
         btnSearch.setBackground(Color.WHITE);
-        btnSearch.setBounds(878, 20, 32, 28);
+        btnSearch.setBounds(911, 20, 32, 28);
         panel_1.add(btnSearch);
         
         String Department[] = {"Marketing", "Production", "Warehouse"};
@@ -73,7 +73,7 @@ public class AuditTrail extends JPanel implements MouseListener {
         panel_1.add(dateChooser);
         
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(10, 92, 949, 574);
+        scrollPane.setBounds(10, 92, 969, 596);
         panel.add(scrollPane);
         
         table = new JTable();

@@ -54,6 +54,7 @@ import KBN.Module.Marketing.RebrandingProducts.AddProduct;
 import KBN.Module.Marketing.RebrandingProducts.ClientProducts;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
 import KBN.Module.Marketing.RebrandingProducts.panelGenerator;
+import KBN.Module.Marketing.ReturnProducts.ReturnDetails;
 import KBN.Module.Marketing.ReturnProducts.ReturnProductPanel;
 import KBN.Module.Marketing.dashboard.Dashboard;
 import KBN.Module.Marketing.dashboard.Dashboard1;
@@ -108,6 +109,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 	// Return Products
 	private ReturnProductPanel returnProd;
+	private ReturnDetails returnDetails;
 		
 	private ClientProducts clientProductList;
 	
@@ -265,6 +267,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
     	// Return Products
     	returnProd = new ReturnProductPanel();
+    	returnDetails = new ReturnDetails();
 		
 		custAccount = new CustomerAccount();
 		auditTrail = new AuditTrail();
@@ -563,6 +566,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rebrandingProd.btnSearch.addActionListener(this);
 		clientProductList.btnAdd.addActionListener(this);
 		
+		//Return Products
+		returnProd.btnUpdateStatus.addActionListener(this);
+		returnProd.btnView.addActionListener(this);
+		
 		//KBNProducts Panel
 		kbnProd.btnProducts.addActionListener(this);
 		kbnProd.btnArchive.addActionListener(this);
@@ -651,6 +658,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// Return Products
 		if(e.getSource() == btnReturnProducts)
 			returnProductFunc();
+		
+		if(e.getSource() == returnProd.btnView)
+			returnViewDetails();
 		
 		//inside Panel 
 		if(e.getSource() == custAccount.btnCreate)
@@ -2104,6 +2114,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			returnProd.setVisible(true);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error returnProductFunc: " + e.getMessage());
+		}
+	}
+	
+	private void returnViewDetails(){
+		try {
+			returnDetails.setVisible(true);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error returnViewDetails: " + e.getMessage());
 		}
 	}
 

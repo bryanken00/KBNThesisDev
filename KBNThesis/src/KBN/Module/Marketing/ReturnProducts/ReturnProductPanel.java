@@ -18,9 +18,11 @@ import javax.swing.JTable;
 
 public class ReturnProductPanel extends JPanel {
 	
-	private JTextField txtSearchBar;
+	public JTextField txtSearchBar;
 	public DefaultTableModel main;
-	private JTable table;
+	public JTable table;
+	public JButton btnView;
+	public JButton btnUpdateStatus;
 	
 	public ReturnProductPanel() {
 		setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -88,13 +90,13 @@ public class ReturnProductPanel extends JPanel {
         scrollPane.setBounds(10, 92, 969, 557);
         add(scrollPane);
         
-        JButton btnEdit = new JButton("View Details");
-        btnEdit.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-        btnEdit.setFocusable(false);
-        btnEdit.setBorder(new LineBorder(new Color(0, 0, 0)));
-        btnEdit.setBackground(Color.WHITE);
-        btnEdit.setBounds(839, 660, 140, 28);
-        add(btnEdit);
+        btnView = new JButton("View Details");
+        btnView.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+        btnView.setFocusable(false);
+        btnView.setBorder(new LineBorder(new Color(0, 0, 0)));
+        btnView.setBackground(Color.WHITE);
+        btnView.setBounds(839, 660, 140, 28);
+        add(btnView);
         
 
         table = new JTable();
@@ -106,11 +108,19 @@ public class ReturnProductPanel extends JPanel {
         };
         scrollPane.setViewportView(table);
         
+        btnUpdateStatus = new JButton("Update Status");
+        btnUpdateStatus.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+        btnUpdateStatus.setFocusable(false);
+        btnUpdateStatus.setBorder(new LineBorder(new Color(0, 0, 0)));
+        btnUpdateStatus.setBackground(Color.WHITE);
+        btnUpdateStatus.setBounds(10, 660, 140, 28);
+        add(btnUpdateStatus);
+        
         tableSetup();
 	}
 	
 	private void tableSetup() {
-		String[] columnDefaultData = {"Date Return", "Client Name", ""};
+		String[] columnDefaultData = {"Date Return", "Client Name", "Status"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 		table.setRowHeight(50);
