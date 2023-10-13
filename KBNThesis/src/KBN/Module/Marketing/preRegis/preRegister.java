@@ -44,6 +44,7 @@ public class preRegister extends JDialog implements ActionListener {
 	private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz1234567890";
 	private ArrayList arr;
 	private int random;
+	private String accountID;
 	
 	public preRegList preReg;
 	
@@ -186,13 +187,14 @@ public class preRegister extends JDialog implements ActionListener {
 					
 //					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "');";
 //					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"');";
-//					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';";
+					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';";
 //					st.execute(sqlCustAcc);
 //					st.execute(sqlCustAccInfo);
-//					st.execute(sqlUpdatePreReg);
+					st.execute(sqlUpdatePreReg);
 //					st.execute(sqlOrders);
-					
-					
+					String FullName = FN + " " + MI + " " + LN;
+					String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
+					st.execute(AuditTrail);
 					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
 				}else {
 					JOptionPane.showMessageDialog(null, "Please Complete the form");
@@ -201,6 +203,10 @@ public class preRegister extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(null, "ERROR Register: " + e1.getMessage());
 			}
 		}
+	}
+	
+	public void setAccountID(String id) {
+		this.accountID = id;
 	}
 	
 

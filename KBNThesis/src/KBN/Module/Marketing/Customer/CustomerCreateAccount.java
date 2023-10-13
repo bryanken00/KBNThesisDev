@@ -66,6 +66,8 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 	private JLabel lblAddress;
 	private JLabel lblWarning_1[];
 	
+	private String accountID;
+	
 	public CustomerCreateAccount() {
 		setResizable(false);
         setBounds(0, 0, 834, 487);
@@ -339,9 +341,12 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 					st.execute(sqlCustAcc);
 					st.execute(sqlCustAccInfo);
 //					st.execute(sqlOrders);
+					String FullName = FN + " " + MI + " " + LN;
+					String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
+					st.execute(AuditTrail);
 					JOptionPane.showMessageDialog(null, "Registration completed");
 					this.dispose();
-					
+					arr.clear();
 				}else {
 					JOptionPane.showMessageDialog(null, "Please complete the form");
 				}
@@ -351,6 +356,10 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 
 
 		}
+	}
+	
+	public void setAccountID(String id) {
+		this.accountID = id;
 	}
 
 	@Override

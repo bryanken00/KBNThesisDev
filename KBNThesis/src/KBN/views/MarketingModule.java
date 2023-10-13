@@ -735,6 +735,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public void mousePressed(MouseEvent e) {
 		if(e.getSource() == custAccount.lblNotif) {
 			noticListSetter();
+			preReg.setAccountID(accountID);
 			preReg.setVisible(true);
 		}
 		if(e.getSource() == kbnProd.table) {
@@ -2209,6 +2210,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 						
 					System.out.println(confirmationPanel.table.getValueAt(i, 2));
 				}
+				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Confirm Stock - TrackingID: " + TrackingID + "');";
+				st.execute(AuditTrail);
+				JOptionPane.showMessageDialog(null, "Stock Added!");
 				confirmationPanel.btnConfirm.setVisible(false);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Error confirmButtonFunc: " + e.getMessage());
@@ -2236,6 +2240,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " has been Approved");
 			else
 				JOptionPane.showMessageDialog(null, "Something wrong");
+			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Approved Order - Reference #: " + refNum + "');";
+			st.execute(AuditTrail);
 			panelDataSetter();
 			orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 		}catch (Exception e1) {
@@ -2341,6 +2347,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void custAccountCreateAccount() {
 		custCreateAccount.setVisible(true);
+		custCreateAccount.setAccountID(accountID);
 	}
 	
 	private void custAccountFunc() {
