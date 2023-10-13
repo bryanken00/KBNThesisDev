@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
@@ -16,7 +17,9 @@ import javax.swing.SwingConstants;
 import javax.swing.JTable;
 
 public class ReturnProductPanel extends JPanel {
+	
 	private JTextField txtSearchBar;
+	public DefaultTableModel main;
 	private JTable table;
 	
 	public ReturnProductPanel() {
@@ -81,12 +84,9 @@ public class ReturnProductPanel extends JPanel {
         btnAbsorb.setBounds(316, 21, 78, 28);
         panel_1.add(btnAbsorb);
         
-        JScrollPane panel = new JScrollPane();
-        panel.setBounds(10, 92, 969, 557);
-        add(panel);
-        
-        table = new JTable();
-        panel.setViewportView(table);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(10, 92, 969, 557);
+        add(scrollPane);
         
         JButton btnEdit = new JButton("View Details");
         btnEdit.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
@@ -95,5 +95,24 @@ public class ReturnProductPanel extends JPanel {
         btnEdit.setBackground(Color.WHITE);
         btnEdit.setBounds(839, 660, 140, 28);
         add(btnEdit);
+        
+
+        table = new JTable();
+        main = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        scrollPane.setViewportView(table);
+        
+        tableSetup();
+	}
+	
+	private void tableSetup() {
+		String[] columnDefaultData = {"Date Return", "Client Name", ""};
+		main.setColumnIdentifiers(columnDefaultData);
+		table.setModel(main);
+		table.setRowHeight(50);
 	}
 }

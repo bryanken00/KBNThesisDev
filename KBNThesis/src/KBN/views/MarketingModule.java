@@ -54,6 +54,7 @@ import KBN.Module.Marketing.RebrandingProducts.AddProduct;
 import KBN.Module.Marketing.RebrandingProducts.ClientProducts;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
 import KBN.Module.Marketing.RebrandingProducts.panelGenerator;
+import KBN.Module.Marketing.ReturnProducts.ReturnProductPanel;
 import KBN.Module.Marketing.dashboard.Dashboard;
 import KBN.Module.Marketing.dashboard.Dashboard1;
 import KBN.Module.Marketing.dashboard.DashboardSalesChartData;
@@ -104,6 +105,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		private int rebrandingClientCount = 0;
 	private AddProduct addProdRebranding;
 		private String rebrandingUserID = "";
+		
+	// Return Products
+	private ReturnProductPanel returnProd;
 		
 	private ClientProducts clientProductList;
 	
@@ -253,11 +257,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// KBNProducts
 		kbnProd = new KBNProducts();
 		
+		// Rebranding
 		rebrandingProd = new RebrandingProd();
 		rebrandingPanelGen = new panelGenerator();
     	clientProductList = new ClientProducts();
     	addProdRebranding = new AddProduct();
 		
+    	// Return Products
+    	returnProd = new ReturnProductPanel();
 		
 		custAccount = new CustomerAccount();
 		auditTrail = new AuditTrail();
@@ -641,6 +648,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == cancelOrderPanel.orderLPanel.btnSearch)
 			cancelorderPanelFuncSearch();
 		
+		// Return Products
+		if(e.getSource() == btnReturnProducts)
+			returnProductFunc();
+		
 		//inside Panel 
 		if(e.getSource() == custAccount.btnCreate)
 			custAccountCreateAccount();
@@ -874,6 +885,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		cancelOrderPanel.setVisible(false);
 		cp.setVisible(false);
 		confirmationPanel.setVisible(false);
+		returnProd.setVisible(false);
 	}
 	
 	private void defaultPanel() {
@@ -887,6 +899,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.add(cancelOrderPanel);
 		panelTab.add(cp);
 		panelTab.add(confirmationPanel);
+		panelTab.add(returnProd);
 		dashboard1.setVisible(true);
 	}
 	
@@ -2084,6 +2097,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
 		}
 	}
+	
+	private void returnProductFunc() {
+		try {
+			setVisiblePanel();
+			returnProd.setVisible(true);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error returnProductFunc: " + e.getMessage());
+		}
+	}
 
 	private void orderPanelFunc() {
 		setVisiblePanel();
@@ -2210,6 +2232,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			JOptionPane.showMessageDialog(null, "Error confirmClickData: " + e.getMessage());
 		}
 	}
+
 	
 	// Confirm Button - ConfirmationPanel
 	private void confirmButtonFunc() {
