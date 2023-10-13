@@ -21,6 +21,7 @@ public class preRegList extends JPanel {
 	
 	public preRegList() {
 		setLayout(null);
+		setBackground(Color.WHITE);
 		setBounds(0, 0, 260, 1000);
 	}
 	
@@ -50,6 +51,7 @@ public class preRegList extends JPanel {
 		if(i > 0)
 			y = 100*i;
 		panel[i] = new JPanel();
+		panel[i].setBackground(Color.WHITE);
 		panel[i].setBounds(0, y, 240, 100);
 		panel[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		panel[i].setLayout(null);

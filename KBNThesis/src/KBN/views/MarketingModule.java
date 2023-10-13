@@ -602,6 +602,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		// Confirmation Product
 		confirmationPanel.btnConfirm.addActionListener(this);
+		confirmListPanel.comboBox.addItemListener(this);
 		
 	}
 	
@@ -1901,6 +1902,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void KBNPanelFuncArchive() {
 		rightClick.btnArchive.setText("Restore");
 		kbnProdButtonChecker = "Archive";
+		kbnProd.btnArchive.setBackground(new Color(75, 119, 71));
+		kbnProd.btnArchive.setForeground(Color.WHITE);
+		kbnProd.btnProducts.setBackground(Color.WHITE);
+		kbnProd.btnProducts.setForeground(Color.BLACK);
 		setVisiblePanel();
 		kbnProd.main.setRowCount(0);
 		kbnProd.table.setModel(kbnProd.main);
@@ -1950,6 +1955,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void KBNPanelFunc() {
 		rightClick.btnArchive.setText("Archive");
 		kbnProdButtonChecker = "Products";
+		kbnProd.btnProducts.setBackground(new Color(75, 119, 71));
+		kbnProd.btnProducts.setForeground(Color.WHITE);
+		kbnProd.btnArchive.setBackground(Color.WHITE);
+		kbnProd.btnArchive.setForeground(Color.BLACK);
 		setVisiblePanel();
 		kbnProd.main.setRowCount(0);
 		kbnProd.table.setModel(kbnProd.main);
@@ -2162,6 +2171,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		ConfirmProductPanelRemoveMouseListeners();
 		confirmationCounter();
 	}
+	
 	private void ConfirmProductPanelRemoveMouseListeners() {
 		if(confirmationCounter > 0) {
 		    for (int i = 0; i < confirmationCounter; i++) {
@@ -2198,8 +2208,62 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblconfirmationtracking AS a \n"
 					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
 					+ "GROUP BY a.TrackingID;";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				confirmListPanelData.TrackingID[i] = rs.getString(1);
+				confirmListPanelData.lblDate[i].setText(rs.getString(2));
+				confirmListPanelData.lblOrderStatus[i].setText(rs.getString(3));
+				confirmListPanelData.lblTotalProducts[i].setText(rs.getString(4));
+				confirmListPanelData.lblTotalItems[i].setText(rs.getString(5));
+				i++;
+			}
 
-			System.out.println(SQL);
+			ConfirmPanelAddActionlist();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error confirmationCounter: " + e.getMessage());
+		}
+	}
+	
+	private void confirmationCounterCategory() {
+		try {
+			String cat = "";
+			if(confirmListPanel.comboBox.getSelectedIndex() == 0){
+				confrimationPanelFunc();
+				return;
+			}
+			else
+				cat = confirmListPanel.comboBox.getSelectedItem() + "";
+			String SQLCounter = "SELECT COUNT(a.TrackingID) \n"
+					+ "FROM tblconfirmationtracking AS a \n"
+					+ "WHERE a.Status = '" + cat + "';";
+			
+			st.execute(SQLCounter);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				confirmationCounter = rs.getInt(1);
+			
+			confirmListPanelData = new ConfirmationListPanelData();
+			confirmListPanel.scrollPane.setViewportView(confirmListPanelData);
+			
+			confirmListPanelData.iConfirmationCount(confirmationCounter);
+			
+			ConfirmPanelSetDataCategory(cat);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error confirmationCounter: " + e.getMessage());
+		}
+	}
+	
+	private void ConfirmPanelSetDataCategory(String cat) {
+		try {
+			String SQL = "SELECT a.TrackingID, a.DateAdded, a.Status, COUNT(b.TrackingID), SUM(b.ProductQuantity) \n"
+					+ "FROM tblconfirmationtracking AS a \n"
+					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
+					+ "WHERE a.Status = '" + cat + "' \n"
+					+ "GROUP BY a.TrackingID;";
+			
 			st.execute(SQL);
 			rs = st.getResultSet();
 			int i = 0;
@@ -3146,8 +3210,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		delStatus.setVisible(true);
 		delStatus.panel1.add(dTB1);
 		delStatus.panel1.remove(dTB2);
-		delStatus.btnListOfDelivery.setBackground(new Color(8,104,0,255));
-		delStatus.btnCompleted.setBackground(new Color(255,255,255,255));
+		delStatus.btnListOfDelivery.setBackground(new Color(75, 119, 71));
+		delStatus.btnListOfDelivery.setForeground(Color.WHITE);
+		delStatus.btnCompleted.setBackground(Color.WHITE);
+		delStatus.btnCompleted.setForeground(Color.BLACK);
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
@@ -3190,8 +3256,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		delStatus.panel1.add(dTB2);
 		delStatus.panel1.remove(dTB1);
-		delStatus.btnListOfDelivery.setBackground(new Color(255,255,255,255));
-		delStatus.btnCompleted.setBackground(new Color(8,104,0,255));
+		delStatus.btnCompleted.setBackground(new Color(75, 119, 71));
+		delStatus.btnCompleted.setForeground(Color.WHITE);
+		delStatus.btnListOfDelivery.setBackground(Color.WHITE);
+		delStatus.btnListOfDelivery.setForeground(Color.BLACK);
 		
 		try {
 			dTB2.main.setRowCount(0);
@@ -3307,6 +3375,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			} catch (Exception e2) {
 				JOptionPane.showMessageDialog(null, "Error cancelOrderPanel.cbCategory: " + e2.getMessage());
 			}
+		}
+		if(e.getSource() == confirmListPanel.comboBox){
+			setVisiblePanel();
+			confirmationPanel.setVisible(true);
+			ConfirmProductPanelRemoveMouseListeners();
+			confirmationCounterCategory();
 		}
 		
 	}

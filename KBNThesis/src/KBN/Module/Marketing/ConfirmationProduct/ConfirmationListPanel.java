@@ -19,7 +19,7 @@ import javax.swing.JComboBox;
 public class ConfirmationListPanel extends JPanel{
 	
 	public JScrollPane scrollPane;
-	private JComboBox comboBox;
+	public JComboBox comboBox;
 	
 	public ConfirmationListPanel() {
 		setBackground(new Color(255, 255, 255));
@@ -38,7 +38,7 @@ public class ConfirmationListPanel extends JPanel{
 		add(panel);
 		panel.setLayout(null);
 
-		String[] status = {"Pending", "Completed"};
+		String[] status = {"All", "Pending", "Completed"};
 		comboBox = new JComboBox(status);
 		comboBox.setBounds(10, 11, 183, 23);
 		panel.add(comboBox);

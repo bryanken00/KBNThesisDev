@@ -60,8 +60,8 @@ public class DeliveryStatus extends JPanel implements MouseListener{
 		
 		btnListOfDelivery = new JButton("List of Delivery");
 		btnListOfDelivery.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnListOfDelivery.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnListOfDelivery.setFocusable(false);
-		btnListOfDelivery.setBorderPainted(false);
 		btnListOfDelivery.setBackground(Color.WHITE);
 		btnListOfDelivery.setBounds(10, 20, 174, 29);
 		btnListOfDelivery.setOpaque(true);
@@ -69,8 +69,8 @@ public class DeliveryStatus extends JPanel implements MouseListener{
 		
 		btnCompleted = new JButton("Completed");
 		btnCompleted.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnCompleted.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnCompleted.setFocusable(false);
-		btnCompleted.setBorderPainted(false);
 		btnCompleted.setBackground(Color.WHITE);
 		btnCompleted.setBounds(226, 20, 174, 29);
 		btnCompleted.setOpaque(true);
