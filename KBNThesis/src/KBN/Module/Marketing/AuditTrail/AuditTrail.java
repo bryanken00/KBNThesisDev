@@ -13,16 +13,19 @@ import javax.swing.JTable;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 
-public class AuditTrail extends JPanel {
+public class AuditTrail extends JPanel implements MouseListener {
 	public DefaultTableModel main;
-	private JTextField textField;
-	private JTable table;
+	private JTextField txtSearchBar;
+	public JTable table;
 	
 	public AuditTrail() {
 		setBackground(new Color(255, 255, 255));
@@ -43,11 +46,12 @@ public class AuditTrail extends JPanel {
         panel_1.setBackground(Color.WHITE);
         panel.add(panel_1);
         
-        textField = new JTextField();
-        textField.setText("Search by CourierID or Ref Number");
-        textField.setForeground(Color.GRAY);
-        textField.setBounds(648, 20, 230, 29);
-        panel_1.add(textField);
+        txtSearchBar = new JTextField();
+        txtSearchBar.setText("Search by User, Actions");
+        txtSearchBar.setForeground(Color.GRAY);
+        txtSearchBar.setBounds(648, 20, 230, 29);
+        txtSearchBar.addMouseListener(this);
+        panel_1.add(txtSearchBar);
         
         JButton btnSearch = new JButton("");
         btnSearch.setIcon(new ImageIcon(AuditTrail.class.getResource("/KBN/resources/SearchBarUniversal.png")));
@@ -73,7 +77,12 @@ public class AuditTrail extends JPanel {
         panel.add(scrollPane);
         
         table = new JTable();
-		main = new DefaultTableModel();
+        main = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+        };
         scrollPane.setViewportView(table);
         
         tableSetup();
@@ -83,10 +92,61 @@ public class AuditTrail extends JPanel {
 		String[] columnDefaultData = {"Time & Date", "User", "Actions"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
-		table.setRowHeight(30);
+		table.setRowHeight(50);
 		
 		TableColumnModel columnModel = table.getColumnModel();
-		TableColumn column = columnModel.getColumn(0);
-	    column.setPreferredWidth(20);
+		TableColumn column2 = columnModel.getColumn(2);
+		column2.setPreferredWidth(300);
+		TableColumn column0 = columnModel.getColumn(0);
+		column0.setCellRenderer(new CenteredTableCellRenderer());
+
+		TableColumn column1 = columnModel.getColumn(1);
+		column1.setCellRenderer(new CustomTableCellRenderer());
+	    
+	    Font tableFont = new Font("Arial", Font.PLAIN, 14);
+	    table.setFont(tableFont);
+	    
+        int headerRowHeight = 40;
+        table.getTableHeader().setPreferredSize(new java.awt.Dimension(100, headerRowHeight));
+
+        Font headerFont = new Font("Arial", Font.BOLD, 14); // Customize the font as needed
+        table.getTableHeader().setFont(headerFont);
+        
+        table.getTableHeader().setBackground(Color.WHITE);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if(txtSearchBar.getText().equals("Search by User, Actions"))
+			txtSearchBar.setText("");
+		txtSearchBar.setForeground(Color.BLACK);
+		txtSearchBar.setFocusable(true);
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if(txtSearchBar.getText().equals("")) {
+			txtSearchBar.setText("Search by User, Actions");
+			txtSearchBar.setForeground(Color.GRAY);
+		}
+		txtSearchBar.setFocusable(false);
 	}
 }

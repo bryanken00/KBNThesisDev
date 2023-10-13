@@ -1955,9 +1955,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rebrandingPanelGen = new panelGenerator();
 		rebrandingProd.scrollPane.setViewportView(rebrandingPanelGen);
 		
-		String SQLCounter = "SELECT COUNT(DISTINCT b.userID) \n"
-				+ "FROM tblrebrandingproducts AS b \n"
-				+ "WHERE b.userID IN (SELECT DISTINCT a.UserID FROM tblcustomerinformation AS a);";
+		String SQLCounter = "SELECT COUNT(userID) \n"
+				+ "FROM tblcustomerinformation \n"
+				+ "WHERE AccountType = 'Rebranding';";
 		
 		try {
 			st.execute(SQLCounter);
@@ -1976,10 +1976,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void rebrandingSettingUpPanelData() {
 		try {
-			String sql = "SELECT a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS Name, b.Description , COUNT(a.prodName) \n"
-			+ "FROM tblrebrandingproducts AS a \n"
-			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID "
-			+ "GROUP BY a.userID;";
+			String sql = "SELECT b.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS Name, b.Description, IFNULL(COUNT(a.prodName), 0) AS ProductCount \n"
+					+ "FROM tblcustomerinformation AS b \n"
+					+ "LEFT JOIN tblrebrandingproducts AS a ON b.UserID = a.userID \n"
+					+ "WHERE b.AccountType = 'Rebranding' \n"
+					+ "GROUP BY b.userID";
 
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -2059,7 +2060,26 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		auditTrail.setVisible(true);
 		
 		try {
-			String SQL = "";
+			auditTrail.main.setRowCount(0);
+			String SQL = "SELECT DATE_FORMAT(a.DateAction, '%Y-%m-%d') AS formatted_date, \n"
+					+ "       DATE_FORMAT(a.DateAction, '%h:%i %p') AS formatted_time, \n"
+					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
+					+ "       a.Description \n"
+					+ "FROM audittrailmarketing As a \n"
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+			st.execute(SQL);
+			ArrayList temp = new ArrayList<>();
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				String formattedText = "<html><center>" + rs.getString(1) + "<br>" + rs.getString(2) + "</center></html>";
+//				temp.add(rs.getString(1) + ", " + rs.getString(2));
+				temp.add(formattedText);
+				temp.add(rs.getString(3));
+				temp.add(rs.getString(4));
+				auditTrail.main.addRow(temp.toArray());
+				temp.clear();
+			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
 		}

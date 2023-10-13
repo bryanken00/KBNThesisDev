@@ -160,7 +160,7 @@ public class preRegister extends JDialog implements ActionListener {
 					String Description = reg.txtBrand.getText();
 					String Email = reg.txtEmail.getText();
 					String accType = reg.cbAccType.getSelectedItem().toString();
-					if(accType.equals("Rebranding"))
+					if(!accType.equals("Rebranding"))
 						accType = "";
 					
 					String createAccount = "CREATE PROCEDURE CreateAccountWithRollback()\r\n"

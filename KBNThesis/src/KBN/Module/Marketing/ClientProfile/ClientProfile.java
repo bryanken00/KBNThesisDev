@@ -204,14 +204,14 @@ public class ClientProfile extends JPanel {
 		
 		lblBrand = new JLabel("Brand");
 		lblBrand.setHorizontalAlignment(SwingConstants.LEFT);
-		lblBrand.setFont(new Font("Tahoma", Font.BOLD, 15));
-		lblBrand.setBounds(264, 11, 244, 31);
+		lblBrand.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblBrand.setBounds(350, 11, 244, 31);
 		panelClientProfile.add(lblBrand);
 		
 		lblDetails = new JLabel("Client Details");
 		lblDetails.setHorizontalAlignment(SwingConstants.LEFT);
-		lblDetails.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblDetails.setBounds(10, 53, 244, 81);
+		lblDetails.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblDetails.setBounds(10, 38, 330, 96);
 		panelClientProfile.add(lblDetails);
 		
 		JPanel panelDiscount = new JPanel();
@@ -243,6 +243,12 @@ public class ClientProfile extends JPanel {
 		lblDiscount.setIcon(new ImageIcon(ClientProfile.class.getResource("/KBN/resources/Marketing/dashboard/PercentagePNG/0.png")));
 		lblDiscount.setBounds(68, 38, 74, 74);
 		panelDiscount.add(lblDiscount);
+		
+		JLabel lblBrand_2 = new JLabel("Brand:");
+		lblBrand_2.setHorizontalAlignment(SwingConstants.LEFT);
+		lblBrand_2.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblBrand_2.setBounds(264, 11, 63, 31);
+		panelClientProfile.add(lblBrand_2);
 		
 		panelProducts = new JPanel();
 		panelProducts.setBackground(new Color(255, 255, 255));
