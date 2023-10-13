@@ -2198,7 +2198,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "FROM tblconfirmationtracking AS a \n"
 					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
 					+ "GROUP BY a.TrackingID;";
-			
+
+			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
 			int i = 0;
@@ -2297,12 +2298,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        orderPanel.table.setModel(orderPanel.main);
 			String sql = "UPDATE tblorderstatus SET Status = 'Approved' WHERE OrderRefNumber = '" + refNum + "';";
 			int i = st.executeUpdate(sql);
-			if(i == 1)
+			if(i == 1) {
+				String SQLApprovedBy = "INSERT INTO tblorderapproved(OrderRefNumber,ApprovedBy) VALUES('" + refNum + "','" + accountID + "');";
+				st.execute(SQLApprovedBy);
+				String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Approved Order - Reference #: " + refNum + "');";
+				st.execute(AuditTrail);
 				JOptionPane.showMessageDialog(null, "Reference #: " + refNum + " has been Approved");
+			}
 			else
 				JOptionPane.showMessageDialog(null, "Something wrong");
-			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Approved Order - Reference #: " + refNum + "');";
-			st.execute(AuditTrail);
 			panelDataSetter();
 			orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 		}catch (Exception e1) {
