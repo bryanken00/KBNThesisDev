@@ -120,7 +120,7 @@ public class ReturnProductPanel extends JPanel {
 	}
 	
 	private void tableSetup() {
-		String[] columnDefaultData = {"Date Return", "Client Name", "Status"};
+		String[] columnDefaultData = {"Reference Number", "Date Return", "Client Name", "Status"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 		table.setRowHeight(50);

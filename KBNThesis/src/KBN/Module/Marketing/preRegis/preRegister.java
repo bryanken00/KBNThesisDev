@@ -28,6 +28,7 @@ import KBN.Module.Marketing.OrderingPanel.OrderListPanel;
 import KBN.Module.Marketing.OrderingPanel.OrderListPanelData;
 import KBN.commons.DbConnection;
 import KBN.views.MarketingModule;
+import javax.swing.border.LineBorder;
 
 public class preRegister extends JDialog implements ActionListener {
 	private JScrollPane scrollPane;
@@ -49,6 +50,7 @@ public class preRegister extends JDialog implements ActionListener {
 	public preRegList preReg;
 	
 	public preRegister() {
+		getContentPane().setBackground(new Color(255, 255, 255));
 		setResizable(false);
 		setModal(true);
 		setBounds(100, 100, 1132, 536);
@@ -77,7 +79,7 @@ public class preRegister extends JDialog implements ActionListener {
 		scrollPane.setViewportView(preReg);
 		
 		panel = new JPanel();
-		panel.setBounds(276, 5, 834, 487);
+		panel.setBounds(276, 0, 834, 497);
 		getContentPane().add(panel);
 		
 		
@@ -85,6 +87,9 @@ public class preRegister extends JDialog implements ActionListener {
 		dbConn = new DbConnection();
 		panel.setLayout(null);
 		reg = new Registration();
+		reg.setBorder(new LineBorder(new Color(0, 0, 0)));
+		reg.setBounds(0, 0, 834, 497);
+		reg.setBackground(new Color(255, 255, 255));
         arr = new ArrayList<>();
 		panel.add(reg);
 		

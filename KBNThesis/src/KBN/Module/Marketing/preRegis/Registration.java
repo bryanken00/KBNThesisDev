@@ -5,6 +5,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 import java.awt.Color;
@@ -28,6 +29,7 @@ public class Registration extends JPanel {
 	
 	public Registration() {
 		setBounds(0, 0, 834, 487);
+		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Create Account");
@@ -108,7 +110,6 @@ public class Registration extends JPanel {
 		btnRegister = new JButton("Register");
 		btnRegister.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnRegister.setFocusable(false);
-		btnRegister.setBorderPainted(false);
 		btnRegister.setBackground(Color.WHITE);
 		btnRegister.setBounds(676, 39, 120, 28);
 		add(btnRegister);
@@ -116,7 +117,7 @@ public class Registration extends JPanel {
 		btnGeneratePass = new JButton("Generate Password");
 		btnGeneratePass.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnGeneratePass.setFocusable(false);
-		btnGeneratePass.setBorderPainted(false);
+		btnGeneratePass.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnGeneratePass.setBackground(Color.WHITE);
 		btnGeneratePass.setBounds(24, 397, 224, 28);
 		add(btnGeneratePass);

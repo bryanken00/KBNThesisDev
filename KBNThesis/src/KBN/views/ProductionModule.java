@@ -15,6 +15,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -72,6 +73,10 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			// Acc Level
 			private String AccountLevel = "";
 			private String userName = "";
+			
+			
+		// Checker
+			private JButton btnChecker;
 
 	private JPanel contentPane;
 	private JPanel panelNav;
@@ -134,7 +139,6 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         KBNDetailsData = new KBNDataViewDetailsData();
         
 
-        
         
         
         panelNav.add(nav);
@@ -211,12 +215,21 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.btnKBNProduct.setForeground(new Color(255, 255,255));
         defaultPanel();
         kbnMain.setVisible(true);
+        btnChecker = nav.btnKBNProduct;
         kbnData = new KBNData();
         kbnMain.container.setViewportView(kbnData);
         kbnDataCounter_();
         kbnDataButtons();
         kbnDataPanelGenerator();
         
+	}
+	
+	private void rebrandingFunc() {
+		try {
+			
+		} catch (Exception e) {
+			JMessage("Error rebrandingFunc: " + e.getMessage());
+		}
 	}
 	
 	private void kbnDataCounter_() {
@@ -399,6 +412,9 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		// Navs
 			if(e.getSource() == nav.btnKBNProduct)
 				kbnDataFunc();
+			
+			if(e.getSource() == nav.btnRebrandingProduct)
+				rebrandingFunc();
 			
 			if(e.getSource() == nav.btnRebrandingProduct) {
 				navColor();
