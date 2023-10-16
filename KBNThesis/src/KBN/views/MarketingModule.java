@@ -320,7 +320,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		chartdataSetter();
 		dashboard1();
 		btnChecker = btnDashboard;
-		preRegCounter();
 		preRegStatus();
 		
 		marketingButtons();
@@ -760,6 +759,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(e.getSource() == custAccount.lblNotif) {
+			preReg = new preRegister();
+			preRegCounter();
 			noticListSetter();
 			preReg.setAccountID(accountID);
 			preReg.setVisible(true);
@@ -2087,8 +2088,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void custAccPanelFunc() {
 		setVisiblePanel();
-		custAccount.setVisible(true);
+		preRegCounter();
         custAccountFunc();
+		custAccount.setVisible(true);
 	}
 	
 	private void AuditPanelFunc() {
@@ -2985,11 +2987,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         preRegStatus();
 
         // Pre Reg
-        if (clickedComponent instanceof JPanel) {
-            for (int i = 0; i < rowCount; i++) {
-                if (clickedComponent == preReg.preReg.panel[i]) {
-                    preRegDataSetter(i);
-                    return;
+        if(preReg.preReg.panel != null) {
+            if (clickedComponent instanceof JPanel) {
+                for (int i = 0; i < rowCount; i++) {
+                    if (clickedComponent == preReg.preReg.panel[i]) {
+                        preRegDataSetter(i);
+                        return;
+                    }
                 }
             }
         }
@@ -3197,6 +3201,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        int TotalDiscount = 0;
 	        int TotalAmount = 0;
 	        while(rs.next()) {
+	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	            Date date = inputFormat.parse(rs.getString(2));
 	            String outputDate = outputFormat.format(date);
 	            cancelOrderPanel.lblOrderD.setText(outputDate);
@@ -3213,7 +3219,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        	cancelOrderPanel.main.addRow(tableData.toArray());
 	        	tableData.clear();
 	        	TotalQuantity += Integer.parseInt(rs.getString(4));
-	        	TotalDiscount += Integer.parseInt(rs.getString(8));
+	        	double discount = Double.parseDouble(rs.getString(8));
+	        	TotalDiscount += discount;
 	        	TotalAmount += Integer.parseInt(rs.getString(6));
 	        }
 	        
@@ -3325,6 +3332,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rs = st.getResultSet();
 			while(rs.next()) {
 				//Date
+	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	            Date date = inputFormat.parse(rs.getString(1));
 	            String outputDate = outputFormat.format(date);
 				arrDelList.add(outputDate);
@@ -3373,6 +3382,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rs = st.getResultSet();
 			while(rs.next()) {
 				//Date
+	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	            Date date = inputFormat.parse(rs.getString(1));
 	            String outputDate = outputFormat.format(date);
 				arrDelList.add(outputDate);
@@ -3417,6 +3428,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rs = st.getResultSet();
 			while(rs.next()) {
 				//Date
+	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	            Date date = inputFormat.parse(rs.getString(1));
 	            String outputDate = outputFormat.format(date);
 				arrDelList.add(outputDate);

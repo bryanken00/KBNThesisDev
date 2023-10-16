@@ -138,7 +138,7 @@ public class preRegister extends JDialog implements ActionListener {
 				String ID = mModule.regID;
 				st = dbConn.getConnection().createStatement();
 				st.execute("DROP PROCEDURE IF EXISTS `CreateAccountWithRollback`;");
-				String sql = "SELECT Username FROM tblCustomerAccount;";
+				String sql = "SELECT Username FROM tblcustomeraccount;";
 				st.execute(sql);
 				rs = st.getResultSet();
 				
@@ -198,7 +198,7 @@ public class preRegister extends JDialog implements ActionListener {
 					st.execute(sqlUpdatePreReg);
 //					st.execute(sqlOrders);
 					String FullName = FN + " " + MI + " " + LN;
-					String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
+					String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
 					st.execute(AuditTrail);
 					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
 				}else {

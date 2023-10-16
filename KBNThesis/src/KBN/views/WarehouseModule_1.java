@@ -360,6 +360,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		rawMats.main.setRowCount(0);
 		rawMats.revalidate();
 		arrSQLResult = new ArrayList<>();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			st.execute(sql);
 			rs = st.getResultSet();
@@ -395,6 +397,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			st = dbConn.getConnection().createStatement();
 			st.execute(sql);
 			rs = st.getResultSet();
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
 			while(rs.next()) {
 				arrSQLResult.add(rs.getString(1));
 				arrSQLResult.add(rs.getString(2));
@@ -779,7 +783,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         
         try {	        
 	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
-	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "FROM tblordercheckout AS a \n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
 	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled';";
 	        st.execute(sqlCount);
@@ -790,18 +794,18 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        procOrderData.OrderCounter(processOrder);
 	        
 //	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price) \n"
-//	        		+ "FROM tblOrderCheckout AS a \n"
+//	        		+ "FROM tblordercheckout AS a \n"
 //	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
 //	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
-//	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+//	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
 //	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
 //	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
 	        
 	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price), CONCAT(f.FirstName, ' ', f.LastName) AS Name\r\n"
-	        		+ "FROM tblOrderCheckout AS a \r\n"
+	        		+ "FROM tblordercheckout AS a \r\n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
+	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
 	        		+ "JOIN tblorderapproved AS e On a.OrderRefNumber = e.OrderRefNumber\r\n"
 	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
 	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \r\n"
@@ -838,7 +842,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         
         try {	        
 	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
-	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "FROM tblordercheckout AS a \n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
 	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.OrderRefNumber LIKE '%" + ref + "%';";
 	        st.execute(sqlCount);
@@ -848,10 +852,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        
 	        procOrderData.OrderCounter(processOrder);
 	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price), CONCAT(f.FirstName, ' ', f.LastName) AS Name\r\n"
-	        		+ "FROM tblOrderCheckout AS a \r\n"
+	        		+ "FROM tblordercheckout AS a \r\n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
+	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
 	        		+ "JOIN tblorderapproved AS e ON a.OrderRefNumber = e.OrderRefNumber\r\n"
 	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
 	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND a.OrderRefNumber LIKE '%" + ref + "%' \r\n"
@@ -885,7 +889,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         
         try {	        
 	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
-	        		+ "FROM tblOrderCheckout AS a \n"
+	        		+ "FROM tblordercheckout AS a \n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
 	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.status = '" + cat + "';";
 	        st.execute(sqlCount);
@@ -896,10 +900,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        procOrderData.OrderCounter(processOrder);
 	        
 	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price), CONCAT(f.FirstName, ' ', f.LastName) AS Name\r\n"
-	        		+ "FROM tblOrderCheckout AS a \r\n"
+	        		+ "FROM tblordercheckout AS a \r\n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblOrderCheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
+	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
 	        		+ "JOIN tblorderapproved AS e ON a.OrderRefNumber = e.OrderRefNumber\r\n"
 	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
 	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.status = '" + cat + "' \r\n"

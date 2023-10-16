@@ -344,7 +344,7 @@ public class ProductDetails extends JDialog implements ActionListener{
 					+ howtouse + "');";
 			
 			st.execute(SQLInsert);
-			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product Added - " + prodName + "(" + prodVol + ")');";
+			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product Added - " + prodName + "(" + prodVol + ")');";
 			st.execute(AuditTrail);
 			JOptionPane.showMessageDialog(null, "Product Added!");
 			clearInputs();
@@ -381,7 +381,7 @@ public class ProductDetails extends JDialog implements ActionListener{
 					+ "WHERE prodID = '" + prodID + "';";
 			
 			st.execute(SQLUpdate);
-			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product - Update " + prodName + "(" + prodVol + ")');";
+			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product - Update " + prodName + "(" + prodVol + ")');";
 			st.execute(AuditTrail);
 			JOptionPane.showMessageDialog(null, "Product Updated!");
 			clearInputs();

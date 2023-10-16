@@ -124,6 +124,7 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		
 		try {
 			st = dbCon.getConnection().createStatement();
+			dbCon.getConnection().setAutoCommit(false);
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "SQL Connection");
 		}
@@ -480,68 +481,79 @@ public class Cashier extends JFrame implements ActionListener, MouseListener{
 		}
 		
 	}
+	
+	private void payNow() throws SQLException {
+		try {
+			//Genarating RefNumber
+			String ref = "";
+			String sqlRefGen = "SELECT COUNT(OrderRefNumber) FROM tblorderstatus";
+			st.execute(sqlRefGen);
+			rs = st.getResultSet();
+			if(rs.next())
+				ref = "ref" + (rs.getInt(1) + 1);
+			
+			int rowCount = 0;
+			int rowCount1 = 0;
+			int rowCount2 = 0;
+			int rowCount3 = 0;
+
+			for(int i = 0; i < arr.size(); i++) {
+				// Inserting products on tblordercheckoutdata,
+				String prodName = pOrderList.lblProdName[i].getText();
+				String prodVolume = pOrderList.prodVolume[i];
+				String prodQuantity = pOrderList.lblQuantity[i].getText();
+//				String prodPrice = pOrderList.lblPrice[i].getText();
+				
+	            String sqlKBN = "INSERT INTO tblordercheckoutdata(OrderRefNumber,ProductName, volume, Quantity, Price) " +
+                        "SELECT '" + ref + "', prodName, prodVolume, " + prodQuantity + ", prodPrice " +
+                        "FROM tblproducts " +
+                        "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
+//	            System.out.println(sqlKBN);
+	            rowCount = st.executeUpdate(sqlKBN);
+	            
+	            // setting up product stock on tblProducts
+	            String sqlUpdate = "UPDATE tblproducts "
+	            		+ "SET Quantity = Quantity - " + prodQuantity + ", "
+	            		+ "Sold = Sold + " + prodQuantity + " "
+	            		+ "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
+//	            System.out.println(sqlUpdate);
+	            
+	            rowCount1 = st.executeUpdate(sqlUpdate);
+	            
+			}
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String date = dateFormat.format(new Date());
+//			System.out.println(date);
+			
+			String sql2 = "INSERT INTO tblordercheckout(OrderRefNumber, OrderDate, UserID, address, contact, email) VALUES ('" + ref + "','" + date + "','Cashier Walk-In','Walk-IN','00000000000','Walk-IN@gmail.com')";
+			rowCount2 = st.executeUpdate(sql2);
+			String sqlFinal = "INSERT INTO tblorderstatus VALUES('" + ref + "','Completed')";
+			rowCount3 = st.executeUpdate(sqlFinal);
+			
+			if(rowCount != 0 && rowCount1 !=0 && rowCount2 !=0 && rowCount3 !=0) {
+				JOptionPane.showMessageDialog(null, "Order Completed");
+				pOrderList = new orderListPanel();
+				panelOrderList.setViewportView(pOrderList);
+				arr.clear();
+				orderListClickCount = 0;
+			}
+			
+			dbCon.getConnection().commit();
+		} catch (SQLException e2) {
+			dbCon.getConnection().rollback();
+			JOptionPane.showMessageDialog(null, "btnPayERROR: " + e2.getMessage());
+		}
+	}
 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == lower.btnPay) {
 			try {
-				//Genarating RefNumber
-				String ref = "";
-				String sqlRefGen = "SELECT COUNT(OrderRefNumber) FROM tblorderstatus";
-				st.execute(sqlRefGen);
-				rs = st.getResultSet();
-				if(rs.next())
-					ref = "ref" + (rs.getInt(1) + 1);
-				
-				int rowCount = 0;
-				int rowCount1 = 0;
-				int rowCount2 = 0;
-				int rowCount3 = 0;
-				
-				for(int i = 0; i < arr.size(); i++) {
-					// Inserting products on tblordercheckoutdata,
-					String prodName = pOrderList.lblProdName[i].getText();
-					String prodVolume = pOrderList.prodVolume[i];
-					String prodQuantity = pOrderList.lblQuantity[i].getText();
-//					String prodPrice = pOrderList.lblPrice[i].getText();
-					
-		            String sqlKBN = "INSERT INTO tblordercheckoutdata(OrderRefNumber,ProductName, volume, Quantity, Price) " +
-	                        "SELECT '" + ref + "', prodName, prodVolume, " + prodQuantity + ", prodPrice " +
-	                        "FROM tblproducts " +
-	                        "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
-//		            System.out.println(sqlKBN);
-		            rowCount = st.executeUpdate(sqlKBN);
-		            
-		            // setting up product stock on tblProducts
-		            String sqlUpdate = "UPDATE tblProducts "
-		            		+ "SET Quantity = Quantity - " + prodQuantity + ", "
-		            		+ "Sold = Sold + " + prodQuantity + " "
-		            		+ "WHERE prodName = '" + prodName + "' AND prodVolume = '" + prodVolume + "'";
-//		            System.out.println(sqlUpdate);
-		            
-		            rowCount1 = st.executeUpdate(sqlUpdate);
-		            
-				}
-				
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				String date = dateFormat.format(new Date());
-//				System.out.println(date);
-				
-				String sql2 = "INSERT INTO tblordercheckout(OrderRefNumber, OrderDate, UserID, address, contact, email) VALUES ('" + ref + "','" + date + "','Cashier Walk-In','Walk-IN','00000000000','Walk-IN@gmail.com')";
-				rowCount2 = st.executeUpdate(sql2);
-				String sqlFinal = "INSERT INTO tblorderstatus VALUES('" + ref + "','Completed')";
-				rowCount3 = st.executeUpdate(sqlFinal);
-				
-				if(rowCount != 0 && rowCount1 !=0 && rowCount2 !=0 && rowCount3 !=0) {
-					JOptionPane.showMessageDialog(null, "Order Completed");
-					pOrderList = new orderListPanel();
-					panelOrderList.setViewportView(pOrderList);
-					arr.clear();
-					orderListClickCount = 0;
-				}
-			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(null, "btnPayERROR: " + e2.getMessage());
+				payNow();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
 		}	
 	}

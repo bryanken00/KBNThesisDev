@@ -203,7 +203,7 @@ public class AddProduct extends JDialog implements ActionListener {
 	public void renderCategories() {
 		try {
 			cbCategory.removeAllItems();
-			String SQL = "SELECT DISTINCT prodCategory FROM tblrebrandingproducts WHERE userID = '" + rebrandingID + "'";
+			String SQL = "SELECT DISTINCT prodcategory FROM tblrebrandingproducts WHERE userID = '" + rebrandingID + "'";
 			ArrayList<String> temp = new ArrayList<>();
 			
 			st.execute(SQL);
@@ -369,7 +369,7 @@ public class AddProduct extends JDialog implements ActionListener {
 			String SQLInsert = "INSERT INTO tblrebrandingproducts(userID, prodImg, prodName, prodVolume, prodPrice, prodCategory, Sold) "
 					+ "VALUES('" + rebrandingID + "','" + imgPath + "','" + prodName + "','" + prodVariant + "','" + prodPrice + "','" + productCategory + "','0');";
 			st.execute(SQLInsert);
-			String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + dataSet.getAccountID() + "','Rebranding Add Product to " + rebrandingID + " - " + sqlProdName + "');";
+			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + dataSet.getAccountID() + "','Rebranding Add Product to " + rebrandingID + " - " + sqlProdName + "');";
 			st.execute(AuditTrail);
 			JOptionPane.showMessageDialog(null, "Product Added!");
 			
