@@ -48,6 +48,8 @@ public class AddItemProduction extends JDialog implements ActionListener {
 	public String checker = "Not-Verified";
 	public JCheckBox closeChecker;
 	
+	public String btnChecker;
+	
 	public AddItemProduction() {
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setResizable(false);
@@ -172,41 +174,84 @@ public class AddItemProduction extends JDialog implements ActionListener {
 		closeChecker.setBorder(new LineBorder(new Color(8, 104, 0), 1, true));
 		container.add(closeChecker);
 	}
+	
+	public void btnVerifyFuncKBN() {
+		try {
+			dbConn = new DbConnection();
+			st = dbConn.getConnection().createStatement();
+			
+			String prodName = txtProductName.getText();
+			String SQL = "SELECT prodVolume AS Variant FROM tblproducts WHERE LOWER(prodName) = LOWER('" + prodName + "')";
+			
+			st.execute(SQL);
+			rs = st.getResultSet();
+			
+			checker = "Not-Verified";
+			int counter = 0;
+			cbVariant.removeAllItems();
+			ArrayList<String> cat = new ArrayList<>();
+			
+			while(rs.next()) {
+				cat.add(rs.getString(1));
+				counter++;
+			}
+			
+			if(counter > 0)
+				checker = "Verified";
+			
+			for (String item : cat) {
+			    cbVariant.addItem(item);
+			}
+
+			cat.clear();
+			
+		} catch (Exception e2) {
+			JOptionPane.showMessageDialog(null, "Error AddItemProduction: " + e2.getMessage());
+		}
+	}
+	
+	public void btnVerifyFuncRebranding() {
+		try {
+			dbConn = new DbConnection();
+			st = dbConn.getConnection().createStatement();
+			
+			String prodName = txtProductName.getText();
+			String SQL = "SELECT prodVolume AS Variant FROM tblrebrandingproducts WHERE LOWER(prodName) = LOWER('" + prodName + "')";
+			
+			st.execute(SQL);
+			rs = st.getResultSet();
+			
+			checker = "Not-Verified";
+			int counter = 0;
+			cbVariant.removeAllItems();
+			ArrayList<String> cat = new ArrayList<>();
+			
+			while(rs.next()) {
+				cat.add(rs.getString(1));
+				counter++;
+			}
+			
+			if(counter > 0)
+				checker = "Verified";
+			
+			for (String item : cat) {
+			    cbVariant.addItem(item);
+			}
+
+			cat.clear();
+			
+		} catch (Exception e2) {
+			JOptionPane.showMessageDialog(null, "Error AddItemProduction: " + e2.getMessage());
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnVerify) {
-			try {
-				dbConn = new DbConnection();
-				st = dbConn.getConnection().createStatement();
-				
-				String prodName = txtProductName.getText();
-				String SQL = "SELECT prodVolume AS Variant FROM tblproducts WHERE LOWER(prodName) = LOWER('" + prodName + "')";
-				
-				st.execute(SQL);
-				rs = st.getResultSet();
-				
-				checker = "Not-Verified";
-				int counter = 0;
-				cbVariant.removeAllItems();
-				ArrayList<String> cat = new ArrayList<>();
-				
-				while(rs.next()) {
-					cat.add(rs.getString(1));
-					counter++;
-				}
-				
-				if(counter > 0)
-					checker = "Verified";
-				
-				for (String item : cat) {
-				    cbVariant.addItem(item);
-				}
-
-				cat.clear();
-				
-			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(null, "Error AddItemProduction: " + e2.getMessage());
+			if(btnChecker.equals("KBN")) {
+				btnVerifyFuncKBN();
+			} else if(btnChecker.equals("REBRANDING")) {
+				btnVerifyFuncRebranding();
 			}
 		}
 		

@@ -70,7 +70,7 @@ public class ForTesting extends JPanel {
 		lblTotalItems.setBounds(182, 69, 108, 22);
 		orderList.add(lblTotalItems);
 
-		lblOrderStatusColor.setBounds(182, 11, 108, 22);
+		lblOrderStatusColor.setBounds(98, 11, 192, 22);
 		orderList.add(lblOrderStatusColor);
 		
 		separator.setBounds(11, 36, 280, 7);

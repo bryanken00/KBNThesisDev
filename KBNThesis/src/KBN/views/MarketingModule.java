@@ -2267,11 +2267,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void confrimationPanelFunc(){
 		setVisiblePanel();
 		confirmationPanel.setVisible(true);
-		ConfirmProductPanelRemoveMouseListeners();
+		ConfirmProductPanelMouseListeners();
 		confirmationCounter();
 	}
 	
-	private void ConfirmProductPanelRemoveMouseListeners() {
+	private void ConfirmProductPanelMouseListeners() {
 		if(confirmationCounter > 0) {
 		    for (int i = 0; i < confirmationCounter; i++) {
 		    	this.confirmListPanelData.confirmList[i].addMouseListener(this);
@@ -2303,7 +2303,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void ConfirmPanelSetData() {
 		try {
-			String SQL = "SELECT a.TrackingID, a.DateAdded, a.Status, COUNT(b.TrackingID), SUM(b.ProductQuantity) \n"
+			String SQL = "SELECT a.TrackingID, a.DateAdded, a.Status, COUNT(b.TrackingID), SUM(b.ProductQuantity), a.ProductType \n"
 					+ "FROM tblconfirmationtracking AS a \n"
 					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
 					+ "GROUP BY a.TrackingID;";
@@ -2312,8 +2312,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			int i = 0;
 			while(rs.next()) {
 				confirmListPanelData.TrackingID[i] = rs.getString(1);
+				confirmListPanelData.ProductType[i] = rs.getString(6);
+				confirmListPanelData.Status[i] = rs.getString(3);
+				
 				confirmListPanelData.lblDate[i].setText(rs.getString(2));
-				confirmListPanelData.lblOrderStatus[i].setText(rs.getString(3));
+				confirmListPanelData.lblOrderStatus[i].setText(rs.getString(6) + " | " + rs.getString(3));
 				confirmListPanelData.lblTotalProducts[i].setText(rs.getString(4));
 				confirmListPanelData.lblTotalItems[i].setText(rs.getString(5));
 				i++;
@@ -2321,7 +2324,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 
 			ConfirmPanelAddActionlist();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error confirmationCounter: " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Error ConfirmPanelSetData: " + e.getMessage());
 		}
 	}
 	
@@ -2389,26 +2392,30 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void confirmClickData() {
 		String TrackingID = confirmListPanelData.TrackingID[ConfirmProductList];
 		try {
-			String SQL = "SELECT a.AddedBy, a.DateAdded, b.ProductName, b.ProductVariant, b.ProductQuantity \n"
-					+ "FROM tblconfirmationtracking AS a \n"
-					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
-					+ "WHERE a.TrackingID = '" + TrackingID + "';";
-			confirmationPanel.lblTrackingID.setText(TrackingID);
-			confirmationPanel.lblTotalQuantity.setText("Total Quantity: " + confirmListPanelData.lblTotalItems[ConfirmProductList].getText());
-			confirmationPanel.lblTotalItem.setText("Total Item: " + confirmListPanelData.lblTotalItems[ConfirmProductList].getText());
-			
-			st.execute(SQL);
-			rs = st.getResultSet();
-			
-			ArrayList temp = new ArrayList<>();
-			while(rs.next()) {
-				confirmationPanel.lblInputted.setText(rs.getString(1));
-				confirmationPanel.lblDateInputted.setText(rs.getString(2));
-				temp.add(rs.getString(3));
-				temp.add(rs.getString(4));
-				temp.add(rs.getString(5));
-				confirmationPanel.main.addRow(temp.toArray());
-				temp.clear();
+			if(confirmListPanelData.ProductType[ConfirmProductList].equals("KBN")) {
+				String SQL = "SELECT a.AddedBy, a.DateAdded, b.ProductName, b.ProductVariant, b.ProductQuantity \n"
+						+ "FROM tblconfirmationtracking AS a \n"
+						+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
+						+ "WHERE a.TrackingID = '" + TrackingID + "';";
+				confirmationPanel.lblTrackingID.setText(TrackingID);
+				confirmationPanel.lblTotalQuantity.setText("Total Quantity: " + confirmListPanelData.lblTotalItems[ConfirmProductList].getText());
+				confirmationPanel.lblTotalItem.setText("Total Item: " + confirmListPanelData.lblTotalItems[ConfirmProductList].getText());
+				
+				st.execute(SQL);
+				rs = st.getResultSet();
+				
+				ArrayList temp = new ArrayList<>();
+				while(rs.next()) {
+					confirmationPanel.lblInputted.setText(rs.getString(1));
+					confirmationPanel.lblDateInputted.setText(rs.getString(2));
+					temp.add(rs.getString(3));
+					temp.add(rs.getString(4));
+					temp.add(rs.getString(5));
+					confirmationPanel.main.addRow(temp.toArray());
+					temp.clear();
+				}	
+			} else if(confirmListPanelData.ProductType[ConfirmProductList].equals("REBRANDING")) {
+				
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error confirmClickData: " + e.getMessage());
@@ -3031,7 +3038,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                 	ConfirmProductList = i;
                 	confirmationPanel.main.setRowCount(0);
                 	confirmationPanel.btnConfirm.setVisible(true);
-                	if(confirmListPanelData.lblOrderStatus[i].getText().equals("COMPLETED"))
+                	if(confirmListPanelData.Status[ConfirmProductList].equals("COMPLETED"))
                     	confirmationPanel.btnConfirm.setVisible(false);
                 	confirmClickData();
                     return;
@@ -3488,7 +3495,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == confirmListPanel.comboBox){
 			setVisiblePanel();
 			confirmationPanel.setVisible(true);
-			ConfirmProductPanelRemoveMouseListeners();
+			ConfirmProductPanelMouseListeners();
 			confirmationCounterCategory();
 		}
 		

@@ -29,6 +29,8 @@ import KBN.Module.Production.KBNProducts.KBNPanelMain;
 import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetails;
 import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetailsData;
 import KBN.Module.Production.Navs.ProductionNav;
+import KBN.Module.Production.RebrandingProducts.RebrandingData;
+import KBN.Module.Production.RebrandingProducts.RebrandingMain;
 import KBN.Module.Production.addItem.AddItemProduction;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
@@ -59,6 +61,15 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			//
 			private int trackingIndex = 0;
 		private int kbnDataCounter;
+		
+		
+		// Rebranding
+		private RebrandingMain rebrandingMain;
+		// Rebranding Panel Generator
+		private RebrandingData rebrandingData;
+		
+
+		private int rebrandingDataCounter;
 		
 		// Add Item
 		private AddItemProduction addItem;
@@ -129,20 +140,29 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         // Class
         nav = new ProductionNav();
 
-		trackView = new KBNDataViewDetails();
 		
+        // KBN
         kbnMain = new KBNPanelMain();
         kbnData = new KBNData();
 
+		trackView = new KBNDataViewDetails();
+        KBNDetailsData = new KBNDataViewDetailsData();
+        
+        
+        // Rebranding
+        rebrandingMain = new RebrandingMain();
+        rebrandingData = new RebrandingData();
+
+        
+        // Add Item
         addItem = new AddItemProduction();
         
-        KBNDetailsData = new KBNDataViewDetailsData();
         
 
         
-        
         panelNav.add(nav);
         container.add(kbnMain);
+        container.add(rebrandingMain);
         kbnMain.container.setViewportView(kbnData);
         defaultPanel();
         kbnMain.setVisible(true);
@@ -157,6 +177,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	// Default Panel
 	private void defaultPanel() {
 		kbnMain.setVisible(false);
+		rebrandingMain.setVisible(false);
 	}
 
 	// Action Listener
@@ -214,27 +235,19 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.btnKBNProduct.setBackground(new Color(8, 104, 0));
 		nav.btnKBNProduct.setForeground(new Color(255, 255,255));
         defaultPanel();
-        kbnMain.setVisible(true);
         btnChecker = nav.btnKBNProduct;
+        addItem.btnChecker = "KBN";
         kbnData = new KBNData();
         kbnMain.container.setViewportView(kbnData);
         kbnDataCounter_();
         kbnDataButtons();
         kbnDataPanelGenerator();
-        
-	}
-	
-	private void rebrandingFunc() {
-		try {
-			
-		} catch (Exception e) {
-			JMessage("Error rebrandingFunc: " + e.getMessage());
-		}
+        kbnMain.setVisible(true);
 	}
 	
 	private void kbnDataCounter_() {
 		try {
-			String SQL = "SELECT COUNT(TrackingID) FROM tblconfirmationtracking";
+			String SQL = "SELECT COUNT(TrackingID) FROM tblconfirmationtracking WHERE ProductType = 'KBN';";
 			st.execute(SQL);
 			rs = st.getResultSet();
 			if(rs.next())
@@ -255,7 +268,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	private void kbnDataPanelGenerator() {
 		try {
 			String SQL = "SELECT a.TrackingID, DATE_FORMAT(a.DateAdded, '%Y-%m-%d') AS FormattedDateAdded, a.Status, a.AddedBy \n"
-					+ "FROM tblconfirmationtracking AS a";
+					+ "FROM tblconfirmationtracking AS a "
+					+ "WHERE ProductType = 'KBN';";
 			st.execute(SQL);
 			rs = st.getResultSet();
 			int i = 0;
@@ -270,10 +284,76 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
-	// Add Item
+	// Rebranding
+	private void rebrandingFunc() {
+		navColor();
+		nav.btnRebrandingProduct.setBackground(new Color(8, 104, 0));
+		nav.btnRebrandingProduct.setForeground(new Color(255, 255,255));
+        defaultPanel();
+        btnChecker = nav.btnRebrandingProduct;
+        addItem.btnChecker = "REBRANDING";
+        rebrandingData = new RebrandingData();
+        rebrandingMain.container.setViewportView(rebrandingData);
+        rebrandingDataCounter_();
+        rebrandingDataButtons();
+        rebrandingDataPanelGenerator();
+        rebrandingMain.setVisible(true);
+	}
 	
-	private void AddItemFuncKBN() {
+	private void rebrandingDataCounter_() {
 		try {
+			String SQL = "SELECT COUNT(TrackingID) FROM tblconfirmationtracking WHERE ProductType = 'REBRANDING';";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			if(rs.next())
+				rebrandingDataCounter = rs.getInt(1);
+			
+			rebrandingData.iCountKBNProducts(rebrandingDataCounter);
+		} catch (Exception e) {
+			JMessage("Error rebrandingDataCounter_: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandingDataButtons() {
+		for(int i = 0; i < rebrandingDataCounter; i++) {
+			rebrandingData.btnViewDetails[i].addActionListener(this);
+		}
+	}
+	
+	private void rebrandingDataPanelGenerator() {
+		try {
+			String SQL = "SELECT a.TrackingID, DATE_FORMAT(a.DateAdded, '%Y-%m-%d') AS FormattedDateAdded, a.Status, a.AddedBy \n"
+					+ "FROM tblconfirmationtracking AS a "
+					+ "WHERE ProductType = 'REBRANDING';";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				rebrandingData.lblTrackingID[i].setText(rs.getString(1));
+				rebrandingData.lblDate[i].setText(rs.getString(2));
+				rebrandingData.lblStatus[i].setText(rs.getString(3));
+				i++;
+			}
+		} catch (Exception e) {
+			JMessage("Error rebrandingDataPanelGenerator: " + e.getMessage());
+		}
+	}
+	
+	// Add Item
+	private void AddItemFuncKBN() {
+		
+		if(btnChecker == nav.btnKBNProduct)
+			kbnAdd();
+		else if(btnChecker == nav.btnRebrandingProduct)
+			rebrandingAdd();
+		else
+			JMessage("Something Wrong");
+
+	}
+	
+	private void kbnAdd() {
+		try {
+			addItem.btnVerifyFuncKBN();
 			if(addItem.checker.equals("Verified")) {
 				String prodName = addItem.txtProductName.getText();
 				String variant = addItem.cbVariant.getSelectedItem() + "";
@@ -298,10 +378,62 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					st.execute(SQLTracking);
 				}
 				
-				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity,TimeAdded) \n"
-						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME \n"
+				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded, ProductType) \n"
+						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME, ProductType \n"
 						+ "FROM tblconfirmationtracking AS a \n"
 						+ "JOIN tblproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
+						+ "GROUP BY b.prodName, b.prodVolume;";
+				
+
+				st.execute(SQLConfirmDATA);
+				JMessage("Product Added!");
+				addItem.txtProductName.setText("");
+				addItem.cbVariant.removeAllItems();
+				addItem.txtQuantity.setText("0");
+				addItem.checker = "Not-Verified";
+				if(addItem.closeChecker.isSelected()) {
+					kbnDataFunc();
+					addItem.dispose();
+				}
+			}else {
+				JMessage("Please Verify first");
+			}
+		} catch (Exception e) {
+			JMessage("Error btnAddItem: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandingAdd() {
+		try {
+			addItem.btnVerifyFuncRebranding();
+			if(addItem.checker.equals("Verified")) {
+				String prodName = addItem.txtProductName.getText();
+				String variant = addItem.cbVariant.getSelectedItem() + "";
+				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
+				
+		        LocalDate currentDate = LocalDate.now();
+		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		        String formattedDate = currentDate.format(formatter);
+		        
+				String checker = "SELECT TrackingID "
+						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING'";
+				
+				int checker__ = 0;
+				st.execute(checker);
+				rs = st.getResultSet();
+				if(rs.next()) {
+					checker__++;
+				}
+				
+				if(checker__ == 0) {
+					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy) VALUES(NOW(),'PENDING','" + userName + "');";
+					st.execute(SQLTracking);
+				}
+				
+				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded, ProductType) \n"
+						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME, ProductType \n"
+						+ "FROM tblconfirmationtracking AS a \n"
+						+ "JOIN tblrebrandingproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
 						+ "GROUP BY b.prodName, b.prodVolume;";
 				
 
@@ -415,12 +547,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			
 			if(e.getSource() == nav.btnRebrandingProduct)
 				rebrandingFunc();
-			
-			if(e.getSource() == nav.btnRebrandingProduct) {
-				navColor();
-				nav.btnRebrandingProduct.setBackground(new Color(8, 104, 0));
-				nav.btnRebrandingProduct.setForeground(new Color(255, 255,255));
-			}
+
 			if(e.getSource() == nav.btnArchiveList) {
 				navColor();
 				nav.btnArchiveList.setBackground(new Color(8, 104, 0));

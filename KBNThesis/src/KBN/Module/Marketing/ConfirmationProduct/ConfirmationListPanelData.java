@@ -21,6 +21,8 @@ public class ConfirmationListPanelData extends JPanel {
 	public JLabel[] lblTotalItems;
 	public JLabel[] lblDate;
 	public String[] TrackingID;
+	public String[] ProductType;
+	public String[] Status;
 	
 	private JSeparator[] separator;
 	private JLabel[] lblTotalProduct;
@@ -43,6 +45,8 @@ public class ConfirmationListPanelData extends JPanel {
 		
 		this.setPreferredSize(new Dimension(2, 100*ConfirmationCount));
 		TrackingID = new String[ConfirmationCount];
+		ProductType = new String[ConfirmationCount];
+		Status = new String[ConfirmationCount];
 		separator = new JSeparator[ConfirmationCount];
 		confirmList = new JPanel[ConfirmationCount];
 		lblOrderStatus = new JLabel[ConfirmationCount];
@@ -100,7 +104,7 @@ public class ConfirmationListPanelData extends JPanel {
 		confirmList[i].add(lblTotalItems[i]);
 
 		lblOrderStatus[i] = new JLabel();
-		lblOrderStatus[i].setBounds(182, 11, 108, 22);
+		lblOrderStatus[i].setBounds(98, 11, 192, 22);
 		confirmList[i].add(lblOrderStatus[i]);
 		
 		separator[i] = new JSeparator();
