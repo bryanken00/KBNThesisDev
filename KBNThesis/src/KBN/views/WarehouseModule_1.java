@@ -780,16 +780,19 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 
         procOrderData = new ProcessOrderData();
         procOrder.orderListScrollPane.setViewportView(procOrderData);
+        processOrder = 0;
         
         try {	        
 	        String sqlCount = "SELECT COUNT(a.OrderRefNumber) \n"
 	        		+ "FROM tblordercheckout AS a \n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
-	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled';";
+	        		+ "WHERE c.status = 'Approved';";
+	        
 	        st.execute(sqlCount);
 	        rs = st.getResultSet();
 	        if(rs.next())
 	        	processOrder = rs.getInt(1);
+	        
 	        
 	        procOrderData.OrderCounter(processOrder);
 	        
@@ -797,7 +800,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 //	        		+ "FROM tblordercheckout AS a \n"
 //	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
 //	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
-//	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+//	        		+ "JOIN tblordercheckoutdata AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
 //	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
 //	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
 	        
@@ -805,10 +808,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        		+ "FROM tblordercheckout AS a \r\n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
+	        		+ "JOIN tblordercheckoutdata AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
 	        		+ "JOIN tblorderapproved AS e On a.OrderRefNumber = e.OrderRefNumber\r\n"
 	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
-	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \r\n"
+	        		+ "WHERE c.status = 'Approved' \r\n"
 	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
 	        
 	        st.execute(sql);
@@ -855,7 +858,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        		+ "FROM tblordercheckout AS a \r\n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
+	        		+ "JOIN tblordercheckoutdata AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
 	        		+ "JOIN tblorderapproved AS e ON a.OrderRefNumber = e.OrderRefNumber\r\n"
 	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
 	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND a.OrderRefNumber LIKE '%" + ref + "%' \r\n"
@@ -903,7 +906,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        		+ "FROM tblordercheckout AS a \r\n"
 	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
 	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblordercheckoutData AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
+	        		+ "JOIN tblordercheckoutdata AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
 	        		+ "JOIN tblorderapproved AS e ON a.OrderRefNumber = e.OrderRefNumber\r\n"
 	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
 	        		+ "WHERE (c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled') AND c.status = '" + cat + "' \r\n"

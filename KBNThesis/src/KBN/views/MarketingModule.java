@@ -50,6 +50,8 @@ import KBN.Module.Marketing.OrderingPanel.OrderPanelPopupInstruction;
 import KBN.Module.Marketing.OrderingPanel.OrderingCancel;
 import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
 import KBN.Module.Marketing.OrderingPanel.onDelivery;
+import KBN.Module.Marketing.RebrandingNew.RebrandingNew;
+import KBN.Module.Marketing.RebrandingNew.RebrandingRightClick;
 import KBN.Module.Marketing.RebrandingProducts.AddProduct;
 import KBN.Module.Marketing.RebrandingProducts.ClientProducts;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
@@ -100,20 +102,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	//KBN Products
 	private KBNProducts kbnProd;
 	private String kbnProdButtonChecker = "Products";
+	private String rebrandingProdButtonChecker = "Products";
 	
-	// Rebranding
-	private RebrandingProd rebrandingProd;
-	private panelGenerator rebrandingPanelGen;
-		private int rebrandingClientCount = 0;
-	private AddProduct addProdRebranding;
-		private String rebrandingUserID = "";
+	//Rebranding new
+	private RebrandingNew rebrandingNew;
 		
 	// Return Products
 	private ReturnProductPanel returnProd;
 	private ReturnDetails returnDetails;
-		
-	private ClientProducts clientProductList;
-	
 	
 	private CustomerAccount custAccount;
 	private AuditTrail auditTrail;
@@ -122,8 +118,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private OrderingPanel orderPanel;
 	private OrderingCancel cancelOrderPanel;
 	private preRegister preReg;
-	private preRegList preRegisList;
 	private RightClick rightClick;
+	private RebrandingRightClick rRightClick;
 	private ProductDetails prodDetails;
 	private OrderPanelPopupInstruction orderPanelInstruction;
 	private onDelivery onDeliver;
@@ -261,11 +257,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// KBNProducts
 		kbnProd = new KBNProducts();
 		
-		// Rebranding
-		rebrandingProd = new RebrandingProd();
-		rebrandingPanelGen = new panelGenerator();
-    	clientProductList = new ClientProducts();
-    	addProdRebranding = new AddProduct();
+		// Rebranding New
+		rebrandingNew = new RebrandingNew();
 		
     	// Return Products
     	returnProd = new ReturnProductPanel();
@@ -295,6 +288,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rightClick = new RightClick();
 			getContentPane().add(rightClick);
 			rightClick.setVisible(false);
+			
+		rRightClick = new RebrandingRightClick();
+			getContentPane().add(rRightClick);
+			rRightClick.setVisible(false);
 		// End Right Click
 		
 		// Client Profile Tab
@@ -562,10 +559,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		//KBN ProdMouseList
 		kbnProd.table.addMouseListener(this);
-		
-		// Rebranding Client
-		rebrandingProd.btnSearch.addActionListener(this);
-		clientProductList.btnAdd.addActionListener(this);
+		rebrandingNew.table.addMouseListener(this);
 		
 		//Return Products
 		returnProd.btnUpdateStatus.addActionListener(this);
@@ -576,12 +570,22 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		kbnProd.btnArchive.addActionListener(this);
 		kbnProd.btnSearch.addActionListener(this);
 		
+		//KBNProducts Panel
+		rebrandingNew.btnProducts.addActionListener(this);
+		rebrandingNew.btnArchive.addActionListener(this);
+		rebrandingNew.btnSearch.addActionListener(this);
+		
 		//RightClick
 		rightClick.btnAddItem.addActionListener(this);
 		rightClick.btnEdit.addActionListener(this);
 		rightClick.btnArchive.addActionListener(this);
 		rightClick.addKeyListener(this);
 		kbnProd.table.addKeyListener(this);
+
+		rRightClick.btnArchive.addActionListener(this);
+		rRightClick.addKeyListener(this);
+		rebrandingNew.table.addKeyListener(this);
+		
 		
 			// Module Selection
 		lblUsername.addMouseListener(this);
@@ -609,6 +613,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		rightClick.setVisible(false);
+		rRightClick.setVisible(false);
+		
 		if(e.getSource() == btnDashboard)
 			dashboardPanelFunc();
 		
@@ -623,7 +631,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			KBNPanelFuncSearch(kbnProd.txtSearchBar.getText());
 			
 		if(e.getSource() == btnRebranding)
-			rebrandProdPanelFunc();
+			rebrandingNewPanelFunc();
+		if(e.getSource() == rebrandingNew.btnProducts)
+			rebrandingNewPanelFunc();
+		if(e.getSource() == rebrandingNew.btnArchive)
+			rebrandingNewPanelFuncArchive();
+		
+		
+		
 		if(e.getSource() == btnCustomerAccount)
 			custAccPanelFunc();
 		if(e.getSource() == btnAuditTrail)
@@ -678,16 +693,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				custAccPanelFunc();
 		}
 		
-		// Rebranding
-		if(e.getSource() == rebrandingProd.btnSearch) {
-			rebrandClientCountSearch(rebrandingProd.txtSearchBar.getText());
-		}
-		if(e.getSource() == clientProductList.btnAdd) {
-			addProdRebranding.clearFields();
-			addProdRebranding.setUserID(rebrandingUserID);
-			addProdRebranding.renderCategories();
-			addProdRebranding.setVisible(true);
-		}
 		
 		// Module Selection
 		if(e.getSource() == moduleSelection.btnProductionModule) {
@@ -708,6 +713,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			archiveKBNProducts();
 		if(e.getSource() == rightClick.btnAddItem)
 			addItem();
+		
+		if(e.getSource() == rRightClick.btnArchive)
+			rebrandingarchiveKBNProducts();
+		
 		
 		// Confirmation Panel
 		if(e.getSource() == btnConfirmation)
@@ -771,6 +780,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
 			}
 		}
+		
+		if(e.getSource() == rebrandingNew.table) {
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				rRightClick.setVisible(true);
+				rRightClick.setBounds(e.getX() + 90, e.getY() + 157, 200, 90);
+			}
+		}
+		
 		if(e.getSource() == cp.lblOrders) {
 			cpsp = new ClientProfileScrollablePanel();
 			cp.scrollOrderPanel.setViewportView(cpsp);
@@ -873,6 +890,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			}
 		}
 		
+		if(e.getSource() == rebrandingNew.table || e.getSource() == rebrandingNew) {
+			if(e.getKeyCode() == 27) {
+				rRightClick.setVisible(false);
+			}
+		}
+		
 		if(e.getSource() == lblUsername) {
 			if(e.getKeyCode() == 27 || e.getSource() == moduleSelection) {
 				moduleSelection.setVisible(false);
@@ -893,7 +916,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void setVisiblePanel() {
 		dashboard1.setVisible(false);
 		kbnProd.setVisible(false);
-		rebrandingProd.setVisible(false);
+		rebrandingNew.setVisible(false);
 		custAccount.setVisible(false);
 		auditTrail.setVisible(false);
 		delStatus.setVisible(false);
@@ -907,7 +930,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void defaultPanel() {
 		panelTab.add(dashboard1);
 		panelTab.add(kbnProd);
-		panelTab.add(rebrandingProd);
+		panelTab.add(rebrandingNew);
 		panelTab.add(custAccount);
 		panelTab.add(auditTrail);
 		panelTab.add(delStatus);
@@ -1050,6 +1073,83 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rightClick.setVisible(false);
 			}else {
 				KBNPanelFuncArchive();
+				rightClick.setVisible(false);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ErrorArchiveKBN: " + e.getMessage());
+		}
+	}
+	
+	private void rebrandingarchiveKBNProducts() {
+		String dropDelimiter = "DROP PROCEDURE IF EXISTS InsertAndDeleteWithRollbackRebranding;";
+		try {
+			String ID = rebrandingNew.table.getValueAt(rebrandingNew.table.getSelectedRow(), 0) + "";
+			String prodName = rebrandingNew.table.getValueAt(rebrandingNew.table.getSelectedRow(), 3) + "";
+			String Archive = "";
+			String Restore = "";
+			Archive = "CREATE PROCEDURE InsertAndDeleteWithRollbackRebranding()\r\n"
+					+ "BEGIN\r\n"
+					+ "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+					+ "  BEGIN\r\n"
+					+ "    ROLLBACK;\r\n"
+					+ "    RESIGNAL;\r\n"
+					+ "  END;\r\n"
+					+ "\r\n"
+					+ "  START TRANSACTION;\r\n"
+					+ "\r\n"
+					+ "INSERT INTO tblrebrandingproductsarchive\r\n"
+					+ "SELECT * FROM tblrebrandingproducts\r\n"
+					+ "WHERE prodID = '" + ID + "';\r\n"
+					+ "\r\n"
+					+ "  -- Delete the inserted rows from tblproducts\r\n"
+					+ "  DELETE FROM tblrebrandingproducts WHERE prodID IN (SELECT prodID FROM tblrebrandingproductsarchive);\r\n"
+					+ "\r\n"
+					+ "  COMMIT;\r\n"
+					+ "END;";
+			
+
+			Restore = "CREATE PROCEDURE InsertAndDeleteWithRollbackRebranding()\r\n"
+					+ "BEGIN\r\n"
+					+ "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+					+ "  BEGIN\r\n"
+					+ "    ROLLBACK;\r\n"
+					+ "    RESIGNAL;\r\n"
+					+ "  END;\r\n"
+					+ "\r\n"
+					+ "  START TRANSACTION;\r\n"
+					+ "\r\n"
+					+ "INSERT INTO tblrebrandingproducts\r\n"
+					+ "SELECT * FROM tblrebrandingproductsarchive\r\n"
+					+ "WHERE prodID = '" + ID + "';\r\n"
+					+ "\r\n"
+					+ "  -- Delete the inserted rows from tblproducts\r\n"
+					+ "  DELETE FROM tblrebrandingproductsarchive WHERE prodID IN (SELECT prodID FROM tblrebrandingproducts);\r\n"
+					+ "\r\n"
+					+ "  COMMIT;\r\n"
+					+ "END;";
+			
+			String proccessIfNoError = "CALL InsertAndDeleteWithRollbackRebranding();";
+
+			st.execute(dropDelimiter);
+			if(rebrandingProdButtonChecker.equals("Products")) {
+				st.execute(Archive);
+				String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Rebranding Product Archive - " + prodName + "');";
+				st.execute(AuditTrail);
+			}
+			if(rebrandingProdButtonChecker.equals("Archive")) {
+				st.execute(Restore);
+				String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Rebranding Product Restore - " + prodName + "');";
+				st.execute(AuditTrail);
+			}
+			
+			//final execute if 2 query is no error
+			st.execute(proccessIfNoError);
+
+			if(rebrandingProdButtonChecker.equals("Products")) {
+				rebrandingNewPanelFunc();
+				rightClick.setVisible(false);
+			}else {
+				rebrandingNewPanelFuncArchive();
 				rightClick.setVisible(false);
 			}
 		} catch (Exception e) {
@@ -1914,9 +2014,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		setVisiblePanel();
 		kbnProd.main.setRowCount(0);
 		kbnProd.table.setModel(kbnProd.main);
-//        Object[] row2 = {"http://localhost/webdevelopment/thesis1_website/Products/resources/fllotion.png", "Product 1", 10, 5};
-        
-//        kbnProd
         
         try {
         	String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM tblproductsarchive";
@@ -1982,108 +2079,88 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		kbnProd.setVisible(true);
 	}
 	
-	private void rebrandProdPanelFunc() {
+	private void rebrandingNewPanelFunc() {
+		rRightClick.btnArchive.setText("Archive");
+		rebrandingProdButtonChecker = "Products";
+		
 		setVisiblePanel();
-		rebrandingProd.setVisible(true);
-		rebrandClientCount();
-	}
-	
-	private void rebrandClientCount() {
-		rebrandingPanelGen = new panelGenerator();
-		rebrandingProd.scrollPane.setViewportView(rebrandingPanelGen);
 		
-		String SQLCounter = "SELECT COUNT(userID) \n"
-				+ "FROM tblcustomerinformation \n"
-				+ "WHERE AccountType = 'Rebranding';";
+		rebrandingNew.main.setRowCount(0);
 		
-		try {
-			st.execute(SQLCounter);
-			rs = st.getResultSet();
-			if(rs.next())
-				rebrandingClientCount = rs.getInt(1);
-			
-			rebrandingPanelGen.setCount(rebrandingClientCount);
-			rebrandingClickablePanel();
-			
-			rebrandingSettingUpPanelData();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error rebrandClientCount: " + e.getMessage());
-		}
-	}
-	
-	private void rebrandingSettingUpPanelData() {
-		try {
-			String sql = "SELECT b.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS Name, b.Description, IFNULL(COUNT(a.prodName), 0) AS ProductCount \n"
-					+ "FROM tblcustomerinformation AS b \n"
-					+ "LEFT JOIN tblrebrandingproducts AS a ON b.UserID = a.userID \n"
-					+ "WHERE b.AccountType = 'Rebranding' \n"
-					+ "GROUP BY b.userID";
-
-			st.execute(sql);
-			rs = st.getResultSet();
-			int i = 0;
-			while(rs.next()) {
-				rebrandingPanelGen.userID[i] = rs.getString(1);
-				rebrandingPanelGen.lblOwnerName[i].setText(rs.getString(2));
-				rebrandingPanelGen.lblProductBrand[i].setText(rs.getString(3));
-				rebrandingPanelGen.lblProductTotal[i].setText(rs.getString(4));
-				i++;
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error rebrandingSettingUpPanelData: " + e.getMessage());
-		}
-	}
-	
-	private void rebrandClientCountSearch(String search) {
-		rebrandingPanelGen = new panelGenerator();
-		rebrandingProd.scrollPane.setViewportView(rebrandingPanelGen);
+		rebrandingNew.btnProducts.setBackground(new Color(75, 119, 71));
+		rebrandingNew.btnProducts.setForeground(Color.WHITE);
+		rebrandingNew.btnArchive.setBackground(Color.WHITE);
+		rebrandingNew.btnArchive.setForeground(Color.BLACK);
 		
-		String SQLCounter = "SELECT COUNT(DISTINCT b.userID) \n"
-				+ "FROM tblrebrandingproducts AS b \n"
-				+ "WHERE b.userID IN (SELECT DISTINCT a.UserID FROM tblcustomerinformation AS a WHERE CONCAT(a.FirstName, ' ', a.LastName) LIKE '%" + search + "%');";
+        try {
+        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, SUM(a.Sold) AS TotalSold, c.FinishProduct\r\n"
+        			+ "FROM tblrebrandingproducts AS a\r\n"
+        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
+        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
+        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
+        			+ "GROUP BY a.userID, Product\r\n"
+        			+ "ORDER BY TotalSold DESC;";
+        	st.execute(sql);
+        	rs = st.getResultSet();
+        	ArrayList temp = new ArrayList<>();
+        	while(rs.next()) {
+        		temp.add(rs.getString(1));
+        		temp.add(rs.getString(2));
+        		temp.add(rs.getString(3));
+        		temp.add(rs.getString(4));
+        		temp.add(rs.getString(5));
+        		temp.add(rs.getString(6));
+        		rebrandingNew.main.addRow(temp.toArray());
+        		temp.clear();
+        	}
+        }catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "Error rebrandingNewPanelFunc: " + e.getMessage());
+		}
 		
-		try {
-			st.execute(SQLCounter);
-			rs = st.getResultSet();
-			if(rs.next())
-				rebrandingClientCount = rs.getInt(1);
-			
-			rebrandingPanelGen.setCount(rebrandingClientCount);
-			rebrandingClickablePanel();
-			
-			rebrandingSettingUpPanelDataSearch(search);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error rebrandClientCount: " + e.getMessage());
-		}
+		rebrandingNew.setVisible(true);
 	}
 	
-	private void rebrandingSettingUpPanelDataSearch(String search) {
-		try {
-			String sql = "SELECT a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS Name, b.Description , COUNT(a.prodName) \n"
-			+ "FROM tblrebrandingproducts AS a \n"
-			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID "
-			+ "WHERE CONCAT(b.FirstName, ' ', b.LastName) LIKE '%" + search + "%' "
-			+ "GROUP BY a.userID;";
-
-			st.execute(sql);
-			rs = st.getResultSet();
-			int i = 0;
-			while(rs.next()) {
-				rebrandingPanelGen.userID[i] = rs.getString(1);
-				rebrandingPanelGen.lblOwnerName[i].setText(rs.getString(2));
-				rebrandingPanelGen.lblProductBrand[i].setText(rs.getString(3));
-				rebrandingPanelGen.lblProductTotal[i].setText(rs.getString(4));
-				i++;
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error rebrandingSettingUpPanelData: " + e.getMessage());
+	private void rebrandingNewPanelFuncArchive() {
+		
+		rRightClick.btnArchive.setText("Restore");
+		rebrandingProdButtonChecker = "Archive";
+		
+		setVisiblePanel();
+		
+		rebrandingNew.main.setRowCount(0);
+		
+		rebrandingNew.btnProducts.setBackground(new Color(75, 119, 71));
+		rebrandingNew.btnProducts.setForeground(Color.WHITE);
+		rebrandingNew.btnArchive.setBackground(Color.WHITE);
+		rebrandingNew.btnArchive.setForeground(Color.BLACK);
+		
+        try {
+        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, SUM(a.Sold) AS TotalSold, c.FinishProduct\r\n"
+        			+ "FROM tblrebrandingproductsarchive AS a\r\n"
+        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
+        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
+        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
+        			+ "GROUP BY a.userID, Product\r\n"
+        			+ "ORDER BY TotalSold DESC;";
+        	
+        	st.execute(sql);
+        	rs = st.getResultSet();
+        	ArrayList temp = new ArrayList<>();
+        	while(rs.next()) {
+        		temp.add(rs.getString(1));
+        		temp.add(rs.getString(2));
+        		temp.add(rs.getString(3));
+        		temp.add(rs.getString(4));
+        		temp.add(rs.getString(5));
+        		temp.add(rs.getString(6));
+        		rebrandingNew.main.addRow(temp.toArray());
+        		temp.clear();
+        	}
+        }catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "Error rebrandingNewPanelFunc: " + e.getMessage());
 		}
-	}
-	
-	private void rebrandingClickablePanel() {
-		for(int i = 0; i < rebrandingClientCount; i++) {
-			rebrandingPanelGen.panel[i].addMouseListener(this);
-		}
+		
+		rebrandingNew.setVisible(true);
 	}
 	
 	private void custAccPanelFunc() {
@@ -3045,39 +3122,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
                 }
             }
         }
-        
-        // Rebranding
-        if(clickedComponent4 instanceof JPanel) {
-            for (int i = 0; i < rebrandingClientCount; i++) {
-                if (clickedComponent == rebrandingPanelGen.panel[i]) {
-                	String rebrandingUID = rebrandingPanelGen.userID[i];
-                	rebrandingUserID = rebrandingUID;
-                	try {
-						String sql = "SELECT prodName, prodVolume, sold FROM tblrebrandingproducts WHERe userID = '" + rebrandingUID + "' ORDER BY sold DESC;";
-						
-						st.execute(sql);
-						rs = st.getResultSet();
-						
-						clientProductList.main.setRowCount(0);
-						
-						ArrayList temp = new ArrayList<>();
-						
-						while(rs.next()) {
-							temp.add(rs.getString(1));
-							temp.add(rs.getString(2));
-							temp.add(rs.getString(3));
-							clientProductList.main.addRow(temp.toArray());
-							
-							temp.clear();
-						}
-                    	clientProductList.setVisible(true);
-					} catch (Exception e2) {
-						// TODO: handle exception
-					}
-                    return;
-                }
-            }
-        }        
 
         
 //        for (int i = 0; i < OrderCount; i++) {
