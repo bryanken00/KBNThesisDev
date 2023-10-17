@@ -288,7 +288,7 @@ public class ProductDetails extends JDialog implements ActionListener{
 	private Image imgLoader(String path) {
 		Image scaledImage = null;
 		try {
-			URL imageUrl = new URL("http://localhost/webdevelopment/thesis1_website/Products/resources/" + path);
+			URL imageUrl = new URL("https://www.kbnskinessentials.shop/Products/resources/" + path);
 			ImageIcon imageIcon = new ImageIcon(imageUrl);
 			Image image = imageIcon.getImage();
 
@@ -424,7 +424,7 @@ public class ProductDetails extends JDialog implements ActionListener{
 	        return; // Handle the exception as needed
 	    }
 	    
-        String targetURL = "http://localhost/webdevelopment/thesis1_website/Products/upload.php";
+        String targetURL = "https://www.kbnskinessentials.shop/Products/upload.php";
 
         try {
             URL url = new URL(targetURL);
