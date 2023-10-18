@@ -189,9 +189,9 @@ public class RebrandingNew extends JPanel implements MouseListener {
         table.getColumnModel().getColumn(0).setMaxWidth(0);
         
 		// set 2nd Column width
-        table.getColumnModel().getColumn(0).setPreferredWidth(100);
-        table.getColumnModel().getColumn(1).setPreferredWidth(200);
-        table.getColumnModel().getColumn(2).setPreferredWidth(150);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setPreferredWidth(200);
+        table.getColumnModel().getColumn(3).setPreferredWidth(150);
 	}
 	
 	

@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -32,10 +34,11 @@ import KBN.Module.Production.Navs.ProductionNav;
 import KBN.Module.Production.RebrandingProducts.RebrandingData;
 import KBN.Module.Production.RebrandingProducts.RebrandingMain;
 import KBN.Module.Production.addItem.AddItemProduction;
+import KBN.Module.Production.addItem.AddItemProductionRebranding;
 import KBN.commons.DbConnection;
 import KBN.commons.dataSetter;
 
-public class ProductionModule extends JFrame implements ActionListener, MouseListener, KeyListener{
+public class ProductionModule extends JFrame implements ActionListener, MouseListener, KeyListener, ItemListener{
 	
 	
 	// Class
@@ -73,6 +76,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		
 		// Add Item
 		private AddItemProduction addItem;
+		private AddItemProductionRebranding addItemRebrand;
 		
 		// Module Selection
 		private ModuleSelectionProduction moduleSelection;
@@ -156,6 +160,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         
         // Add Item
         addItem = new AddItemProduction();
+        addItemRebrand = new AddItemProductionRebranding();
         
         
 
@@ -194,6 +199,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		
 		// Add Item
 		addItem.btnAddItem.addActionListener(this);
+		addItemRebrand.btnAddItem.addActionListener(this);
 		
 		
 		nav.lblUsername.addMouseListener(this);
@@ -201,6 +207,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		moduleSelection.addKeyListener(this);
 		moduleSelection.btnMarketingModule.addActionListener(this);
 		moduleSelection.btnWarehouseModule.addActionListener(this);
+		
+		
+		// Add Item Rebranding
+		addItemRebrand.cbClientName.addItemListener(this);
+		addItemRebrand.cbProductName.addItemListener(this);
 		
 		
 	}
@@ -364,7 +375,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		        String formattedDate = currentDate.format(formatter);
 		        
 				String checker = "SELECT TrackingID "
-						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING'";
+						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING' AND ProductType = 'KBN'";
 				
 				int checker__ = 0;
 				st.execute(checker);
@@ -374,7 +385,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				}
 				
 				if(checker__ == 0) {
-					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy) VALUES(NOW(),'PENDING','" + userName + "');";
+					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy,ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'KBN');";
 					st.execute(SQLTracking);
 				}
 				
@@ -404,6 +415,12 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	}
 	
 	private void rebrandingAdd() {
+		String SQLConfirmDATA1 = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded, ProductType) \n"
+				+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '100', CURRENT_TIME, ProductType \n"
+				+ "FROM tblconfirmationtracking AS a \n"
+				+ "JOIN tblrebrandingproducts AS b ON b.prodName = 'test' AND b.prodVolume = '10ml' \n"
+				+ "GROUP BY b.prodName, b.prodVolume;";
+		System.out.println(SQLConfirmDATA1);
 		try {
 			addItem.btnVerifyFuncRebranding();
 			if(addItem.checker.equals("Verified")) {
@@ -416,7 +433,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		        String formattedDate = currentDate.format(formatter);
 		        
 				String checker = "SELECT TrackingID "
-						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING'";
+						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING' AND ProductType = ' REBRANDING'";
 				
 				int checker__ = 0;
 				st.execute(checker);
@@ -426,7 +443,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				}
 				
 				if(checker__ == 0) {
-					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy) VALUES(NOW(),'PENDING','" + userName + "');";
+					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy, ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'REBRANDING');";
 					st.execute(SQLTracking);
 				}
 				
@@ -555,7 +572,14 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			}
 			
 			if(e.getSource() == nav.btnAddItem) {
-				addItem.setVisible(true);
+				if(btnChecker == nav.btnKBNProduct)
+					addItem.setVisible(true);
+				else if(btnChecker == nav.btnRebrandingProduct) {
+					addItemRebrand.getClientName();
+					addItemRebrand.setVisible(true);
+				}
+				else
+					JMessage("Something Wrong");
 			}
 			
 			if(e.getSource() == addItem.btnAddItem) {
@@ -657,6 +681,43 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		
+		if(e.getSource() == addItemRebrand.cbClientName) {
+			int clientName = addItemRebrand.cbClientName.getSelectedIndex();
+			String userID_ = addItemRebrand.userID.get(clientName);
+			addItemRebrand.cbProductName.removeAllItems();
+			try {
+				st.execute("SELECT prodName FROM tblrebrandingproducts WHERE userID = '" + userID_ +"';");
+				rs = st.getResultSet();
+				while(rs.next()) {
+					addItemRebrand.cbProductName.addItem(rs.getString(1));
+				}
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
+		}
+		
+//		if(e.getSource() == addItemRebrand.cbProductName) {
+//			int clientName = addItemRebrand.cbClientName.getSelectedIndex();
+//			String prodName = addItemRebrand.cbProductName.getSelectedItem() + "";
+//			String userID_ = addItemRebrand.userID.get(clientName);
+//			addItemRebrand.cbVariant.removeAllItems();
+//			try {
+//				st.execute("SELECT prodVolume FROM tblrebrandingproducts WHERE userID = '" + userID_ +"' AND prodName = '" + prodName + "';");
+//				rs = st.getResultSet();
+//				while(rs.next()) {
+//					addItemRebrand.cbVariant.addItem(rs.getString(1));
+//				}
+//			} catch (Exception e2) {
+//				// TODO: handle exception
+//			}
+//		}
 		
 	}
 }
