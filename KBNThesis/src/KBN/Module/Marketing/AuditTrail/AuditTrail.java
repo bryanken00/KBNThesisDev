@@ -2,11 +2,14 @@ package KBN.Module.Marketing.AuditTrail;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -96,7 +99,7 @@ public class AuditTrail extends JPanel implements MouseListener {
 		
 		TableColumnModel columnModel = table.getColumnModel();
 		TableColumn column2 = columnModel.getColumn(2);
-		column2.setPreferredWidth(300);
+		column2.setPreferredWidth(400);
 		TableColumn column0 = columnModel.getColumn(0);
 		column0.setCellRenderer(new CenteredTableCellRenderer());
 
@@ -113,6 +116,8 @@ public class AuditTrail extends JPanel implements MouseListener {
         table.getTableHeader().setFont(headerFont);
         
         table.getTableHeader().setBackground(Color.WHITE);
+        
+        table.getColumnModel().getColumn(2).setCellRenderer(new CustomFontTableCellRenderer());
 	}
 
 	@Override
@@ -149,4 +154,23 @@ public class AuditTrail extends JPanel implements MouseListener {
 		}
 		txtSearchBar.setFocusable(false);
 	}
+	
+    // Custom cell renderer for changing the font of specific text using HTML
+    static class CustomFontTableCellRenderer extends DefaultTableCellRenderer {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value != null) {
+                String cellText = value.toString();
+                // Change the font of the first part (splitted[0])
+                String[] splitted = cellText.split(" - ", 2);
+                if (splitted.length == 2) {
+                    // Wrap the first part in HTML tags with a custom font
+                    setText("<html><font face='Arial' size='5'>" + splitted[0] + "</font> - " + splitted[1] + "</html>");
+                } else {
+                    setText(cellText);
+                }
+            }
+            return c;
+        }
+    }
 }

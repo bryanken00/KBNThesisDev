@@ -2191,7 +2191,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //				temp.add(rs.getString(1) + ", " + rs.getString(2));
 				temp.add(formattedText);
 				temp.add(rs.getString(3));
-				temp.add(rs.getString(4));
+				
+				String[] splitted = rs.getString(4).split(" - ");
+				temp.add("<html><b>" + splitted[0] + "</b> - " + splitted[1] + "</html>");
 				auditTrail.main.addRow(temp.toArray());
 				temp.clear();
 			}
