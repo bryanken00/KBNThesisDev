@@ -402,11 +402,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				addItem.cbVariant.removeAllItems();
 				addItem.txtQuantity.setText("0");
 				addItem.checker = "Not-Verified";
-				addItem.closeChecker.setSelected(false);
 				if(addItem.closeChecker.isSelected()) {
 					kbnDataFunc();
 					addItem.dispose();
 				}
+				addItem.closeChecker.setSelected(false);
 			}else {
 				JMessage("Please Verify first");
 			}
@@ -458,13 +458,12 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			addItemRebrand.cbProductName.removeAllItems();
 			addItemRebrand.cbVariant.removeAllItems();
 			addItemRebrand.txtQuantity.setText("0");
-			addItemRebrand.closeChecker.setSelected(false);
 			
 			if(addItemRebrand.closeChecker.isSelected()) {
 				rebrandingFunc();
 				addItemRebrand.dispose();
 			}
-				
+			addItemRebrand.closeChecker.setSelected(false);
 		} catch (Exception e) {
 			JMessage("Error rebrandingAdd(): " + e.getMessage());
 		}
