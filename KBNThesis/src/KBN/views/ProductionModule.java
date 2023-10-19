@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,6 +34,8 @@ import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetailsData;
 import KBN.Module.Production.Navs.ProductionNav;
 import KBN.Module.Production.RebrandingProducts.RebrandingData;
 import KBN.Module.Production.RebrandingProducts.RebrandingMain;
+import KBN.Module.Production.RebrandingProducts.ViewDetails.RebrandingDataViewDetails;
+import KBN.Module.Production.RebrandingProducts.ViewDetails.RebrandingDataViewDetailsData;
 import KBN.Module.Production.addItem.AddItemProduction;
 import KBN.Module.Production.addItem.AddItemProductionRebranding;
 import KBN.commons.DbConnection;
@@ -70,6 +73,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		private RebrandingMain rebrandingMain;
 		// Rebranding Panel Generator
 		private RebrandingData rebrandingData;
+			//Tracking
+			private RebrandingDataViewDetails rebrandingTrackView;
+			private RebrandingDataViewDetailsData rebrandingDetailsData;
+			//
+			private int rebrandingtrackingIndex = 0;
 		
 
 		private int rebrandingDataCounter;
@@ -98,6 +106,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	private JPanel container;
 
 	public ProductionModule() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1280, 760);
 		contentPane = new JPanel();
@@ -156,6 +165,9 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         // Rebranding
         rebrandingMain = new RebrandingMain();
         rebrandingData = new RebrandingData();
+        
+        rebrandingTrackView = new RebrandingDataViewDetails();
+        rebrandingDetailsData = new RebrandingDataViewDetailsData();
 
         
         // Add Item
@@ -350,18 +362,6 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
-	// Add Item
-	private void AddItemFuncKBN() {
-		
-		if(btnChecker == nav.btnKBNProduct)
-			kbnAdd();
-		else if(btnChecker == nav.btnRebrandingProduct)
-			rebrandingAdd();
-		else
-			JMessage("Something Wrong");
-
-	}
-	
 	private void kbnAdd() {
 		try {
 			addItem.btnVerifyFuncKBN();
@@ -389,8 +389,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					st.execute(SQLTracking);
 				}
 				
-				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded, ProductType) \n"
-						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME, ProductType \n"
+				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded) \n"
+						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME \n"
 						+ "FROM tblconfirmationtracking AS a \n"
 						+ "JOIN tblproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
 						+ "GROUP BY b.prodName, b.prodVolume;";
@@ -402,6 +402,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				addItem.cbVariant.removeAllItems();
 				addItem.txtQuantity.setText("0");
 				addItem.checker = "Not-Verified";
+				addItem.closeChecker.setSelected(false);
 				if(addItem.closeChecker.isSelected()) {
 					kbnDataFunc();
 					addItem.dispose();
@@ -415,60 +416,57 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	}
 	
 	private void rebrandingAdd() {
-		String SQLConfirmDATA1 = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded, ProductType) \n"
-				+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '100', CURRENT_TIME, ProductType \n"
-				+ "FROM tblconfirmationtracking AS a \n"
-				+ "JOIN tblrebrandingproducts AS b ON b.prodName = 'test' AND b.prodVolume = '10ml' \n"
-				+ "GROUP BY b.prodName, b.prodVolume;";
-		System.out.println(SQLConfirmDATA1);
 		try {
-			addItem.btnVerifyFuncRebranding();
-			if(addItem.checker.equals("Verified")) {
-				String prodName = addItem.txtProductName.getText();
-				String variant = addItem.cbVariant.getSelectedItem() + "";
-				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
-				
-		        LocalDate currentDate = LocalDate.now();
-		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		        String formattedDate = currentDate.format(formatter);
-		        
-				String checker = "SELECT TrackingID "
-						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING' AND ProductType = ' REBRANDING'";
-				
-				int checker__ = 0;
-				st.execute(checker);
-				rs = st.getResultSet();
-				if(rs.next()) {
-					checker__++;
-				}
-				
-				if(checker__ == 0) {
-					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy, ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'REBRANDING');";
-					st.execute(SQLTracking);
-				}
-				
-				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded, ProductType) \n"
-						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME, ProductType \n"
-						+ "FROM tblconfirmationtracking AS a \n"
-						+ "JOIN tblrebrandingproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
-						+ "GROUP BY b.prodName, b.prodVolume;";
-				
-
-				st.execute(SQLConfirmDATA);
-				JMessage("Product Added!");
-				addItem.txtProductName.setText("");
-				addItem.cbVariant.removeAllItems();
-				addItem.txtQuantity.setText("0");
-				addItem.checker = "Not-Verified";
-				if(addItem.closeChecker.isSelected()) {
-					kbnDataFunc();
-					addItem.dispose();
-				}
-			}else {
-				JMessage("Please Verify first");
+			if(addItemRebrand.cbProductName.getSelectedItem() == null || addItemRebrand.cbVariant.getSelectedItem() == null) {
+				JMessage("Please Select First");
+				return;
 			}
+			
+			String userID = addItemRebrand.userID.get(addItemRebrand.cbClientName.getSelectedIndex());
+			String prodName = addItemRebrand.cbProductName.getSelectedItem() + "";
+			String variant = addItemRebrand.cbVariant.getSelectedItem() + "";
+			int quantity = Integer.parseInt(addItemRebrand.txtQuantity.getText());
+			
+	        LocalDate currentDate = LocalDate.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        String formattedDate = currentDate.format(formatter);
+	        
+			String checker = "SELECT TrackingID "
+					+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING' AND ProductType = 'REBRANDING'";
+			
+			int checker__ = 0;
+			st.execute(checker);
+			rs = st.getResultSet();
+			if(rs.next()) {
+				checker__++;
+			}
+			
+			if(checker__ == 0) {
+				String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy, ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'REBRANDING');";
+				st.execute(SQLTracking);
+			}
+			String SQLRebrandingConfirmDATA = "INSERT INTO tblconfirmationproductRebranding (UserID, TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded)\r\n"
+					+ "SELECT '" + userID + "', MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME\r\n"
+					+ "FROM tblconfirmationtracking AS a \r\n"
+					+ "JOIN tblrebrandingproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant +"' \r\n"
+					+ "GROUP BY b.prodName, b.prodVolume;";
+			
+
+			st.execute(SQLRebrandingConfirmDATA);
+			JMessage("Product Added!");
+			
+			addItemRebrand.cbProductName.removeAllItems();
+			addItemRebrand.cbVariant.removeAllItems();
+			addItemRebrand.txtQuantity.setText("0");
+			addItemRebrand.closeChecker.setSelected(false);
+			
+			if(addItemRebrand.closeChecker.isSelected()) {
+				rebrandingFunc();
+				addItemRebrand.dispose();
+			}
+				
 		} catch (Exception e) {
-			JMessage("Error btnAddItem: " + e.getMessage());
+			JMessage("Error rebrandingAdd(): " + e.getMessage());
 		}
 	}
 	
@@ -518,11 +516,66 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	        	i++;
 
 	        }
-	        
-			trackView.setVisible(true);
+
 			trackView.revalidate();
+			trackView.setVisible(true);
 		} catch (Exception e) {
 			JMessage("Error viewDetails: " + e.getMessage());
+		}
+
+	}
+	
+	private void RebrandViewDetails(int index) {
+		try {
+			rebrandingtrackingIndex = index;
+			String trackingID = rebrandingData.lblTrackingID[index].getText();
+			rebrandingTrackView.lblTrackingID.setText("Tracking ID: " + trackingID);
+	        
+			rebrandingDetailsData = new RebrandingDataViewDetailsData();
+	        rebrandingTrackView.scrollPane.setViewportView(rebrandingDetailsData);
+	        
+	        String SQLCount = "SELECT COUNT(a.ProductName) \n"
+	        		+ "FROM tblconfirmationproductRebranding AS a \n"
+	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        
+	        st.execute(SQLCount);
+	        rs = st.getResultSet();
+	        
+	        int count = 0;
+	        if(rs.next())
+	        	count = rs.getInt(1);
+	        
+	        
+	        rebrandingDetailsData.prodCount(count);
+	        
+	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM, b.TrackingID \n"
+	        		+ "FROM tblconfirmationproductRebranding AS a \n"
+	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        
+	        st.execute(SQL);
+	        rs = st.getResultSet();
+	        int i = 0;
+	        while(rs.next()) {
+	        	rebrandingDetailsData.productID[i] = rs.getString(1);
+	        	rebrandingDetailsData.lblProductName[i].setText(rs.getString(2));
+	        	rebrandingDetailsData.lblVariant[i].setText(rs.getString(3));
+	        	rebrandingDetailsData.lblQuantity[i].setText(rs.getString(4));
+	        	rebrandingDetailsData.lblTime[i].setText(rs.getString(5));
+
+	        	rebrandingDetailsData.TrackingID = rs.getString(6);
+		        if(!rebrandingData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
+		        	rebrandingDetailsData.btnDelete[i].setVisible(false);
+		        rebrandingDetailsData.btnDelete[i].addActionListener(this);
+	        	i++;
+
+	        }
+
+			rebrandingTrackView.revalidate();
+			rebrandingTrackView.setVisible(true);
+		} catch (Exception e) {
+			JMessage("Error Rebranding viewDetails: " + e.getMessage());
 		}
 
 	}
@@ -555,6 +608,34 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
+	private void RebranddeleteDetails(int index) {
+		try {
+			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + rebrandingDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
+			if (dialogResult == JOptionPane.YES_OPTION) {
+				if(rebrandingDetailsData.productID.length == 1) {
+					String SQLDelete1 = "DELETE FROM tblconfirmationtracking WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "'";
+					st.execute(SQLDelete1);
+					
+					String SQLDelete = "DELETE FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'";
+					st.execute(SQLDelete);
+					
+					RebrandViewDetails(trackingIndex);
+					rebrandingFunc();
+					rebrandingTrackView.dispose();
+				}else {
+					String SQLDelete = "DELETE FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'";
+					st.execute(SQLDelete);
+					RebrandViewDetails(trackingIndex);
+				}
+			}else {
+				
+			}
+
+		} catch (Exception e) {
+			JMessage("Error RebranddeleteDetails: " + e.getMessage());
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -582,9 +663,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					JMessage("Something Wrong");
 			}
 			
-			if(e.getSource() == addItem.btnAddItem) {
-				AddItemFuncKBN();
-			}
+			if(e.getSource() == addItem.btnAddItem)
+				kbnAdd();
+			
+			if(e.getSource() == addItemRebrand.btnAddItem)
+				rebrandingAdd();
 			
 		// Module Selection
 			if(e.getSource() == moduleSelection.btnMarketingModule) {
@@ -609,16 +692,40 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			}
 			
 		// Tracking
-			if(KBNDetailsData.btnDelete != null) {
-				if(KBNDetailsData.btnDelete.length != 0) {
-					for(int i = 0; i < KBNDetailsData.btnDelete.length; i++) {
-						if(e.getSource() == KBNDetailsData.btnDelete[i]) {
-							deleteDetails(i);
-							break;
-						}
+		if(KBNDetailsData.btnDelete != null) {
+			if(KBNDetailsData.btnDelete.length != 0) {
+				for(int i = 0; i < KBNDetailsData.btnDelete.length; i++) {
+					if(e.getSource() == KBNDetailsData.btnDelete[i]) {
+						deleteDetails(i);
+						break;
 					}
 				}
 			}
+		}
+			
+		// Rebraning Data Buttons
+			if(rebrandingData.btnViewDetails != null) {
+				for(int i = 0; i < rebrandingData.btnViewDetails.length; i++) {
+					if(e.getSource() == rebrandingData.btnViewDetails[i]) {
+						RebrandViewDetails(i);
+						break;
+					}
+				}
+			}
+			
+		// Rebrand Tracking
+		if(rebrandingDetailsData.btnDelete != null) {
+			if(rebrandingDetailsData.btnDelete.length != 0) {
+				for(int i = 0; i < rebrandingDetailsData.btnDelete.length; i++) {
+					if(e.getSource() == rebrandingDetailsData.btnDelete[i]) {
+						RebranddeleteDetails(i);
+						break;
+					}
+				}
+			}
+		}
+			
+
 	}
 
 
@@ -688,36 +795,45 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		
-		if(e.getSource() == addItemRebrand.cbClientName) {
-			int clientName = addItemRebrand.cbClientName.getSelectedIndex();
-			String userID_ = addItemRebrand.userID.get(clientName);
-			addItemRebrand.cbProductName.removeAllItems();
-			try {
-				st.execute("SELECT prodName FROM tblrebrandingproducts WHERE userID = '" + userID_ +"';");
-				rs = st.getResultSet();
-				while(rs.next()) {
-					addItemRebrand.cbProductName.addItem(rs.getString(1));
-				}
-			} catch (Exception e2) {
-				// TODO: handle exception
-			}
+    	if(e.getSource() == addItemRebrand.cbClientName) {
+    		addItemRebrand.cbProductName.removeItemListener(this);
+    	    if (e.getStateChange() == ItemEvent.SELECTED) {
+    			String userID_ = addItemRebrand.userID.get(addItemRebrand.cbClientName.getSelectedIndex());
+    			addItemRebrand.cbProductName.removeAllItems();
+    			
+    			try {
+    				st.execute("SELECT prodName FROM tblrebrandingproducts WHERE userID = '" + userID_ +"';");
+    				rs = st.getResultSet();
+    				ArrayList<String> temp = new ArrayList<>();
+    				while(rs.next()) {
+    					addItemRebrand.cbProductName.addItem(rs.getString(1));
+    				}
+    				
+    				
+    			} catch (Exception e2) {
+    				JMessage("Error ItemChange cbClientName: " + e2.getMessage());
+    			}
+
+        		addItemRebrand.cbProductName.addItemListener(this);
+    	    }
 		}
-		
-//		if(e.getSource() == addItemRebrand.cbProductName) {
-//			int clientName = addItemRebrand.cbClientName.getSelectedIndex();
-//			String prodName = addItemRebrand.cbProductName.getSelectedItem() + "";
-//			String userID_ = addItemRebrand.userID.get(clientName);
-//			addItemRebrand.cbVariant.removeAllItems();
-//			try {
-//				st.execute("SELECT prodVolume FROM tblrebrandingproducts WHERE userID = '" + userID_ +"' AND prodName = '" + prodName + "';");
-//				rs = st.getResultSet();
-//				while(rs.next()) {
-//					addItemRebrand.cbVariant.addItem(rs.getString(1));
-//				}
-//			} catch (Exception e2) {
-//				// TODO: handle exception
-//			}
-//		}
-		
+    	
+    	if(e.getSource() == addItemRebrand.cbProductName) {
+    		if(e.getStateChange() == ItemEvent.SELECTED) {
+    			String userID_ = addItemRebrand.userID.get(addItemRebrand.cbClientName.getSelectedIndex());
+    			String productName = addItemRebrand.cbProductName.getSelectedItem() + "";
+    			addItemRebrand.cbVariant.removeAllItems();
+    			
+				try {
+					st.execute("SELECT prodVolume FROM tblrebrandingproducts WHERE userID = '" + userID_ +"' AND prodName = '" + productName + "';");
+					rs = st.getResultSet();
+					while(rs.next()) {
+						addItemRebrand.cbVariant.addItem(rs.getString(1));
+					}
+				} catch (Exception e2) {
+					JMessage("Error ItemChange cbProductName: " + e2.getMessage());
+				}
+    		}
+    	}
 	}
 }

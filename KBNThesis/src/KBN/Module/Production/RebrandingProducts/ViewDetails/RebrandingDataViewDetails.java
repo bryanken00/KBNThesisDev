@@ -16,12 +16,12 @@ import java.awt.Dimension;
 
 import javax.swing.border.LineBorder;
 
-public class KBNDataViewDetails extends JDialog {
+public class RebrandingDataViewDetails extends JDialog {
 	public JLabel lblTrackingID;
 	public JScrollPane scrollPane;
 	
 
-	public KBNDataViewDetails() {
+	public RebrandingDataViewDetails() {
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setModal(true);
 		setResizable(false);

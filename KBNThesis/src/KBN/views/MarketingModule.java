@@ -2382,10 +2382,19 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void ConfirmPanelSetData() {
 		try {
-			String SQL = "SELECT a.TrackingID, a.DateAdded, a.Status, COUNT(b.TrackingID), SUM(b.ProductQuantity), a.ProductType \n"
-					+ "FROM tblconfirmationtracking AS a \n"
-					+ "JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID \n"
+			String SQL = "SELECT \r\n"
+					+ "    a.TrackingID, \r\n"
+					+ "    a.DateAdded, \r\n"
+					+ "    a.Status, \r\n"
+					+ "    COALESCE(NULLIF(COUNT(b.TrackingID), 0), COUNT(c.TrackingID)) AS CountResult,\r\n"
+					+ "     COALESCE(NULLIF(SUM(b.ProductQuantity), 0), SUM(c.ProductQuantity)) AS SumResult,\r\n"
+					+ "    a.ProductType \r\n"
+					+ "FROM tblconfirmationtracking AS a\r\n"
+					+ "LEFT JOIN tblconfirmationproduct AS b ON a.TrackingID = b.TrackingID\r\n"
+					+ "LEFT JOIN tblconfirmationproductRebranding AS c ON a.TrackingID = c.TrackingID\r\n"
 					+ "GROUP BY a.TrackingID;";
+			
+			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
 			int i = 0;

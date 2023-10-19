@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 
-public class KBNDataViewDetailsDataBAK extends JPanel {
+public class RebrandingDataViewDetailsDataBAK extends JPanel {
 	private JLabel lblProductName;
 	private JLabel lblVariant;
 	private JLabel lblQuantity;
@@ -26,7 +26,7 @@ public class KBNDataViewDetailsDataBAK extends JPanel {
 	private JButton btnDelete_1;
 	private JLabel lblTime_;
 	private JLabel lblTime;
-	public KBNDataViewDetailsDataBAK() {
+	public RebrandingDataViewDetailsDataBAK() {
 		setBounds(0, 0, 653, 414);
 		setLayout(null);
 		

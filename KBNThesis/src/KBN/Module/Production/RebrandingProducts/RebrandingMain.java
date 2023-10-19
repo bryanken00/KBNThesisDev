@@ -17,8 +17,6 @@ import javax.swing.ImageIcon;
 public class RebrandingMain extends JPanel implements MouseListener {
 	
 	public JTextField txtSearchBar;
-	public JDateChooser dateChooser;
-	public JComboBox cbStatus;
 	public JButton btnSearch;
 	public JScrollPane container;
 
@@ -36,14 +34,6 @@ public class RebrandingMain extends JPanel implements MouseListener {
 		add(top);
 		
 		String[] Status = {"PENDING", "COMPLETED"};
-		
-		cbStatus = new JComboBox(Status);
-		cbStatus.setBounds(278, 11, 161, 28);
-		top.add(cbStatus);
-		
-		dateChooser = new JDateChooser();
-		dateChooser.setBounds(449, 11, 161, 28);
-		top.add(dateChooser);
 		
 		txtSearchBar = new JTextField();
 		txtSearchBar.setText("Search by Tracking ID");

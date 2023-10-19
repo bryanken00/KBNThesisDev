@@ -34,7 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
 
-public class AddItemProductionRebranding extends JDialog implements ActionListener {
+public class AddItemProductionRebranding extends JDialog {
 	
 	private DbConnection dbConn;
 	private ResultSet rs;
@@ -57,7 +57,7 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setResizable(false);
 		setModal(true);
-		setBounds(100, 100, 483, 615);
+		setBounds(100, 100, 483, 563);
 		getContentPane().setLayout(null);
 		
 		//set UI to center of screen
@@ -80,7 +80,7 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		JPanel container = new JPanel();
 		container.setBackground(new Color(255, 255, 255));
 		container.setBorder(new LineBorder(new Color(0, 0, 0)));
-		container.setBounds(10, 11, 447, 554);
+		container.setBounds(10, 11, 447, 502);
 		getContentPane().add(container);
 		container.setLayout(null);
 		
@@ -105,24 +105,24 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(10, 227, 427, 88);
+		panel.setBounds(10, 170, 427, 88);
 		container.add(panel);
 		panel.setLayout(null);
 		
 		JLabel lblProductName = new JLabel("Product Name");
 		lblProductName.setForeground(new Color(8, 104, 0));
 		lblProductName.setFont(new Font("Tahoma", Font.PLAIN, 19));
-		lblProductName.setBounds(10, 11, 157, 29);
+		lblProductName.setBounds(19, 11, 157, 29);
 		panel.add(lblProductName);
 		
 		cbProductName = new JComboBox();
-		cbProductName.setBounds(10, 51, 407, 29);
+		cbProductName.setBounds(19, 51, 388, 29);
 		panel.add(cbProductName);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
 		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(10, 326, 427, 88);
+		panel_1.setBounds(10, 269, 427, 88);
 		container.add(panel_1);
 		
 		JLabel lblVariant = new JLabel("Variant");
@@ -138,7 +138,7 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		JPanel panel_2 = new JPanel();
 		panel_2.setLayout(null);
 		panel_2.setBackground(Color.WHITE);
-		panel_2.setBounds(10, 425, 427, 88);
+		panel_2.setBounds(10, 368, 427, 88);
 		container.add(panel_2);
 		
 		JLabel lblQuantity = new JLabel("Quantity");
@@ -170,7 +170,7 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		
 		closeChecker = new JCheckBox("Close after Add?");
 		closeChecker.setBackground(new Color(255, 255, 255));
-		closeChecker.setBounds(268, 520, 169, 23);
+		closeChecker.setBounds(268, 467, 169, 23);
 		closeChecker.setFocusable(false);
 		closeChecker.setBorder(new LineBorder(new Color(8, 104, 0), 1, true));
 		container.add(closeChecker);
@@ -184,11 +184,11 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		JLabel lblClientName = new JLabel("Client Name");
 		lblClientName.setForeground(new Color(8, 104, 0));
 		lblClientName.setFont(new Font("Tahoma", Font.PLAIN, 19));
-		lblClientName.setBounds(10, 11, 157, 29);
+		lblClientName.setBounds(19, 11, 157, 29);
 		panel_3.add(lblClientName);
 
 		cbClientName = new JComboBox();
-		cbClientName.setBounds(10, 51, 407, 26);
+		cbClientName.setBounds(10, 51, 388, 29);
 		panel_3.add(cbClientName);
 		
 		userID = new ArrayList<>();
@@ -196,6 +196,7 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 	
 	public void getClientName() {
 		try {
+			cbClientName.removeAllItems();
 	        userID.clear();
 			String SQL = "SELECT UserID, CONCAT(FirstName, ' ', Lastname) AS FullName FROM tblcustomerinformation WHERE AccountType = 'rebranding'";
 			st.execute(SQL);
@@ -210,11 +211,5 @@ public class AddItemProductionRebranding extends JDialog implements ActionListen
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error getClientName: " + e.getMessage());
 		}
-	}
-	
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		
 	}
 }

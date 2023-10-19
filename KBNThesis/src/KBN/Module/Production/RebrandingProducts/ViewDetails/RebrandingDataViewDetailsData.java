@@ -10,7 +10,7 @@ import java.awt.Dimension;
 
 import javax.swing.border.LineBorder;
 
-public class KBNDataViewDetailsData extends JPanel {
+public class RebrandingDataViewDetailsData extends JPanel {
 	private JPanel[] panel;
 	
 	public JLabel[] lblProductName;
@@ -29,7 +29,7 @@ public class KBNDataViewDetailsData extends JPanel {
 	
 	private int iCount;
 	
-	public KBNDataViewDetailsData() {
+	public RebrandingDataViewDetailsData() {
 		setBounds(0, 0, 603, 414);
 		setBackground(new Color(255, 255, 255));
 		setLayout(null);
