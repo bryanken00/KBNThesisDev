@@ -36,7 +36,7 @@ public class KBNData extends JPanel {
 	}
 	
 	private void settingUp() {
-		this.setPreferredSize(new Dimension(2, 80*counter));
+		this.setPreferredSize(new Dimension(2, 102*counter));
 		panel = new JPanel[counter];
 		lblTrackingID = new JLabel[counter];
 		lblDate = new JLabel[counter];

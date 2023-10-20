@@ -1,4 +1,4 @@
-package KBN.Module.Production.RebrandingProducts;
+package KBN.Module.Production.ArchiveList;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -10,7 +10,7 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
-public class RebrandingData extends JPanel {
+public class ArchiveData extends JPanel {
 	
 	private JPanel[] panel;
 	
@@ -24,7 +24,7 @@ public class RebrandingData extends JPanel {
 	
 	private int counter = 0;
 
-	public RebrandingData() {
+	public ArchiveData() {
 		setBounds(0, 0, 969, 616);
 		setBackground(new Color(255, 255, 255));
 		setLayout(null);
@@ -36,7 +36,7 @@ public class RebrandingData extends JPanel {
 	}
 	
 	private void settingUp() {
-		this.setPreferredSize(new Dimension(2, 102*counter));
+		this.setPreferredSize(new Dimension(2, 80*counter));
 		panel = new JPanel[counter];
 		lblTrackingID = new JLabel[counter];
 		lblDate = new JLabel[counter];

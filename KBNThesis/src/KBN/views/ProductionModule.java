@@ -27,6 +27,10 @@ import javax.swing.border.LineBorder;
 
 import KBN.Module.Marketing.ModuleSelectionMarketing;
 import KBN.Module.Production.ModuleSelectionProduction;
+import KBN.Module.Production.ArchiveList.ArchiveData;
+import KBN.Module.Production.ArchiveList.ArchivePanelMain;
+import KBN.Module.Production.ArchiveList.ViewDetails.ArchiveDataViewDetails;
+import KBN.Module.Production.ArchiveList.ViewDetails.ArchiveDataViewDetailsData;
 import KBN.Module.Production.KBNProducts.KBNData;
 import KBN.Module.Production.KBNProducts.KBNPanelMain;
 import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetails;
@@ -68,7 +72,6 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			private int trackingIndex = 0;
 		private int kbnDataCounter;
 		
-		
 		// Rebranding
 		private RebrandingMain rebrandingMain;
 		// Rebranding Panel Generator
@@ -78,9 +81,18 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			private RebrandingDataViewDetailsData rebrandingDetailsData;
 			//
 			private int rebrandingtrackingIndex = 0;
-		
-
 		private int rebrandingDataCounter;
+		
+		// Archive List
+		private ArchivePanelMain archiveMain;
+		// Archive Panel Generator
+		private ArchiveData archiveData;
+			// Tracking
+			private ArchiveDataViewDetails archiveTrackView;
+			private ArchiveDataViewDetailsData archiveDetailsData;
+			//
+			private int archivetrackingIndex = 0;
+		private int archiveDataCounter;
 		
 		// Add Item
 		private AddItemProduction addItem;
@@ -168,6 +180,14 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         
         rebrandingTrackView = new RebrandingDataViewDetails();
         rebrandingDetailsData = new RebrandingDataViewDetailsData();
+        
+        
+        // Archive
+        archiveMain = new ArchivePanelMain();
+        archiveData = new ArchiveData();
+        
+        archiveTrackView = new ArchiveDataViewDetails();
+        archiveDetailsData = new ArchiveDataViewDetailsData();
 
         
         // Add Item
@@ -180,6 +200,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         panelNav.add(nav);
         container.add(kbnMain);
         container.add(rebrandingMain);
+        container.add(archiveMain);
         kbnMain.container.setViewportView(kbnData);
         defaultPanel();
         kbnMain.setVisible(true);
@@ -195,6 +216,9 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	private void defaultPanel() {
 		kbnMain.setVisible(false);
 		rebrandingMain.setVisible(false);
+		archiveMain.setVisible(false);
+		
+		nav.btnAddItem.setVisible(false);
 	}
 
 	// Action Listener
@@ -258,6 +282,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.btnKBNProduct.setBackground(new Color(8, 104, 0));
 		nav.btnKBNProduct.setForeground(new Color(255, 255,255));
         defaultPanel();
+        
         btnChecker = nav.btnKBNProduct;
         addItem.btnChecker = "KBN";
         kbnData = new KBNData();
@@ -265,6 +290,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         kbnDataCounter_();
         kbnDataButtons();
         kbnDataPanelGenerator();
+        
+        nav.btnAddItem.setVisible(true);
         kbnMain.setVisible(true);
 	}
 	
@@ -307,6 +334,233 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
+	private void kbnAdd() {
+		try {
+			addItem.btnVerifyFuncKBN();
+			if(addItem.checker.equals("Verified")) {
+				String prodName = addItem.txtProductName.getText();
+				String variant = addItem.cbVariant.getSelectedItem() + "";
+				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
+				
+		        LocalDate currentDate = LocalDate.now();
+		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		        String formattedDate = currentDate.format(formatter);
+		        
+				String checker = "SELECT TrackingID "
+						+ "FROM tblconfirmationtracking WHERE DateAdded >= CURDATE() AND STATUS = 'PENDING' AND ProductType = 'KBN';";
+				
+				System.out.println(checker);
+				
+				int checker__ = 0;
+				st.execute(checker);
+				rs = st.getResultSet();
+				if(rs.next()) {
+					checker__++;
+				}
+				
+				if(checker__ == 0) {
+					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy,ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'KBN');";
+					st.execute(SQLTracking);
+				}
+				
+				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded) \n"
+						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME \n"
+						+ "FROM tblconfirmationtracking AS a \n"
+						+ "JOIN tblproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
+						+ "GROUP BY b.prodName, b.prodVolume;";
+				
+
+				st.execute(SQLConfirmDATA);
+				JMessage("Product Added!");
+				addItem.txtProductName.setText("");
+				addItem.cbVariant.removeAllItems();
+				addItem.txtQuantity.setText("0");
+				addItem.checker = "Not-Verified";
+				if(addItem.closeChecker.isSelected()) {
+					kbnDataFunc();
+					addItem.dispose();
+				}
+				addItem.closeChecker.setSelected(false);
+			}else {
+				JMessage("Please Verify first");
+			}
+		} catch (Exception e) {
+			JMessage("Error btnAddItem: " + e.getMessage());
+		}
+	}
+	
+	private void viewDetails(int index) {
+		try {
+			trackingIndex = index;
+			String trackingID = kbnData.lblTrackingID[index].getText();
+	        trackView.lblTrackingID.setText("Tracking ID: " + trackingID);
+	        
+	        KBNDetailsData = new KBNDataViewDetailsData();
+	        trackView.scrollPane.setViewportView(KBNDetailsData);
+	        
+	        String SQLCount = "SELECT COUNT(a.ProductName) \n"
+	        		+ "FROM tblconfirmationproduct AS a \n"
+	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "';";
+	        
+	        st.execute(SQLCount);
+	        rs = st.getResultSet();
+	        
+	        int count = 0;
+	        if(rs.next())
+	        	count = rs.getInt(1);
+	        
+	        KBNDetailsData.prodCount(count);
+	        
+	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM, b.TrackingID \n"
+	        		+ "FROM tblconfirmationproduct AS a \n"
+	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        
+	        st.execute(SQL);
+	        rs = st.getResultSet();
+	        int i = 0;
+	        while(rs.next()) {
+	        	KBNDetailsData.productID[i] = rs.getString(1);
+	        	KBNDetailsData.lblProductName[i].setText(rs.getString(2));
+	        	KBNDetailsData.lblVariant[i].setText(rs.getString(3));
+	        	KBNDetailsData.lblQuantity[i].setText(rs.getString(4));
+	        	KBNDetailsData.lblTime[i].setText(rs.getString(5));
+
+		        KBNDetailsData.TrackingID = rs.getString(6);
+		        if(!kbnData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
+		        	KBNDetailsData.btnDelete[i].setVisible(false);
+		     	KBNDetailsData.btnDelete[i].addActionListener(this);
+	        	i++;
+
+	        }
+
+			trackView.revalidate();
+			trackView.setVisible(true);
+		} catch (Exception e) {
+			JMessage("Error viewDetails: " + e.getMessage());
+		}
+
+	}
+	
+	private void deleteDetails(int index) {
+		try {
+			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + KBNDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
+			if (dialogResult == JOptionPane.YES_OPTION) {
+				
+				
+				if(KBNDetailsData.productID.length == 1) {
+					String SQLInsert1 = "INSERT INTO tblconfirmationtrackingarchive \n"
+							+ "SELECT * FROM tblconfirmationtracking WHERE TrackingID = '" + KBNDetailsData.TrackingID + "'; \n";
+					String SQLDelete1 = "DELETE FROM tblconfirmationtracking WHERE TrackingID = '" + KBNDetailsData.TrackingID + "'; \n";
+					
+					String SQLInsert = "INSERT INTO tblconfirmationproductarchive \n"
+							+ "SELECT * FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'; \n";
+					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'; \n";
+					
+
+					
+					ArrayList<String> arrTemp = new ArrayList<>(); // KBN DELETE
+					
+					
+					String SQLChecker = "SELECT TrackingID FROM tblconfirmationtrackingarchive WHERE TrackingID = '" + KBNDetailsData.TrackingID + "';";
+					st.execute(SQLChecker);
+					
+					rs = st.getResultSet();
+					int checker = 0;
+					while(rs.next())
+						checker++;
+					
+					if(checker == 0)
+						arrTemp.add(SQLInsert1);
+
+					arrTemp.add(SQLInsert);
+					arrTemp.add(SQLDelete1);
+					arrTemp.add(SQLDelete);
+					
+					String Procedures = "CREATE PROCEDURE deleteKBN()\r\n"
+							+ "BEGIN\r\n"
+							+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+							+ "    BEGIN\r\n"
+							+ "        ROLLBACK;\r\n"
+							+ "        RESIGNAL;\r\n"
+							+ "    END;\r\n"
+							+ "\r\n"
+							+ "    START TRANSACTION;\r\n"
+							+ "";
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						Procedures = Procedures + arrTemp.get(i);
+					}
+					
+					Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+							+ "    COMMIT;\r\n"
+							+ "END;";
+					st.execute("DROP PROCEDURE IF EXISTS deleteKBN;");
+					st.execute(Procedures);
+					st.execute("CALL deleteKBN();");
+					
+					viewDetails(trackingIndex);
+					kbnDataFunc();
+					arrTemp.clear();
+					trackView.dispose();
+				}else {
+					ArrayList<String> arrTemp = new ArrayList<>(); // KBN DELETE
+					
+					String SQLChecker = "SELECT TrackingID FROM tblconfirmationtrackingarchive WHERE TrackingID = '" + KBNDetailsData.TrackingID + "';";
+					st.execute(SQLChecker);
+					
+					String SQLInsert1 = "INSERT INTO tblconfirmationtrackingarchive \n"
+							+ "SELECT * FROM tblconfirmationtracking WHERE TrackingID = '" + KBNDetailsData.TrackingID + "'; \n";
+					
+					rs = st.getResultSet();
+					int checker = 0;
+					while(rs.next())
+						checker++;
+					
+					if(checker == 0)
+						arrTemp.add(SQLInsert1);
+					
+					
+					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'; \n";
+					String SQLInsert = "INSERT INTO tblconfirmationproductarchive \n"
+							+ "SELECT * FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'; \n";
+					arrTemp.add(SQLInsert);
+					arrTemp.add(SQLDelete);
+					String Procedures = "CREATE PROCEDURE deleteKBN()\r\n"
+							+ "BEGIN\r\n"
+							+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+							+ "    BEGIN\r\n"
+							+ "        ROLLBACK;\r\n"
+							+ "        RESIGNAL;\r\n"
+							+ "    END;\r\n"
+							+ "\r\n"
+							+ "    START TRANSACTION;\r\n"
+							+ "";
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						Procedures = Procedures + arrTemp.get(i);
+					}
+					
+					Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+							+ "    COMMIT;\r\n"
+							+ "END;";
+					
+					st.execute("DROP PROCEDURE IF EXISTS deleteKBN;");
+					st.execute(Procedures);
+					st.execute("CALL deleteKBN();");
+					arrTemp.clear();
+					viewDetails(trackingIndex);
+				}
+			}else {
+				
+			}
+
+		} catch (Exception e) {
+			JMessage("Error deleteDetails: " + e.getMessage());
+		}
+	}
+	
 	// Rebranding
 	private void rebrandingFunc() {
 		navColor();
@@ -320,6 +574,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         rebrandingDataCounter_();
         rebrandingDataButtons();
         rebrandingDataPanelGenerator();
+        nav.btnAddItem.setVisible(true);
         rebrandingMain.setVisible(true);
 	}
 	
@@ -362,58 +617,6 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
-	private void kbnAdd() {
-		try {
-			addItem.btnVerifyFuncKBN();
-			if(addItem.checker.equals("Verified")) {
-				String prodName = addItem.txtProductName.getText();
-				String variant = addItem.cbVariant.getSelectedItem() + "";
-				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
-				
-		        LocalDate currentDate = LocalDate.now();
-		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		        String formattedDate = currentDate.format(formatter);
-		        
-				String checker = "SELECT TrackingID "
-						+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING' AND ProductType = 'KBN'";
-				
-				int checker__ = 0;
-				st.execute(checker);
-				rs = st.getResultSet();
-				if(rs.next()) {
-					checker__++;
-				}
-				
-				if(checker__ == 0) {
-					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy,ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'KBN');";
-					st.execute(SQLTracking);
-				}
-				
-				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded) \n"
-						+ "SELECT MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME \n"
-						+ "FROM tblconfirmationtracking AS a \n"
-						+ "JOIN tblproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
-						+ "GROUP BY b.prodName, b.prodVolume;";
-				
-
-				st.execute(SQLConfirmDATA);
-				JMessage("Product Added!");
-				addItem.txtProductName.setText("");
-				addItem.cbVariant.removeAllItems();
-				addItem.txtQuantity.setText("0");
-				addItem.checker = "Not-Verified";
-				if(addItem.closeChecker.isSelected()) {
-					kbnDataFunc();
-					addItem.dispose();
-				}
-				addItem.closeChecker.setSelected(false);
-			}else {
-				JMessage("Please Verify first");
-			}
-		} catch (Exception e) {
-			JMessage("Error btnAddItem: " + e.getMessage());
-		}
-	}
 	
 	private void rebrandingAdd() {
 		try {
@@ -432,7 +635,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	        String formattedDate = currentDate.format(formatter);
 	        
 			String checker = "SELECT TrackingID "
-					+ "FROM tblconfirmationtracking WHERE DateAdded >= '" + formattedDate +"' AND STATUS = 'PENDING' AND ProductType = 'REBRANDING'";
+					+ "FROM tblconfirmationtracking WHERE DateAdded >= CURDATE() AND STATUS = 'PENDING' AND ProductType = 'REBRANDING'";
 			
 			int checker__ = 0;
 			st.execute(checker);
@@ -469,59 +672,120 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
-	// View Details Data
-	private void viewDetails(int index) {
+	private void RebranddeleteDetails(int index) {
 		try {
-			trackingIndex = index;
-			String trackingID = kbnData.lblTrackingID[index].getText();
-	        trackView.lblTrackingID.setText("Tracking ID: " + trackingID);
-	        
-	        KBNDetailsData = new KBNDataViewDetailsData();
-	        trackView.scrollPane.setViewportView(KBNDetailsData);
-	        
-	        String SQLCount = "SELECT COUNT(a.ProductName) \n"
-	        		+ "FROM tblconfirmationproduct AS a \n"
-	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
-	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
-	        
-	        st.execute(SQLCount);
-	        rs = st.getResultSet();
-	        
-	        int count = 0;
-	        if(rs.next())
-	        	count = rs.getInt(1);
-	        
-	        KBNDetailsData.prodCount(count);
-	        
-	        String SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM, b.TrackingID \n"
-	        		+ "FROM tblconfirmationproduct AS a \n"
-	        		+ "JOIN tblconfirmationtracking AS b ON a.TrackingID = b.TrackingID \n"
-	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
-	        
-	        st.execute(SQL);
-	        rs = st.getResultSet();
-	        int i = 0;
-	        while(rs.next()) {
-	        	KBNDetailsData.productID[i] = rs.getString(1);
-	        	KBNDetailsData.lblProductName[i].setText(rs.getString(2));
-	        	KBNDetailsData.lblVariant[i].setText(rs.getString(3));
-	        	KBNDetailsData.lblQuantity[i].setText(rs.getString(4));
-	        	KBNDetailsData.lblTime[i].setText(rs.getString(5));
+			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + rebrandingDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
+			if (dialogResult == JOptionPane.YES_OPTION) {
+				if(rebrandingDetailsData.productID.length == 1) {
+					
+					String SQLInsert1 = "INSERT INTO tblconfirmationtrackingarchive \n"
+							+ "SELECT * FROM tblconfirmationtracking WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "'; \n";
+					String SQLDelete1 = "DELETE FROM tblconfirmationtracking WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "'; \n";
+					
+					String SQLInsert = "INSERT INTO tblconfirmationproductRebrandingarchive \n"
+							+ "SELECT * FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'; \n";
+					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + rebrandingDetailsData.productID[index] + "'; \n";
+					
 
-		        KBNDetailsData.TrackingID = rs.getString(6);
-		        if(!kbnData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
-		        	KBNDetailsData.btnDelete[i].setVisible(false);
-		     	KBNDetailsData.btnDelete[i].addActionListener(this);
-	        	i++;
+					
+					ArrayList<String> arrTemp = new ArrayList<>(); // KBN DELETE
+					
+					
+					String SQLChecker = "SELECT TrackingID FROM tblconfirmationtrackingarchive WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "';";
+					st.execute(SQLChecker);
+					
+					rs = st.getResultSet();
+					int checker = 0;
+					while(rs.next())
+						checker++;
+					
+					if(checker == 0)
+						arrTemp.add(SQLInsert1);
 
-	        }
+					arrTemp.add(SQLInsert);
+					arrTemp.add(SQLDelete1);
+					arrTemp.add(SQLDelete);
+					
+					String Procedures = "CREATE PROCEDURE deleteREBRANDING()\r\n"
+							+ "BEGIN\r\n"
+							+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+							+ "    BEGIN\r\n"
+							+ "        ROLLBACK;\r\n"
+							+ "        RESIGNAL;\r\n"
+							+ "    END;\r\n"
+							+ "\r\n"
+							+ "    START TRANSACTION;\r\n"
+							+ "";
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						Procedures = Procedures + arrTemp.get(i);
+					}
+					
+					Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+							+ "    COMMIT;\r\n"
+							+ "END;";
+					st.execute("DROP PROCEDURE IF EXISTS deleteREBRANDING;");
+					st.execute(Procedures);
+					st.execute("CALL deleteREBRANDING();");
+					
+					RebrandViewDetails(rebrandingtrackingIndex);
+					rebrandingFunc();
+					rebrandingTrackView.dispose();
+				}else {
+					
+					ArrayList<String> arrTemp = new ArrayList<>(); // Rebranding DELETE
+					
+					String SQLChecker = "SELECT TrackingID FROM tblconfirmationtrackingarchive WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "';";
+					st.execute(SQLChecker);
+					
+					String SQLInsert1 = "INSERT INTO tblconfirmationtrackingarchive \n"
+							+ "SELECT * FROM tblconfirmationtracking WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "'; \n";
+					
+					rs = st.getResultSet();
+					int checker = 0;
+					while(rs.next())
+						checker++;
+					
+					if(checker == 0)
+						arrTemp.add(SQLInsert1);
+					
+					
+					String SQLDelete = "DELETE FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'; \n";
+					String SQLInsert = "INSERT INTO tblconfirmationproductRebrandingarchive \n"
+							+ "SELECT * FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'; \n";
+					arrTemp.add(SQLInsert);
+					arrTemp.add(SQLDelete);
+					String Procedures = "CREATE PROCEDURE deleteREBRANDING()\r\n"
+							+ "BEGIN\r\n"
+							+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+							+ "    BEGIN\r\n"
+							+ "        ROLLBACK;\r\n"
+							+ "        RESIGNAL;\r\n"
+							+ "    END;\r\n"
+							+ "\r\n"
+							+ "    START TRANSACTION;\r\n"
+							+ "";
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						Procedures = Procedures + arrTemp.get(i);
+					}
+					
+					Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+							+ "    COMMIT;\r\n"
+							+ "END;";
+					
+					st.execute("DROP PROCEDURE IF EXISTS deleteREBRANDING;");
+					st.execute(Procedures);
+					st.execute("CALL deleteREBRANDING();");
+					RebrandViewDetails(rebrandingtrackingIndex);
+				}
+			}else {
+				
+			}
 
-			trackView.revalidate();
-			trackView.setVisible(true);
 		} catch (Exception e) {
-			JMessage("Error viewDetails: " + e.getMessage());
+			JMessage("Error RebranddeleteDetails: " + e.getMessage());
 		}
-
 	}
 	
 	private void RebrandViewDetails(int index) {
@@ -579,60 +843,134 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 
 	}
 	
-	private void deleteDetails(int index) {
+	// Archive
+	private void archiveFunc() {
+		navColor();
+		nav.btnArchiveList.setBackground(new Color(8, 104, 0));
+		nav.btnArchiveList.setForeground(new Color(255, 255,255));
+        defaultPanel();
+        
+        btnChecker = nav.btnRebrandingProduct;
+        archiveData = new ArchiveData();
+        archiveMain.container.setViewportView(archiveData);
+        
+        archiveDataCounter_();
+        archiveDataButtons();
+        archiveDataPanelGenerator();
+        
+        archiveMain.setVisible(true);
+	}
+	
+	private void archiveDataCounter_() {
 		try {
-			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + KBNDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
-			if (dialogResult == JOptionPane.YES_OPTION) {
-				if(KBNDetailsData.productID.length == 1) {
-					String SQLDelete1 = "DELETE FROM tblconfirmationtracking WHERE TrackingID = '" + KBNDetailsData.TrackingID + "'";
-					st.execute(SQLDelete1);
-					
-					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'";
-					st.execute(SQLDelete);
-					
-					viewDetails(trackingIndex);
-					kbnDataFunc();
-					trackView.dispose();
-				}else {
-					String SQLDelete = "DELETE FROM tblconfirmationproduct WHERE ID = '" + KBNDetailsData.productID[index] + "'";
-					st.execute(SQLDelete);
-					viewDetails(trackingIndex);
-				}
-			}else {
-				
-			}
-
+			String SQL = "SELECT COUNT(TrackingID) FROM tblconfirmationtrackingarchive;";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			if(rs.next())
+				archiveDataCounter = rs.getInt(1);
+			
+			archiveData.iCountKBNProducts(archiveDataCounter);
 		} catch (Exception e) {
-			JMessage("Error deleteDetails: " + e.getMessage());
+			JMessage("Error archiveDataCounter_: " + e.getMessage());
 		}
 	}
 	
-	private void RebranddeleteDetails(int index) {
-		try {
-			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + rebrandingDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
-			if (dialogResult == JOptionPane.YES_OPTION) {
-				if(rebrandingDetailsData.productID.length == 1) {
-					String SQLDelete1 = "DELETE FROM tblconfirmationtracking WHERE TrackingID = '" + rebrandingDetailsData.TrackingID + "'";
-					st.execute(SQLDelete1);
-					
-					String SQLDelete = "DELETE FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'";
-					st.execute(SQLDelete);
-					
-					RebrandViewDetails(trackingIndex);
-					rebrandingFunc();
-					rebrandingTrackView.dispose();
-				}else {
-					String SQLDelete = "DELETE FROM tblconfirmationproductRebranding WHERE ID = '" + rebrandingDetailsData.productID[index] + "'";
-					st.execute(SQLDelete);
-					RebrandViewDetails(trackingIndex);
-				}
-			}else {
-				
-			}
-
-		} catch (Exception e) {
-			JMessage("Error RebranddeleteDetails: " + e.getMessage());
+	private void archiveDataButtons() {
+		for(int i = 0; i < archiveDataCounter; i++) {
+			archiveData.btnViewDetails[i].addActionListener(this);
 		}
+	}
+	
+	private void archiveDataPanelGenerator() {
+		try {
+			String SQL = "SELECT a.TrackingID, DATE_FORMAT(a.DateAdded, '%Y-%m-%d') AS FormattedDateAdded, a.Status, a.AddedBy \n"
+					+ "FROM tblconfirmationtrackingarchive AS a;";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				archiveData.lblTrackingID[i].setText(rs.getString(1));
+				archiveData.lblDate[i].setText(rs.getString(2));
+				archiveData.lblStatus[i].setText(rs.getString(3));
+				i++;
+			}
+		} catch (Exception e) {
+			JMessage("Error archiveDataPanelGenerator: " + e.getMessage());
+		}
+	}
+	
+	private void archiveViewDetails(int index) {
+		try {
+			String SQL = "";
+			archivetrackingIndex = index;
+			String trackingID = archiveData.lblTrackingID[index].getText();
+			archiveTrackView.lblTrackingID.setText("Tracking ID: " + trackingID);
+	        
+			archiveDetailsData = new ArchiveDataViewDetailsData();
+	        archiveTrackView.scrollPane.setViewportView(archiveDetailsData);
+	        
+	        String SQLCount = "SELECT COUNT(c.ProductName)\r\n"
+	        		+ "FROM tblconfirmationtrackingarchive AS b\r\n"
+	        		+ "JOIN tblconfirmationproductarchive AS c ON b.TrackingID = c.TrackingID\r\n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "';";
+	        
+	        st.execute(SQLCount);
+	        rs = st.getResultSet();
+	        
+	        int count = 0;
+	        if(rs.next())
+	        	count = rs.getInt(1);
+	        
+	        // KBN
+	        SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM, b.TrackingID \n"
+	        		+ "FROM tblconfirmationproductarchive AS a \n"
+	        		+ "JOIN tblconfirmationtrackingarchive AS b ON a.TrackingID = b.TrackingID \n"
+	        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        
+	        if(count == 0) {
+	        	SQLCount = "SELECT COUNT(a.ProductName)\r\n"
+	        			+ "FROM tblconfirmationproductRebrandingarchive AS a \r\n"
+	        			+ "JOIN tblconfirmationtrackingarchive AS b ON a.TrackingID = b.TrackingID \r\n"
+	        			+ "WHERE b.TrackingID = '" + trackingID + "';";
+	        	st.execute(SQLCount);
+	        	rs = st.getResultSet();
+	        	
+	        	if(rs.next())
+	        		count = rs.getInt(1);
+	        	
+	        	// REBRANDING
+		        SQL = "SELECT a.ID, a.ProductName, a.ProductVariant, a.ProductQuantity, DATE_FORMAT(a.TimeAdded, '%h:%i %p') AS TimeAdded_AMPM, b.TrackingID \n"
+		        		+ "FROM tblconfirmationproductRebrandingarchive AS a \n"
+		        		+ "JOIN tblconfirmationtrackingarchive AS b ON a.TrackingID = b.TrackingID \n"
+		        		+ "WHERE b.TrackingID = '" + trackingID + "'";
+	        }
+	        
+	        archiveDetailsData.prodCount(count);
+	        
+	        st.execute(SQL);
+	        rs = st.getResultSet();
+	        int i = 0;
+	        while(rs.next()) {
+	        	archiveDetailsData.productID[i] = rs.getString(1);
+	        	archiveDetailsData.lblProductName[i].setText(rs.getString(2));
+	        	archiveDetailsData.lblVariant[i].setText(rs.getString(3));
+	        	archiveDetailsData.lblQuantity[i].setText(rs.getString(4));
+	        	archiveDetailsData.lblTime[i].setText(rs.getString(5));
+
+	        	archiveDetailsData.TrackingID = rs.getString(6);
+		        if(!archiveData.lblStatus[index].getText().equalsIgnoreCase("PENDING"))
+		        	archiveDetailsData.btnDelete[i].setVisible(false);
+		        archiveDetailsData.btnDelete[i].addActionListener(this);
+	        	i++;
+
+	        }
+
+			archiveTrackView.revalidate();
+			archiveTrackView.setVisible(true);
+		} catch (Exception e) {
+			JMessage("Error Rebranding viewDetails: " + e.getMessage());
+		}
+
 	}
 	
 	@Override
@@ -645,11 +983,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			if(e.getSource() == nav.btnRebrandingProduct)
 				rebrandingFunc();
 
-			if(e.getSource() == nav.btnArchiveList) {
-				navColor();
-				nav.btnArchiveList.setBackground(new Color(8, 104, 0));
-				nav.btnArchiveList.setForeground(new Color(255, 255,255));
-			}
+			if(e.getSource() == nav.btnArchiveList)
+				archiveFunc();
 			
 			if(e.getSource() == nav.btnAddItem) {
 				if(btnChecker == nav.btnKBNProduct)
@@ -667,18 +1002,6 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			
 			if(e.getSource() == addItemRebrand.btnAddItem)
 				rebrandingAdd();
-			
-		// Module Selection
-			if(e.getSource() == moduleSelection.btnMarketingModule) {
-				marketingModule = new MarketingModule();
-				marketingModule.setVisible(true);
-				this.dispose();
-			}
-			if(e.getSource() == moduleSelection.btnWarehouseModule) {
-				warehouseModule = new WarehouseModule_1();
-				warehouseModule.setVisible(true);
-				this.dispose();
-			}
 		
 		// KBNData Buttons
 			if(kbnData.btnViewDetails != null) {
@@ -690,7 +1013,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				}
 			}
 			
-		// Tracking
+		// KBN Tracking
 		if(KBNDetailsData.btnDelete != null) {
 			if(KBNDetailsData.btnDelete.length != 0) {
 				for(int i = 0; i < KBNDetailsData.btnDelete.length; i++) {
@@ -722,6 +1045,29 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					}
 				}
 			}
+		}
+		
+		// Rebraning Data Buttons
+		if(archiveData.btnViewDetails != null) {
+			for(int i = 0; i < archiveData.btnViewDetails.length; i++) {
+				if(e.getSource() == archiveData.btnViewDetails[i]) {
+					archiveViewDetails(i);
+					break;
+				}
+			}
+		}
+		
+		
+	// Module Selection
+		if(e.getSource() == moduleSelection.btnMarketingModule) {
+			marketingModule = new MarketingModule();
+			marketingModule.setVisible(true);
+			this.dispose();
+		}
+		if(e.getSource() == moduleSelection.btnWarehouseModule) {
+			warehouseModule = new WarehouseModule_1();
+			warehouseModule.setVisible(true);
+			this.dispose();
 		}
 			
 
