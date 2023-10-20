@@ -314,7 +314,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         setVisiblePanel();
         defaultPanel();
 //        mostSoldProd();
-		chartdataSetter();
 		dashboard1();
 		btnChecker = btnDashboard;
 		preRegStatus();
@@ -1593,6 +1592,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void dashboard1() {
+		chartdataSetter();
 		orderCounterDashboard(); // get orderCount
 		setOrderListDataDashboard(); // set data in Dashboard
 		timeDiff();
@@ -2093,23 +2093,32 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rebrandingNew.btnArchive.setForeground(Color.BLACK);
 		
         try {
-        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, SUM(a.Sold) AS TotalSold, c.FinishProduct\r\n"
+
+        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
+        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
+        			+ "SUM(a.Sold) AS TotalSold,\r\n"
+        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
+        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
+        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
+        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
+        			+ "c.FinishProduct\r\n"
         			+ "FROM tblrebrandingproducts AS a\r\n"
         			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
         			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
         			+ "WHERE b.AccountType = 'Rebranding'\r\n"
-        			+ "GROUP BY a.userID, Product\r\n"
-        			+ "ORDER BY TotalSold DESC;";
+        			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
         	st.execute(sql);
         	rs = st.getResultSet();
         	ArrayList temp = new ArrayList<>();
         	while(rs.next()) {
-        		temp.add(rs.getString(1));
-        		temp.add(rs.getString(2));
-        		temp.add(rs.getString(3));
-        		temp.add(rs.getString(4));
-        		temp.add(rs.getString(5));
-        		temp.add(rs.getString(6));
+        		temp.add(rs.getString(1)); //prodID
+        		temp.add(rs.getString(2)); // userID
+        		temp.add(rs.getString(3)); // FullName
+        		temp.add(rs.getString(4)); // ProductName
+        		temp.add(rs.getString(5));// Total Sold
+        		temp.add(rs.getInt(6)); // Available
+        		temp.add(rs.getString(7)); // Return
+        		temp.add(rs.getString(8)); // Total
         		rebrandingNew.main.addRow(temp.toArray());
         		temp.clear();
         	}
@@ -2591,15 +2600,58 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Error confirmButtonFunc KBN: " + e.getMessage());
-					System.out.println(e.getMessage());
 				}
 			}
 		} else if(ProductType.equals("REBRANDING")) {
 			if (dialogResult == JOptionPane.YES_OPTION) {
 				try {
+					st.execute("DROP PROCEDURE IF EXISTS confirmProduct;");
+					ArrayList arrTemp = new ArrayList<>();
+					String UpdateSQL = "UPDATE tblconfirmationtracking \n"
+							+ "SET Status = 'COMPLETED' \n"
+							+ "WHERE TrackingID = '" + TrackingID + "';\n";
+					arrTemp.add(UpdateSQL);
+					
+					for(int i = 0; i < confirmationPanel.table.getRowCount(); i++) {
+						
+						String sqlUpdate = "UPDATE tblrebrandingfinishproduct AS a \n"
+								+ "JOIN tblrebrandingproducts AS b ON b.prodID = a.ID \n"
+								+ "SET a.FinishProduct = a.FinishProduct + '" + confirmationPanel.table.getValueAt(i, 3) + "' \n"
+								+ "WHERE b.prodName = '" + confirmationPanel.table.getValueAt(i, 1) + "' AND prodVolume = '" + confirmationPanel.table.getValueAt(i, 2) + "';";
+						arrTemp.add(sqlUpdate);
+							
+					}
+					
+					String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','Confirm Stock - TrackingID: " + TrackingID + "');\n";
+					arrTemp.add(AuditTrail);
+					
+					String Procedures = "CREATE PROCEDURE confirmProduct()\r\n"
+							+ "BEGIN\r\n"
+							+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+							+ "    BEGIN\r\n"
+							+ "        ROLLBACK;\r\n"
+							+ "        RESIGNAL;\r\n"
+							+ "    END;\r\n"
+							+ "\r\n"
+							+ "    START TRANSACTION;\r\n"
+							+ "";
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						Procedures = Procedures + arrTemp.get(i);
+					}
+					
+					Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+							+ "    COMMIT;\r\n"
+							+ "END;";
+					
+					st.execute(Procedures);
+					st.execute("CALL confirmProduct();");
+					JOptionPane.showMessageDialog(null, "Stock Added!");
+					confirmationPanel.btnConfirm.setVisible(false);
+					confrimationPanelFunc();
 					
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Error confirmButtonFunc REBRANDING: " + e.getMessage());
+					JOptionPane.showMessageDialog(null, "Error confirmButtonFunc KBN: " + e.getMessage());
 				}
 			}
 		}

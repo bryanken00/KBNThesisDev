@@ -124,7 +124,7 @@ public class RebrandingNew extends JPanel implements MouseListener {
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-        String columnIdentifiers[] = {"Product ID", "User ID", "Client Name", "Product Name", "Sold",  "Finish Product"};
+        String columnIdentifiers[] = {"Product ID", "User ID", "Client Name", "Product Name", "Sold", "Available", "Return", "Total"};
         main.setColumnIdentifiers(columnIdentifiers);
 		table.setModel(main);
         Font cellFont = new Font("Arial", Font.PLAIN, 14);
