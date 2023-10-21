@@ -68,7 +68,7 @@ public class KBNProducts extends JPanel implements MouseListener {
 		String [] sort = {"Sort"};
 		
 		txtSearchBar = new JTextField();
-		txtSearchBar.setBounds(684, 61, 200, 32);
+		txtSearchBar.setBounds(614, 61, 270, 32);
 		txtSearchBar.setText("Search by Product Name");
 		txtSearchBar.setForeground(Color.GRAY);
 		txtSearchBar.addMouseListener(this);

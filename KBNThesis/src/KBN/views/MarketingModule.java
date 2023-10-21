@@ -635,7 +635,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			rebrandingNewPanelFunc();
 		if(e.getSource() == rebrandingNew.btnArchive)
 			rebrandingNewPanelFuncArchive();
-		
+		if(e.getSource() == rebrandingNew.btnSearch)
+			RebrandingPanelFuncSearch(rebrandingNew.txtSearchBar.getText());
 		
 		
 		if(e.getSource() == btnCustomerAccount)
@@ -802,8 +803,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			clientProfileOrderHistoryActionlist();
 		}
 		if(e.getSource() == cp.lblProducts) {
-			cp.scrollOrderPanel.setViewportView(rp);
 			clientProfileOwnProductsRefresher(uID);
+			cp.scrollOrderPanel.setViewportView(rp);
 		}
 		
 		if(e.getComponent() instanceof JButton) {
@@ -2035,13 +2036,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(kbnProdButtonChecker.equals("Archive"))
 			checker__ = "tblproductsarchive";
 		else
-			checker__ = "tblProducts";
+			checker__ = "tblproducts";
 		setVisiblePanel();
 		kbnProd.main.setRowCount(0);
 		kbnProd.table.setModel(kbnProd.main);
+		String sql = "";
+		if(!kbnProd.txtSearchBar.getText().equals(""))
+			sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM " + checker__ + " WHERE prodName LIKE '%" + search + "%'";
+		else
+			sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM " + checker__ + ";";
         
         try {
-        	String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity, Sold FROM " + checker__ + " WHERE prodName LIKE '%" + search + "%'";
+        	
         	st.execute(sql);
         	rs = st.getResultSet();
         	while(rs.next()) {
@@ -2144,24 +2150,41 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rebrandingNew.btnArchive.setForeground(Color.BLACK);
 		
         try {
-        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, SUM(a.Sold) AS TotalSold, c.FinishProduct\r\n"
+        	
+        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
+        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
+        			+ "SUM(a.Sold) AS TotalSold,\r\n"
+        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
+        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
+        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
+        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
+        			+ "c.FinishProduct\r\n"
         			+ "FROM tblrebrandingproductsarchive AS a\r\n"
         			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
         			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
         			+ "WHERE b.AccountType = 'Rebranding'\r\n"
-        			+ "GROUP BY a.userID, Product\r\n"
-        			+ "ORDER BY TotalSold DESC;";
+        			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
+        	
+//        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, SUM(a.Sold) AS TotalSold, c.FinishProduct\r\n"
+//        			+ "FROM tblrebrandingproductsarchive AS a\r\n"
+//        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
+//        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
+//        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
+//        			+ "GROUP BY a.userID, Product\r\n"
+//        			+ "ORDER BY TotalSold DESC;";
         	
         	st.execute(sql);
         	rs = st.getResultSet();
         	ArrayList temp = new ArrayList<>();
         	while(rs.next()) {
-        		temp.add(rs.getString(1));
-        		temp.add(rs.getString(2));
-        		temp.add(rs.getString(3));
-        		temp.add(rs.getString(4));
-        		temp.add(rs.getString(5));
-        		temp.add(rs.getString(6));
+        		temp.add(rs.getString(1)); //prodID
+        		temp.add(rs.getString(2)); // userID
+        		temp.add(rs.getString(3)); // FullName
+        		temp.add(rs.getString(4)); // ProductName
+        		temp.add(rs.getString(5));// Total Sold
+        		temp.add(rs.getInt(6)); // Available
+        		temp.add(rs.getString(7)); // Return
+        		temp.add(rs.getString(8)); // Total
         		rebrandingNew.main.addRow(temp.toArray());
         		temp.clear();
         	}
@@ -2170,6 +2193,69 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		
 		rebrandingNew.setVisible(true);
+	}
+	
+	private void RebrandingPanelFuncSearch(String search) {
+		String checker__ = "";
+		if(rebrandingProdButtonChecker.equals("Archive"))
+			checker__ = "tblrebrandingproductsarchive";
+		else
+			checker__ = "tblrebrandingproducts";
+		setVisiblePanel();
+		rebrandingNew.main.setRowCount(0);
+		rebrandingNew.table.setModel(rebrandingNew.main);
+		String sql = "";
+		
+		if(!search.equals("Search by Product Name, Client Name"))
+			sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
+        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
+        			+ "SUM(a.Sold) AS TotalSold,\r\n"
+        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
+        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
+        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
+        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
+        			+ "c.FinishProduct\r\n"
+        			+ "FROM " + checker__ + " AS a\r\n"
+        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
+        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
+        			+ "WHERE b.AccountType = 'Rebranding' AND (a.prodName LIKE '%" + search + "%' OR CONCAT(b.Firstname, ' ', b.Lastname) LIKE '%" + search + "%')\r\n"
+        			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
+		else
+        	sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
+        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
+        			+ "SUM(a.Sold) AS TotalSold,\r\n"
+        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
+        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
+        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
+        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
+        			+ "c.FinishProduct\r\n"
+        			+ "FROM " + checker__ + " AS a\r\n"
+        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
+        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
+        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
+        			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
+        
+        try {
+        	
+        	st.execute(sql);
+        	rs = st.getResultSet();
+        	ArrayList temp = new ArrayList<>();
+        	while(rs.next()) {
+        		temp.add(rs.getString(1)); //prodID
+        		temp.add(rs.getString(2)); // userID
+        		temp.add(rs.getString(3)); // FullName
+        		temp.add(rs.getString(4)); // ProductName
+        		temp.add(rs.getString(5));// Total Sold
+        		temp.add(rs.getInt(6)); // Available
+        		temp.add(rs.getString(7)); // Return
+        		temp.add(rs.getString(8)); // Total
+        		rebrandingNew.main.addRow(temp.toArray());
+        		temp.clear();
+        	}
+        }catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "ERROR RebrandingPanelFuncSearch: " + e.getMessage());
+		}
+        rebrandingNew.setVisible(true);
 	}
 	
 	private void custAccPanelFunc() {
@@ -3037,6 +3123,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void clientProfileOwnProductsRefresher(String userID) {
 		try {
+			rp = new rebrandingProductsList();
 			String OrderCount = "SELECT COUNT(prodID) FROM tblrebrandingproducts WHERE userID = '" + userID + "'";
 			st.execute(OrderCount);
 			rs = st.getResultSet();

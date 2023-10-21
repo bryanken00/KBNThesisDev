@@ -68,8 +68,8 @@ public class RebrandingNew extends JPanel implements MouseListener {
 		String [] sort = {"Sort"};
 		
 		txtSearchBar = new JTextField();
-		txtSearchBar.setBounds(684, 61, 200, 32);
-		txtSearchBar.setText("Search by Product Name");
+		txtSearchBar.setBounds(614, 61, 270, 32);
+		txtSearchBar.setText("Search by Product Name, Client Name");
 		txtSearchBar.setForeground(Color.GRAY);
 		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setColumns(10);
@@ -215,7 +215,7 @@ public class RebrandingNew extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		if(txtSearchBar.getText().equals("Search by Product Name"))
+		if(txtSearchBar.getText().equals("Search by Product Name, Client Name"))
 			txtSearchBar.setText("");
 		txtSearchBar.setForeground(Color.BLACK);
 		txtSearchBar.setFocusable(true);
@@ -225,7 +225,7 @@ public class RebrandingNew extends JPanel implements MouseListener {
 	@Override
 	public void mouseExited(MouseEvent e) {
 		if(txtSearchBar.getText().equals("")) {
-			txtSearchBar.setText("Search by Product Name");
+			txtSearchBar.setText("Search by Product Name, Client Name");
 			txtSearchBar.setForeground(Color.GRAY);
 		}
 		txtSearchBar.setFocusable(false);

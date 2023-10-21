@@ -56,6 +56,7 @@ public class rebrandingProductsList extends JPanel {
 		lblProd[i] = new JLabel("For Approval");
 		lblProd[i].setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblProd[i].setHorizontalAlignment(SwingConstants.CENTER);
+		lblProd[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		lblProd[i].setBounds(10, 10, 218, 77);
 		panel[i].add(lblProd[i]);
 		
