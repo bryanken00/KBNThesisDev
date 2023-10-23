@@ -16,10 +16,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -33,10 +36,8 @@ import javax.swing.border.EmptyBorder;
 
 import com.toedter.calendar.JDateChooser;
 
-import KBN.views.MarketingModule;
 import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
-import KBNAdminPanel.panels.SalesReportPanel;
 import KBNAdminPanel.panels.Courier.CourierPanel;
 import KBNAdminPanel.panels.Courier.RightClick;
 import KBNAdminPanel.panels.Employee.EmployeeCreate;
@@ -46,6 +47,10 @@ import KBNAdminPanel.panels.Employee.EmployeePanel;
 import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
+import KBNAdminPanel.panels.SalesReport.SalesReportPanel;
+import KBNAdminPanel.panels.dashboard.Dashboard;
+import KBNAdminPanel.panels.dashboard.DashboardSalesChartData;
+import KBNAdminPanel.panels.dashboard.OrderListPanelData;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -80,6 +85,17 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	// Courier
 	private CourierPanel courierPanel;
 	private RightClick courierRightClick;
+	
+	// Dashboard
+	private Dashboard dashboard1;
+	private DashboardSalesChartData dashChartData;
+	private OrderListPanelData opdDashboard;
+	private LocalDate today;
+	
+	
+	// Dashboard
+	private int OrderCountDash = 0; // Order List
+	private String sqlTimeDiff;
 	
 	
 	//Database
@@ -119,6 +135,20 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         navs = new Navs();
         salesPanel = new SalesReportPanel();
         
+        // Dashboard
+        dashboard1 = new Dashboard();
+        opdDashboard = new OrderListPanelData();
+        today = LocalDate.now();
+        
+        sqlTimeDiff = "SELECT TIMESTAMPDIFF(HOUR, NOW(), a.OrderDate) AS HoursDifference, TIMESTAMPDIFF(MINUTE, a.OrderDate, NOW()) AS MinutesDifference\r\n"
+        		+ "FROM tblordercheckout AS a\r\n"
+        		+ "JOIN tblorderstatus As b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+        		+ "WHERE b.Status = 'toPay'\r\n"
+        		+ "ORDER BY OrderDate DESC LIMIT 1;";
+        
+        
+        
+        
         // Forecast
         forecast = new ForecastingPanel();
         forecastgraph = new ForecastGraphs();
@@ -150,6 +180,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 
         contentPane.add(courierRightClick);
         courierRightClick.setVisible(false);
+        
         // Components
 		components();
 		
@@ -158,7 +189,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		panel.add(navs);
 		
 		panelVisible();
-		salesPanel.setVisible(true);
 		
 		//Container
 		container.add(salesPanel);
@@ -166,6 +196,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		container.add(empPanel);
 		container.add(empCreate);
 		container.add(courierPanel);
+		container.add(dashboard1);
+			dashboard1.orderList.setViewportView(opdDashboard);
 		
 		empPanel.container.add(empList);
 		
@@ -173,10 +205,17 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		forecastgraph.graph1.add(bar1);
 		forecastgraph.graph2.add(bar2);
 		
-		btnChecker = navs.btnSalesReport;
+
+		dashboard1();
+		dashboard1.setVisible(true);
+		
+		btnChecker = navs.btnDashboard;
 	}
 	
+
+	
 	private void panelVisible() {
+		dashboard1.setVisible(false);
 		salesPanel.setVisible(false);
 		forecast.setVisible(false);
 		empPanel.setVisible(false);
@@ -185,6 +224,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	}
 	
 	private void actList() {
+		navs.btnDashboard.addActionListener(this);
 		navs.btnSalesReport.addActionListener(this);
 		navs.btnAudit.addActionListener(this);
 		navs.btnForecasting.addActionListener(this);
@@ -356,7 +396,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			
 			empGen.setEmpCount(empCount);
 			
-//			empGenRemoveButtons();
+			empGenRemoveButtons();
 			
 			String getEmpInfo = "SELECT a.accType, CONCAT(b.FirstName, \", \", b.LastName) AS Name, a.Department, b.EmailAdd, b.Contact, a.AccountID\r\n"
 					+ "FROM tblaccount AS a\r\n"
@@ -613,6 +653,11 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		if(e.getSource() == navs.btnDashboard) {
+			panelVisible();
+			dashboard1.setVisible(true);
+		}
 		if(e.getSource() == navs.btnSalesReport) {
 			panelVisible();
 			salesPanel.setVisible(true);
@@ -938,4 +983,434 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		// TODO Auto-generated method stub
 		
 	}
+	
+	// Dashboard
+	private void dashboard1() {
+		chartdataSetter();
+		orderCounterDashboard(); // get orderCount
+		setOrderListDataDashboard(); // set data in Dashboard
+		timeDiff();
+		dailyDashboard();
+		weeklyDashboard();
+		monthlyDashboard();
+		yearlyDashboard();
+		outStock();
+		lowStock();
+		
+		topSell();
+		leastSell();
+	}
+	
+	// chart
+    private void chartdataSetter() {
+    	try {
+            List<Integer> scores = new ArrayList<Integer>();
+            List<String> date = new ArrayList<String>();
+            int max = 0;
+
+    		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
+    				+ "GROUP BY b.OrderDate "
+    				+ "ORDER BY SUM(a.Quantity) DESC LIMIT 1";
+    		
+    		st.execute(sqlMaxCounterYaxis);
+    		rs = st.getResultSet();
+    		
+    		if(rs.next())
+    			max = rs.getInt(1);
+            	
+    		String X_axis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
+    				+ "GROUP BY b.OrderDate ";
+    		
+    		st.execute(X_axis);
+    		rs = st.getResultSet();
+    		
+    	    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
+    		
+    		while(rs.next()) {
+                scores.add(rs.getInt(1));
+        	    Date orderDate = rs.getDate(2);
+        	    String formattedDate = dateFormat.format(orderDate);
+                date.add(formattedDate);
+    		}
+
+            dashChartData = new DashboardSalesChartData(scores, max, date);
+            dashChartData.setBounds(0, 0, 381, 286);
+            dashboard1.panelGraph.add(dashChartData);
+            
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ChartData: " + e.getMessage());
+		}
+    }
+    
+	private void orderCounterDashboard() {
+		try {
+			String sql = "SELECT COUNT(OrderRefNumber) FROM tblorderstatus WHERE status = 'toPay'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				OrderCountDash = rs.getInt(1);
+			
+			opdDashboard.iOrderCount(OrderCountDash);
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error OrderCount: " + e.getMessage());
+		}
+	}
+	
+	private void setOrderListDataDashboard() {
+		try {
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE c.status = 'toPay'";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				opdDashboard.lblRefNumber[i].setText(rs.getString(1));
+				opdDashboard.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				opdDashboard.lblStatus[i].setText(rs.getString(5));
+				//status indicator
+				String path = "/KBNAdminPanel/resources/orderPanel/" + rs.getString(5) + ".png";
+				opdDashboard.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
+				opdDashboard.lblOrderStatusColor[i].revalidate();
+				opdDashboard.lblOrderStatusColor[i].repaint();
+				i++;
+			}
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR setOrderListData: " + e.getMessage());
+		}
+	}
+	
+	private void timeDiff() {
+		try {
+			st.execute(sqlTimeDiff);
+			rs = st.getResultSet();
+			double min = 0;
+			if(rs.next()) {
+				min = rs.getDouble(2);
+			}
+			
+			double hour = min / 60;
+			
+			double day;
+			
+			
+			if(hour > 0) {
+				day = hour / 24;
+				double remainingHours = day - (int)day; // get hours in decimal
+				double getHour = 24 * remainingHours; // to get hours
+				double remainingMinutes = getHour - (int) getHour; // get mins in decimal
+				double getMin = 60 * remainingMinutes; // to get mins
+				
+				String hr_ = (getHour > 1)? "Hours" : "Hour"; // check if the getHour value if more than 1
+				String min_ = (getMin > 1)? "Minutes" : "Minute"; // same with hr_
+				
+				String label = "New Order " + (int)day + " days, " + (int)getHour + " " + hr_ + ", and " + (int)getMin + " " + min_ + " ago";
+				dashboard1.lblTimeDiff.setText(label);
+			} else {
+			    String min_ = (min > 1) ? "Minutes" : "Minute";
+			    String label = "New Order " + min + " " + min_ + " ago";
+			    dashboard1.lblTimeDiff.setText(label);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "timeDiff ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void dailyDashboard() {
+		try {
+			double today = 0;
+			double lastDay = 1;
+			
+			String thisDayCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= CURDATE()";
+			
+			st.execute(thisDayCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				today = rs.getInt(1);
+			
+			String lastDayCount = "SELECT SUM(b.Quantity) FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= SUBDATE(CURDATE(),1) AND a.OrderDate <= CURDATE();";
+
+			st.execute(lastDayCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastDay = rs.getInt(1);
+			
+			if(lastDay == 0)
+				lastDay = 1;
+			
+			double percentage = (today / lastDay) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+			dashboard1.lblDailyPercent.setIcon(new ImageIcon(Dashboard.class.getResource("/KBNAdminPanel/resources/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void weeklyDashboard() {
+		try {
+			double thisWeek = 0;
+			double lastWeek = 1;
+			
+	        LocalDate mondayOfLastWeek = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	        LocalDate sundayOfLastWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+	        LocalDate mondaythisWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	        
+			String thisWeekCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + mondaythisWeek + "'";
+//			System.out.println("Present: " + thisWeekCount);
+			
+			st.execute(thisWeekCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisWeek = rs.getInt(1);
+			
+			String lastWeekCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + mondayOfLastWeek + "'  AND a.OrderDate <= '" + sundayOfLastWeek + "'";
+//			System.out.println("Last: " + lastWeekCount);
+
+			st.execute(lastWeekCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastWeek = rs.getInt(1);
+			
+			if(lastWeek == 0)
+				lastWeek = 1;
+			
+			
+			double percentage = (thisWeek / lastWeek) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+			dashboard1.lblWeeklyPercent.setIcon(new ImageIcon(Dashboard.class.getResource("/KBNAdminPanel/resources/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "weeklyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void monthlyDashboard() {
+		try {
+			double thisMonth = 0;
+			double lastMonth = 1;
+			
+			LocalDate firstDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+			LocalDate lastDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+			LocalDate firstDayOfThisMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+	        
+			String thisMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfThisMonth + "'";
+//			System.out.println(thisMonthCount);
+			
+			st.execute(thisMonthCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisMonth = rs.getInt(1);
+			
+			String lastMonthCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfLastMonth + "'  AND a.OrderDate <= '" + lastDayOfLastMonth + "'";
+//			System.out.println("Last: " + lastMonthCount);
+
+			st.execute(lastMonthCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastMonth = rs.getInt(1);
+			
+			if(lastMonth == 0)
+				lastMonth = 1;
+			
+			
+			double percentage = (thisMonth / lastMonth) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+			
+			
+			dashboard1.lblMonthlyPercent.setIcon(new ImageIcon(Dashboard.class.getResource("/KBNAdminPanel/resources/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void yearlyDashboard() {
+		try {
+			double thisYear = 0;
+			double lastYear = 1;
+			
+			LocalDate firstDayOfLastYear = today.minusYears(1).with(TemporalAdjusters.firstDayOfYear());
+			LocalDate lastDayOfLastYear = today.minusYears(1).with(TemporalAdjusters.lastDayOfYear());
+			LocalDate firstDayOfThisYear = today.with(TemporalAdjusters.firstDayOfYear());
+		    
+			String thisYearCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfThisYear + "'";
+//			System.out.println(thisYearCount);
+			
+			st.execute(thisYearCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				thisYear = rs.getInt(1);
+			
+			String lastYearCount = "SELECT SUM(b.Quantity) "
+					+ "FROM tblordercheckout AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "WHERE a.OrderDate >= '" + firstDayOfLastYear + "'  AND a.OrderDate <= '" + lastDayOfLastYear + "'";
+//			System.out.println("Last: " + lastYearCount);
+
+			st.execute(lastYearCount);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				lastYear = rs.getInt(1);
+			
+			if(lastYear == 0)
+				lastYear = 1;
+			
+			
+			double percentage = (thisYear / lastYear) * 100;
+			int randOFF = (int)Math.round(percentage);
+			
+			if(randOFF < 0)
+				randOFF = 0;
+			
+			if(randOFF > 100)
+				randOFF = 100;
+			
+			dashboard1.lblYearlyPercent.setIcon(new ImageIcon(Dashboard.class.getResource("/KBNAdminPanel/resources/dashboard/PercentagePNG/" + randOFF + ".png")));
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "dailyDashboard ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void outStock() {
+		try {
+			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
+			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume < 1 LIMIT 5";
+			
+			st.execute(sql);
+			rs = st.getResultSet();
+			ArrayList lowStock = new ArrayList<>();
+			while(rs.next()) {
+				lowStock.add(rs.getString(1));
+				dashboard1.tLow.addRow(lowStock.toArray());
+				lowStock.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "out of Stock ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void lowStock() {
+		try {
+			String sql = "SELECT a.MATERIAL_NAME, a.CODE_NAME, a.SUPPLIER, CONCAT(a.todayCurrentVolume / 1000, 'kg') AS kilo "
+			+ "FROM tblcurrentmonth AS a WHERE a.todayCurrentVolume > 0 AND todayCurrentVolume < 20000 LIMIT 5";
+			
+			st.execute(sql);
+			rs = st.getResultSet();
+			ArrayList lowStock = new ArrayList<>();
+			while(rs.next()) {
+				lowStock.add(rs.getString(1));
+				dashboard1.tMid.addRow(lowStock.toArray());
+				lowStock.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "lowStock ERROR: " + e.getMessage());
+		}
+	}
+	
+	private void topSell() {
+		
+		// Specific Date;
+		String SQL = "SELECT CONCAT(a.ProductName, ' (', a.volume, ')') AS product, SUM(a.Quantity) AS Sold\r\n"
+				+ "FROM tblordercheckoutdata AS a\r\n"
+				+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+				+ "WHERE b.OrderDate >= '2023/09/01'\r\n"
+				+ "GROUP BY a.OrderRefNumber, product\r\n"
+				+ "ORDER BY Quantity DESC\r\n"
+				+ "LIMIT 5";
+		
+		try {
+			st.execute(SQL);
+			rs = st.getResultSet();
+			ArrayList temp = new ArrayList<>();
+			while(rs.next()) {
+				temp.add(rs.getString(1));
+				temp.add(rs.getString(2));
+				dashboard1.maintableTopSelling.addRow(temp.toArray());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error topSell: " + e.getMessage());
+		}
+	}
+	private void leastSell() {
+		
+		// All Time
+		String SQL = "SELECT CONCAT(a.ProductName, ' (', a.volume, ')') AS product, SUM(a.Quantity) AS Quantity\r\n"
+				+ "FROM tblordercheckoutdata AS a\r\n"
+				+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+				+ "GROUP BY a.OrderRefNumber, product\r\n"
+				+ "ORDER BY Quantity ASC\r\n"
+				+ "LIMIT 5";
+		
+		try {
+			st.execute(SQL);
+			rs = st.getResultSet();
+			ArrayList temp = new ArrayList<>();
+			while(rs.next()) {
+				temp.add(rs.getString(1));
+				temp.add(rs.getString(2));
+				dashboard1.maintableLeastSelling.addRow(temp.toArray());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error topSell: " + e.getMessage());
+		}
+	}
+	
 }

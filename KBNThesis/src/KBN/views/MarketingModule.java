@@ -91,6 +91,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	//Class Import
 	private DbConnection dbConn;
 	private dataSetter dataSet;
+	
+	// Dashboard
 	private Dashboard1 dashboard1;
 	private OrderListPanelData opdDashboard;
 

@@ -27,6 +27,7 @@ public class Navs extends JPanel implements MouseListener{
 	public JButton btnListOfCourier;
 	
 	private JButton btnChecker;
+	public JButton btnDashboard;
 
 	public Navs() {
 		setBackground(new Color(255, 255, 255));
@@ -45,17 +46,27 @@ public class Navs extends JPanel implements MouseListener{
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(0, 221, 255, 339);
+		panel.setBounds(0, 172, 255, 388);
 		add(panel);
 		panel.setLayout(null);
 		
+		btnDashboard = new JButton("Dashboard");
+		btnDashboard.setIcon(new ImageIcon(Navs.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+		btnDashboard.setVerticalTextPosition(SwingConstants.CENTER);
+		btnDashboard.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnDashboard.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnDashboard.setFocusable(false);
+		btnDashboard.setBorderPainted(false);
+		btnDashboard.setBackground(Color.WHITE);
+		btnDashboard.setBounds(10, 25, 241, 35);
+		panel.add(btnDashboard);
+		
 		btnSalesReport = new JButton("Sales Report");
-		btnSalesReport.setIcon(new ImageIcon(Navs.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
 		btnSalesReport.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnSalesReport.setFocusable(false);
 		btnSalesReport.setBorderPainted(false);
 		btnSalesReport.setBackground(new Color(255, 255, 255));
-		btnSalesReport.setBounds(10, 27, 241, 35);
+		btnSalesReport.setBounds(10, 85, 241, 35);
 		panel.add(btnSalesReport);
 		
 		btnAudit = new JButton("Audit Trail");
@@ -63,7 +74,7 @@ public class Navs extends JPanel implements MouseListener{
 		btnAudit.setFocusable(false);
 		btnAudit.setBorderPainted(false);
 		btnAudit.setBackground(new Color(255, 255, 255));
-		btnAudit.setBounds(10, 89, 241, 35);
+		btnAudit.setBounds(10, 145, 241, 35);
 		panel.add(btnAudit);
 		
 		btnForecasting = new JButton("Forecasting");
@@ -71,7 +82,7 @@ public class Navs extends JPanel implements MouseListener{
 		btnForecasting.setFocusable(false);
 		btnForecasting.setBorderPainted(false);
 		btnForecasting.setBackground(new Color(255, 255, 255));
-		btnForecasting.setBounds(10, 151, 241, 35);
+		btnForecasting.setBounds(10, 205, 241, 35);
 		panel.add(btnForecasting);
 		
 		btnEmployeeList = new JButton("List of Employee");
@@ -79,7 +90,7 @@ public class Navs extends JPanel implements MouseListener{
 		btnEmployeeList.setFocusable(false);
 		btnEmployeeList.setBorderPainted(false);
 		btnEmployeeList.setBackground(new Color(255, 255, 255));
-		btnEmployeeList.setBounds(10, 213, 241, 35);
+		btnEmployeeList.setBounds(10, 265, 241, 35);
 		panel.add(btnEmployeeList);
 		
 		btnEmployeeList.setHorizontalTextPosition(JLabel.CENTER);
@@ -101,9 +112,9 @@ public class Navs extends JPanel implements MouseListener{
 		btnListOfCourier.setFocusable(false);
 		btnListOfCourier.setBorderPainted(false);
 		btnListOfCourier.setBackground(Color.WHITE);
-		btnListOfCourier.setBounds(10, 275, 241, 35);
+		btnListOfCourier.setBounds(10, 325, 241, 35);
 		panel.add(btnListOfCourier);
-		
+
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setBounds(10, 663, 241, 13);
 		add(separator_2);
@@ -113,7 +124,8 @@ public class Navs extends JPanel implements MouseListener{
 		lblUsername.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 15));
 		lblUsername.setBounds(10, 670, 241, 40);
 		add(lblUsername);
-		
+
+		btnDashboard.addMouseListener(this);
 		btnSalesReport.addMouseListener(this);
 		btnAudit.addMouseListener(this);
 		btnForecasting.addMouseListener(this);
@@ -130,6 +142,7 @@ public class Navs extends JPanel implements MouseListener{
 	public void mousePressed(MouseEvent e) {
 		if(e.getComponent() instanceof JButton) {
 			
+			btnDashboard.setIcon(null);
 			btnSalesReport.setIcon(null);
 			btnAudit.setIcon(null);
 			btnForecasting.setIcon(null);
@@ -139,7 +152,7 @@ public class Navs extends JPanel implements MouseListener{
 			Component c = e.getComponent();
 			btnChecker = (JButton) e.getComponent();
 			if(btnChecker == c)
-				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBNAdminPanel/resources/Dashboard.png")));
 			
 		}else
 			return;
