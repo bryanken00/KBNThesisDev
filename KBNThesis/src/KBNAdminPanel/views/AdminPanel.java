@@ -18,6 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -146,9 +148,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         		+ "WHERE b.Status = 'toPay'\r\n"
         		+ "ORDER BY OrderDate DESC LIMIT 1;";
         
-        
-        
-        
         // Forecast
         forecast = new ForecastingPanel();
         forecastgraph = new ForecastGraphs();
@@ -212,8 +211,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		btnChecker = navs.btnDashboard;
 	}
 	
-
-	
 	private void panelVisible() {
 		dashboard1.setVisible(false);
 		salesPanel.setVisible(false);
@@ -273,6 +270,25 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		container.setBounds(255, 0, 1009, 721);
 		contentPane.add(container);
 		container.setLayout(null);
+	}
+	
+	private void SalesReportPanel() {
+		panelVisible();
+		salesPanel.setVisible(true);
+
+		String SqlWeek1 = "SELECT DISTINCT CONCAT(a.prodName, ' ', a.prodVolume) AS Product,\r\n"
+				+ "       COALESCE(SUM(b.Quantity), 0) AS TotalQuantity\r\n"
+				+ "FROM tblproducts AS a\r\n"
+				+ "LEFT JOIN (\r\n"
+				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity\r\n"
+				+ "    FROM tblordercheckoutdata AS ocd\r\n"
+				+ "    JOIN tblordercheckout AS oc ON ocd.OrderRefNumber = oc.OrderRefNumber\r\n"
+				+ "    JOIN tblorderstatus AS os ON ocd.OrderRefNumber = os.OrderRefNumber\r\n"
+				+ "    WHERE os.Status = 'Completed' AND oc.OrderDate >= '2023-10-01' AND oc.OrderDate <= '2023-10-31'\r\n"
+				+ "    GROUP BY ocd.ProductName, ocd.volume, ocd.OrderRefNumber\r\n"
+				+ ") AS b ON a.prodName = b.ProductName AND a.prodVolume = b.volume\r\n"
+				+ "GROUP BY Product;";
+		
 	}
 	
 	private void renderingKBNProducts() {
@@ -658,10 +674,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			panelVisible();
 			dashboard1.setVisible(true);
 		}
-		if(e.getSource() == navs.btnSalesReport) {
-			panelVisible();
-			salesPanel.setVisible(true);
-		}
+		if(e.getSource() == navs.btnSalesReport)
+			SalesReportPanel();
 		
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
