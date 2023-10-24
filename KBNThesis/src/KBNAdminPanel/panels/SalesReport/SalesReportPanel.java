@@ -75,7 +75,6 @@ public class SalesReportPanel extends JPanel {
 		main = new DefaultTableModel(table.getRowCount(), table.getColumnCount()) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Make all cells non-editable
                 return false;
             }
         };
@@ -90,8 +89,11 @@ public class SalesReportPanel extends JPanel {
 		table.setModel(main);
 		
 		TableColumn column = table.getColumnModel().getColumn(0); // This is the first column
-        column.setPreferredWidth(200);
+        column.setPreferredWidth(400);
         table.setRowHeight(50);
+        
+        Font cellFont = new Font("Arial", Font.PLAIN, 20);
+        table.setFont(cellFont);
 
 	}
 }

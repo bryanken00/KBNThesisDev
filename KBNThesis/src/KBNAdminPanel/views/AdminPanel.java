@@ -272,23 +272,132 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		container.setLayout(null);
 	}
 	
-	private void SalesReportPanel() {
-		panelVisible();
-		salesPanel.setVisible(true);
+	private void SalesReportPanel(int year_, int month_) {
+        try {
+        	
+			panelVisible();
+			salesPanel.setVisible(true);
+			
+			int year = year_;
+			int month = month_;
+	
+			
+	        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1); // October 2023
+	        LocalDate currentMonday = firstDayOfMonth.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+	        LocalDate currentSunday = firstDayOfMonth.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+	        int weekIndex = 1;
+	        
+	        ArrayList arrTemp = new ArrayList<>();
+	        String SqlWeek1 = "";
+	
+	        while (currentMonday.getMonth() == firstDayOfMonth.getMonth()) {
+	            if (currentSunday.isBefore(currentMonday)) {
+	                currentSunday = currentSunday.plusWeeks(1);
+	            }
+	            
+		   		 SqlWeek1 = "SELECT DISTINCT CONCAT(a.prodName, ' ', a.prodVolume) AS Product, \n"
+		 				+ "       COALESCE(SUM(b.Quantity), 0) AS TotalQuantity \n"
+		 				+ "FROM tblproducts AS a \n"
+		 				+ "LEFT JOIN ( \n"
+		 				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity \n"
+		 				+ "    FROM tblordercheckoutdata AS ocd \n"
+		 				+ "    JOIN tblordercheckout AS oc ON ocd.OrderRefNumber = oc.OrderRefNumber \n"
+		 				+ "    JOIN tblorderstatus AS os ON ocd.OrderRefNumber = os.OrderRefNumber \n"
+		 				+ "    WHERE os.Status = 'Completed' AND oc.OrderDate >= '" + currentMonday + "' AND oc.OrderDate <= '" + currentSunday + "' \n"
+		 				+ "    GROUP BY ocd.ProductName, ocd.volume, ocd.OrderRefNumber \n"
+		 				+ ") AS b ON a.prodName = b.ProductName AND a.prodVolume = b.volume \n"
+		 				+ "GROUP BY Product \n"
+		 				+ "ORDER BY Product ASC;";
+		   		 
+		   		arrTemp.add(SqlWeek1);
+		   		
+	            currentMonday = currentMonday.plusWeeks(1);
+	            currentSunday = currentSunday.plusWeeks(1);
+	            
+	            weekIndex++;
+	        }
+	        
+	   		String ProductList = "SELECT DISTINCT CONCAT(a.prodName, ' ', a.prodVolume) AS Product \n"
+	 				+ "FROM tblproducts AS a \n"
+	 				+ "LEFT JOIN ( \n"
+	 				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity \n"
+	 				+ "    FROM tblordercheckoutdata AS ocd \n"
+	 				+ "    JOIN tblordercheckout AS oc ON ocd.OrderRefNumber = oc.OrderRefNumber \n"
+	 				+ "    JOIN tblorderstatus AS os ON ocd.OrderRefNumber = os.OrderRefNumber \n"
+	 				+ "    WHERE os.Status = 'Completed' AND oc.OrderDate >= '" + currentMonday + "' AND oc.OrderDate <= '" + currentSunday + "' \n"
+	 				+ "    GROUP BY ocd.ProductName, ocd.volume, ocd.OrderRefNumber \n"
+	 				+ ") AS b ON a.prodName = b.ProductName AND a.prodVolume = b.volume \n"
+	 				+ "GROUP BY Product \n"
+	 				+ "ORDER BY Product ASC;";
+	   			
 
-		String SqlWeek1 = "SELECT DISTINCT CONCAT(a.prodName, ' ', a.prodVolume) AS Product,\r\n"
-				+ "       COALESCE(SUM(b.Quantity), 0) AS TotalQuantity\r\n"
-				+ "FROM tblproducts AS a\r\n"
-				+ "LEFT JOIN (\r\n"
-				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity\r\n"
-				+ "    FROM tblordercheckoutdata AS ocd\r\n"
-				+ "    JOIN tblordercheckout AS oc ON ocd.OrderRefNumber = oc.OrderRefNumber\r\n"
-				+ "    JOIN tblorderstatus AS os ON ocd.OrderRefNumber = os.OrderRefNumber\r\n"
-				+ "    WHERE os.Status = 'Completed' AND oc.OrderDate >= '2023-10-01' AND oc.OrderDate <= '2023-10-31'\r\n"
-				+ "    GROUP BY ocd.ProductName, ocd.volume, ocd.OrderRefNumber\r\n"
-				+ ") AS b ON a.prodName = b.ProductName AND a.prodVolume = b.volume\r\n"
-				+ "GROUP BY Product;";
-		
+	        ArrayList product = new ArrayList<>();
+	        ArrayList product1 = new ArrayList<>();
+	        ArrayList product2 = new ArrayList<>();
+	        ArrayList product3 = new ArrayList<>();
+	        ArrayList product4 = new ArrayList<>();
+	        ArrayList product5 = new ArrayList<>();
+	        
+	   		st.execute(ProductList);
+	   		
+	   		rs = st.getResultSet();
+	   		while(rs.next())
+	   			product.add(rs.getString(1));
+	        
+            for(int i = 0; i < arrTemp.size(); i++) {
+            	
+            	if(i == 0) {
+                	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product1.add(rs.getString(2));
+                	}
+            	}
+            	
+            	if(i == 1) {
+                	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product2.add(rs.getString(2));
+                	}
+            	}
+            	
+            	if(i == 2) {
+                	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product3.add(rs.getString(2));
+                	}
+            	}
+            	
+            	if(i == 3) {
+                	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product4.add(rs.getString(2));
+                	}
+            	}
+            }
+            
+            int maxRowCount = Math.max(
+                    Math.max(product.size(), product1.size()),
+                    Math.max(product2.size(), Math.max(product3.size(), product4.size()))
+                );
+            
+            for (int i = 0; i < maxRowCount; i++) {
+                Object[] rowData = {
+                    i < product.size() ? product.get(i) : "",
+                    i < product1.size() ? product1.get(i) : "",
+                    i < product2.size() ? product2.get(i) : "",
+                    i < product3.size() ? product3.get(i) : "",
+                    i < product4.size() ? product4.get(i) : ""
+                };
+                salesPanel.main.addRow(rowData);
+            }
+            
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error SalesReportPanel: " + e.getMessage());
+		}
 	}
 	
 	private void renderingKBNProducts() {
@@ -674,8 +783,16 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			panelVisible();
 			dashboard1.setVisible(true);
 		}
-		if(e.getSource() == navs.btnSalesReport)
-			SalesReportPanel();
+		if(e.getSource() == navs.btnSalesReport) {
+	        LocalDate currentDate = LocalDate.now();
+
+	        // Extract the year and month as integers
+	        int currentYear = currentDate.getYear();
+	        int currentMonth = currentDate.getMonthValue();
+	        
+			SalesReportPanel(currentYear,currentMonth);
+			
+		}
 		
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
