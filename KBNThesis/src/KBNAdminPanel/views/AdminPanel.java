@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableColumn;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -275,8 +276,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	private void SalesReportPanel(int year_, int month_) {
         try {
         	
+        	salesPanel.main.setRowCount(0);
+        	
 			panelVisible();
-			salesPanel.setVisible(true);
 			
 			int year = year_;
 			int month = month_;
@@ -288,14 +290,16 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        int weekIndex = 1;
 	        
 	        ArrayList arrTemp = new ArrayList<>();
-	        String SqlWeek1 = "";
+	        ArrayList arrRebranding = new ArrayList<>();
+	        String KBNBrand = "";
+	        String Rebranding = "";
 	
 	        while (currentMonday.getMonth() == firstDayOfMonth.getMonth()) {
 	            if (currentSunday.isBefore(currentMonday)) {
 	                currentSunday = currentSunday.plusWeeks(1);
 	            }
 	            
-		   		 SqlWeek1 = "SELECT DISTINCT CONCAT(a.prodName, ' ', a.prodVolume) AS Product, \n"
+		   		 KBNBrand = "SELECT DISTINCT CONCAT(a.prodName, ' (', a.prodVolume, ')') AS Product, \n"
 		 				+ "       COALESCE(SUM(b.Quantity), 0) AS TotalQuantity \n"
 		 				+ "FROM tblproducts AS a \n"
 		 				+ "LEFT JOIN ( \n"
@@ -309,7 +313,22 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		 				+ "GROUP BY Product \n"
 		 				+ "ORDER BY Product ASC;";
 		   		 
-		   		arrTemp.add(SqlWeek1);
+		   		 Rebranding = "SELECT DISTINCT CONCAT(a.prodName, ' (', a.prodVolume, ')') AS Product, \n"
+		 				+ "       COALESCE(SUM(b.Quantity), 0) AS TotalQuantity \n"
+		 				+ "FROM tblrebrandingproducts AS a \n"
+		 				+ "LEFT JOIN ( \n"
+		 				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity \n"
+		 				+ "    FROM tblordercheckoutdata AS ocd \n"
+		 				+ "    JOIN tblordercheckout AS oc ON ocd.OrderRefNumber = oc.OrderRefNumber \n"
+		 				+ "    JOIN tblorderstatus AS os ON ocd.OrderRefNumber = os.OrderRefNumber \n"
+		 				+ "    WHERE os.Status = 'Completed' AND oc.OrderDate >= '" + currentMonday + "' AND oc.OrderDate <= '" + currentSunday + "' \n"
+		 				+ "    GROUP BY ocd.ProductName, ocd.volume, ocd.OrderRefNumber \n"
+		 				+ ") AS b ON a.prodName = b.ProductName AND a.prodVolume = b.volume \n"
+		 				+ "GROUP BY Product \n"
+		 				+ "ORDER BY Product ASC;";
+		   		 
+		   		arrTemp.add(KBNBrand);
+		   		arrRebranding.add(Rebranding);
 		   		
 	            currentMonday = currentMonday.plusWeeks(1);
 	            currentSunday = currentSunday.plusWeeks(1);
@@ -317,8 +336,32 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	            weekIndex++;
 	        }
 	        
-	   		String ProductList = "SELECT DISTINCT CONCAT(a.prodName, ' ', a.prodVolume) AS Product \n"
+	        if(weekIndex == 5) {
+	        	String[] columnidentifier = {"Products", "Week 1","Week 2","Week 3", "Week 4", "Total"}; // Default
+	        	salesPanel.main.setColumnIdentifiers(columnidentifier);
+	        } else if(weekIndex == 6) {
+	        	String[] columnidentifier = {"Products", "Week 1","Week 2","Week 3", "Week 4", "Week 5", "Total"}; // Default
+	        	salesPanel.main.setColumnIdentifiers(columnidentifier);
+	        }
+	        
+			TableColumn column = salesPanel.table.getColumnModel().getColumn(0); // This is the first column
+	        column.setPreferredWidth(400);
+	        
+	   		String ProductList = "SELECT DISTINCT CONCAT(a.prodName, ' (', a.prodVolume, ')') AS Product \n"
 	 				+ "FROM tblproducts AS a \n"
+	 				+ "LEFT JOIN ( \n"
+	 				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity \n"
+	 				+ "    FROM tblordercheckoutdata AS ocd \n"
+	 				+ "    JOIN tblordercheckout AS oc ON ocd.OrderRefNumber = oc.OrderRefNumber \n"
+	 				+ "    JOIN tblorderstatus AS os ON ocd.OrderRefNumber = os.OrderRefNumber \n"
+	 				+ "    WHERE os.Status = 'Completed' AND oc.OrderDate >= '" + currentMonday + "' AND oc.OrderDate <= '" + currentSunday + "' \n"
+	 				+ "    GROUP BY ocd.ProductName, ocd.volume, ocd.OrderRefNumber \n"
+	 				+ ") AS b ON a.prodName = b.ProductName AND a.prodVolume = b.volume \n"
+	 				+ "GROUP BY Product \n"
+	 				+ "ORDER BY Product ASC;";
+	   		
+	   		String RebrandingList = "SELECT DISTINCT CONCAT(a.prodName, ' (', a.prodVolume, ')') AS Product \n"
+	 				+ "FROM tblrebrandingproducts AS a \n"
 	 				+ "LEFT JOIN ( \n"
 	 				+ "    SELECT ocd.ProductName, ocd.volume, ocd.OrderRefNumber, SUM(ocd.Quantity) AS Quantity \n"
 	 				+ "    FROM tblordercheckoutdata AS ocd \n"
@@ -343,11 +386,22 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	   		rs = st.getResultSet();
 	   		while(rs.next())
 	   			product.add(rs.getString(1));
+	   		
+	   		st.execute(RebrandingList);
+	   		rs = st.getResultSet();
+	   		while(rs.next())
+	   			product.add(rs.getString(1));
 	        
             for(int i = 0; i < arrTemp.size(); i++) {
             	
             	if(i == 0) {
                 	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product1.add(rs.getString(2));
+                	}
+                	
+                	st.execute(arrRebranding.get(i).toString());
                 	rs = st.getResultSet();
                 	while(rs.next()) {
                 		product1.add(rs.getString(2));
@@ -360,10 +414,22 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
                 	while(rs.next()) {
                 		product2.add(rs.getString(2));
                 	}
+                	
+                	st.execute(arrRebranding.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product2.add(rs.getString(2));
+                	}
             	}
             	
             	if(i == 2) {
                 	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product3.add(rs.getString(2));
+                	}
+                	
+                	st.execute(arrRebranding.get(i).toString());
                 	rs = st.getResultSet();
                 	while(rs.next()) {
                 		product3.add(rs.getString(2));
@@ -376,25 +442,65 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
                 	while(rs.next()) {
                 		product4.add(rs.getString(2));
                 	}
+                	
+                	st.execute(arrRebranding.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product4.add(rs.getString(2));
+                	}
+            	}
+            	if(i == 4) {
+                	st.execute(arrTemp.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product5.add(rs.getString(2));
+                	}
+                	
+                	st.execute(arrRebranding.get(i).toString());
+                	rs = st.getResultSet();
+                	while(rs.next()) {
+                		product5.add(rs.getString(2));
+                	}
             	}
             }
-            
-            int maxRowCount = Math.max(
-                    Math.max(product.size(), product1.size()),
-                    Math.max(product2.size(), Math.max(product3.size(), product4.size()))
-                );
-            
-            for (int i = 0; i < maxRowCount; i++) {
-                Object[] rowData = {
-                    i < product.size() ? product.get(i) : "",
-                    i < product1.size() ? product1.get(i) : "",
-                    i < product2.size() ? product2.get(i) : "",
-                    i < product3.size() ? product3.get(i) : "",
-                    i < product4.size() ? product4.get(i) : ""
-                };
-                salesPanel.main.addRow(rowData);
+            if(weekIndex == 5) {
+                int maxRowCount = Math.max(
+                        Math.max(product.size(), product1.size()),
+                        Math.max(product2.size(), Math.max(product3.size(), product4.size()))
+                    );
+                
+                for (int i = 0; i < maxRowCount; i++) {
+                    Object[] rowData = {
+                        i < product.size() ? product.get(i) : "",
+                        i < product1.size() ? product1.get(i) : "",
+                        i < product2.size() ? product2.get(i) : "",
+                        i < product3.size() ? product3.get(i) : "",
+                        i < product4.size() ? product4.get(i) : ""
+                    };
+                    salesPanel.main.addRow(rowData);
+                }
+            }
+            else if(weekIndex == 6) {
+                int maxRowCount = Math.max(
+                	    Math.max(product.size(), product1.size()),
+                	    Math.max(product2.size(), Math.max(product3.size(), Math.max(product4.size(), product5.size())))
+                	);
+
+                	for (int i = 0; i < maxRowCount; i++) {
+                	    Object[] rowData = {
+                	        i < product.size() ? product.get(i) : "",
+                	        i < product1.size() ? product1.get(i) : "",
+                	        i < product2.size() ? product2.get(i) : "",
+                	        i < product3.size() ? product3.get(i) : "",
+                	        i < product4.size() ? product4.get(i) : "",
+                	        i < product5.size() ? product5.get(i) : "" // Include data from product5
+                	    };
+                	    salesPanel.main.addRow(rowData);
+                	}
             }
             
+
+			salesPanel.setVisible(true);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error SalesReportPanel: " + e.getMessage());
 		}

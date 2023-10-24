@@ -7,9 +7,15 @@ import java.awt.Color;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Comparator;
+
 import javax.swing.JComboBox;
 import com.toedter.calendar.JMonthChooser;
 import javax.swing.JButton;
@@ -23,6 +29,8 @@ public class SalesReportPanel extends JPanel {
 	public JComboBox comboBox;
 	public JMonthChooser monthChooser;
 	public JButton btnPrint;
+
+	private TableRowSorter<TableModel> sorter;
 
 	public SalesReportPanel() {
 		setBounds(0, 0, 1009, 721);
@@ -92,8 +100,73 @@ public class SalesReportPanel extends JPanel {
         column.setPreferredWidth(400);
         table.setRowHeight(50);
         
-        Font cellFont = new Font("Arial", Font.PLAIN, 20);
+        Font cellFont = new Font("Arial", Font.PLAIN, 16);
+        
         table.setFont(cellFont);
-
+        
+		sorter = new TableRowSorter<>(main);
+		
+	    sorter.setComparator(0, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            return s1.compareTo(s2);
+	        }
+	    });
+	    
+	    sorter.setComparator(1, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(2, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(3, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(4, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    sorter.setComparator(5, new Comparator<String>() {
+	        @Override
+	        public int compare(String s1, String s2) {
+	            Integer int1 = Integer.parseInt(s1);
+	            Integer int2 = Integer.parseInt(s2);
+	            return int1.compareTo(int2);
+	        }
+	    });
+	    
+	    table.getTableHeader().setReorderingAllowed(false);
+		table.setRowSorter(sorter);
+	    table.getTableHeader().addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	            int columnIndex = table.columnAtPoint(e.getPoint());
+	            // Toggle sorting order when the column header is clicked
+	            sorter.toggleSortOrder(columnIndex);
+	        }
+	    });
 	}
 }
