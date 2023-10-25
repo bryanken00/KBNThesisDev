@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,14 +32,18 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -915,6 +920,34 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Sheet1");
 			
+			// Create the header row
+			XSSFRow headerRow = sheet.createRow(0);
+
+			// Define your column headers
+			ArrayList<String> headers = new ArrayList<>();
+			
+			int columnCount = salesPanel.main.getColumnCount();
+			for (int i = 0; i < columnCount; i++) {
+			    headers.add(salesPanel.main.getColumnName(i));
+			}
+
+			// Populate the header row with column names
+			for (int col = 0; col < headers.size(); col++) {
+			    XSSFCell cell = headerRow.createCell(col);
+			    cell.setCellValue(headers.get(col));
+			    System.out.println(headers.get(col));
+			}
+
+			// Optionally, format the header row for styling
+			XSSFCellStyle headerCellStyle = workbook.createCellStyle();
+			XSSFFont headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerCellStyle.setFont(headerFont);
+
+			for (int col = 0; col < headers.size(); col++) {
+			    headerRow.getCell(col).setCellStyle(headerCellStyle);
+			}
+			
 			for (int row = 0; row < salesPanel.main.getRowCount(); row++) {
 			    XSSFRow excelRow = sheet.createRow(row);
 			    for (int col = 0; col < salesPanel.main.getColumnCount(); col++) {
@@ -935,7 +968,29 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			    }
 			}
 			
-			try (FileOutputStream fileOut = new FileOutputStream("your-file.xlsx")) {
+			
+			JFileChooser fc = new JFileChooser();
+			String file = "";
+	        int option = fc.showSaveDialog(this);
+	        if(option == JFileChooser.APPROVE_OPTION){
+	            String filename = fc.getSelectedFile().getName(); 
+	            String path = fc.getSelectedFile().getParentFile().getPath();
+
+				int len = filename.length();
+				String ext = "";
+
+				if(len > 4){
+					ext = filename.substring(len-4, len);
+				}
+
+				if(ext.equals(".xlsx")){
+					file = path + "\\" + filename; 
+				}else{
+					file = path + "\\" + filename + ".xlsx"; 
+				}
+			}
+	        
+			try (FileOutputStream fileOut = new FileOutputStream(file)) {
 			    workbook.write(fileOut);
 			}catch (Exception e1) {
 				// TODO: handle exception

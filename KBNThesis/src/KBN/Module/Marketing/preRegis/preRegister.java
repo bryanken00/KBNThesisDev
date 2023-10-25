@@ -36,6 +36,7 @@ public class preRegister extends JDialog implements ActionListener {
 	private JPanel panel;
 	
 	private DbConnection dbConn;
+	private SendEmail sendMail;
 	public Registration reg;
 	private MarketingModule mModule;
 	
@@ -85,6 +86,7 @@ public class preRegister extends JDialog implements ActionListener {
 		
 		// Class
 		dbConn = new DbConnection();
+		sendMail = new SendEmail();
 		panel.setLayout(null);
 		reg = new Registration();
 		reg.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -189,18 +191,14 @@ public class preRegister extends JDialog implements ActionListener {
 					
 					st.execute(createAccount);
 					st.execute("CALL CreateAccountWithRollback();");
-					
-//					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "');";
-//					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"');";
 					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';";
-//					st.execute(sqlCustAcc);
-//					st.execute(sqlCustAccInfo);
 					st.execute(sqlUpdatePreReg);
-//					st.execute(sqlOrders);
 					String FullName = FN + " " + MI + " " + LN;
 					String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
 					st.execute(AuditTrail);
 					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
+					sendMail.setDetails(Email, Username, Password);
+					sendMail.sendAccountEmail();
 				}else {
 					JOptionPane.showMessageDialog(null, "Please Complete the form");
 				}

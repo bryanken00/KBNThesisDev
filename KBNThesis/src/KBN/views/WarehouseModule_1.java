@@ -746,6 +746,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private void btnExportFunc() {
 
         fc = new JFileChooser();
+		String file = "";
         int option = fc.showSaveDialog(this);
         if(option == JFileChooser.APPROVE_OPTION){
             String filename = fc.getSelectedFile().getName(); 
@@ -753,7 +754,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 
 			int len = filename.length();
 			String ext = "";
-			String file = "";
 
 			if(len > 4){
 				ext = filename.substring(len-4, len);

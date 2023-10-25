@@ -5,6 +5,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -27,6 +35,7 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Random;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
@@ -81,6 +90,8 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         int y = (dim.height-h)/2;
         this.setLocation(x, y);
         getContentPane().setLayout(null);
+        
+        dbConn = new DbConnection();
 
     	lblWarning_1 = new JLabel[10];
         for(int i = 0; i < 10; i++) {
@@ -227,10 +238,6 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
         lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblEmail.setBounds(24, 155, 134, 30);
         getContentPane().add(lblEmail);
-        
-
-        
-        dbConn = new DbConnection();
         arr = new ArrayList<>();
         btnRegister.addActionListener(this);
         btnGeneratePass.addActionListener(this);
@@ -334,16 +341,13 @@ public class CustomerCreateAccount extends JDialog implements ActionListener, Ke
 					
 					String sqlCustAcc = "INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "')";
 					String sqlCustAccInfo = "INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "', '')";
-//					String sqlOrders = "INSERT INTO tblorders VALUES('" + userID + "', '')";
-					
-//					System.out.println(sqlCustAccInfo);
 					
 					st.execute(sqlCustAcc);
 					st.execute(sqlCustAccInfo);
-//					st.execute(sqlOrders);
 					String FullName = FN + " " + MI + " " + LN;
 					String AuditTrail = "INSERT INTO AuditTrailMarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
 					st.execute(AuditTrail);
+
 					JOptionPane.showMessageDialog(null, "Registration completed");
 					this.dispose();
 					arr.clear();
