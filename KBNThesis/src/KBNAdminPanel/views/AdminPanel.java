@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,6 +37,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -234,6 +240,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		// Courier Right Click
 		courierRightClick.btnEdit.addActionListener(this);
 		courierRightClick.btnView.addActionListener(this);
+		
+		// Sales Report
+		salesPanel.btnPrint.addActionListener(this);
 		
 		
 		// Key Listener
@@ -889,6 +898,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			panelVisible();
 			dashboard1.setVisible(true);
 		}
+		
 		if(e.getSource() == navs.btnSalesReport) {
 	        LocalDate currentDate = LocalDate.now();
 
@@ -899,6 +909,39 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			SalesReportPanel(currentYear,currentMonth);
 			
 		}
+		
+		// Sales Print
+		if(e.getSource() == salesPanel.btnPrint) {
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("Sheet1");
+			
+			for (int row = 0; row < salesPanel.main.getRowCount(); row++) {
+			    XSSFRow excelRow = sheet.createRow(row);
+			    for (int col = 0; col < salesPanel.main.getColumnCount(); col++) {
+			        Object cellValue = salesPanel.main.getValueAt(row, col);
+			        if (cellValue != null) {
+			            XSSFCell cell = excelRow.createCell(col);
+			            if(col == 0) {
+			            	cell.setCellValue(cellValue.toString());
+			            }
+			            
+			            else {
+			            	cell.setCellValue(Integer.parseInt(cellValue.toString()));
+			            }
+			        } else {
+			            XSSFCell cell = excelRow.createCell(col);
+			            cell.setCellValue(0);
+			        }
+			    }
+			}
+			
+			try (FileOutputStream fileOut = new FileOutputStream("your-file.xlsx")) {
+			    workbook.write(fileOut);
+			}catch (Exception e1) {
+				// TODO: handle exception
+			}
+		}
+		
 		
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
