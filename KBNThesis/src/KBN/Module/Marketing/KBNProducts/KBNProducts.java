@@ -43,13 +43,17 @@ public class KBNProducts extends JPanel implements MouseListener {
 	public JButton btnArchive;
 	public JButton btnSearch;
 	
+	public JButton btnAddNewProduct;
+	public JButton btnEditDetails;
+	public JButton btnArchive_1;
+	
 	public KBNProducts() {
 		setBackground(new Color(255, 255, 255));
         this.setBounds(0, 0, 989, 699);
 		setLayout(null);
         
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(26, 146, 933, 511);
+		scrollPane.setBounds(26, 146, 933, 498);
 		add(scrollPane);
 		
 		table = new JTable(){
@@ -114,6 +118,30 @@ public class KBNProducts extends JPanel implements MouseListener {
 		btnSearch.setBackground(Color.WHITE);
 		btnSearch.setBounds(884, 61, 32, 32);
 		add(btnSearch);
+		
+		btnAddNewProduct = new JButton("Add New Product");
+		btnAddNewProduct.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnAddNewProduct.setFocusable(false);
+		btnAddNewProduct.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnAddNewProduct.setBackground(Color.WHITE);
+		btnAddNewProduct.setBounds(26, 653, 158, 35);
+		add(btnAddNewProduct);
+		
+		btnEditDetails = new JButton("Edit Details");
+		btnEditDetails.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnEditDetails.setFocusable(false);
+		btnEditDetails.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnEditDetails.setBackground(Color.WHITE);
+		btnEditDetails.setBounds(194, 653, 158, 35);
+		add(btnEditDetails);
+		
+		btnArchive_1 = new JButton("Archive");
+		btnArchive_1.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnArchive_1.setFocusable(false);
+		btnArchive_1.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnArchive_1.setBackground(Color.WHITE);
+		btnArchive_1.setBounds(801, 655, 158, 35);
+		add(btnArchive_1);
 		
 		tableSetup();
 		

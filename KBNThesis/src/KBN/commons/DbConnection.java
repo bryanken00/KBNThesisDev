@@ -8,13 +8,13 @@ import javax.swing.JOptionPane;
 public class DbConnection {
 	private Connection con = null;
 	
-	//database
+	//database Local Host
 //	private static String url = "jdbc:mysql://localhost:3306/kbndatabase";
 //	private static String username = "root";
 //	private static String password = "";
 	
-	private static String url = "jdbc:mysql://kbnthesis.c2ezvppz4be9.ap-southeast-1.rds.amazonaws.com:3306/kbndatabase";
-//	private static String url = "jdbc:mysql://kbnthesis.c2ezvppz4be9.ap-southeast-1.rds.amazonaws.com:3306/kbndatabase?useSSL=true&requireSSL=true&verifyServerCertificate=true&useLegacyDatetimeCode=false&serverSslCert=/path/to/rds-combined-ca-bundle.pem";
+	// Amazon
+	private static String url = "jdbc:mysql://admin.cjwov25fsy4k.ap-southeast-2.rds.amazonaws.com:3306/kbndatabase?useSSL=false";
 	private static String username = "admin";
 	private static String password = "KENKENken0011";
 	

@@ -49,6 +49,7 @@ public class preRegister extends JDialog implements ActionListener {
 	private String accountID;
 	
 	public preRegList preReg;
+	private JPanel Nav;
 	
 	public preRegister() {
 		getContentPane().setBackground(new Color(255, 255, 255));
@@ -65,20 +66,6 @@ public class preRegister extends JDialog implements ActionListener {
         int y = (dim.height-h)/2;
         this.setLocation(x, y);
 		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 62, 263, 425);
-		scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		getContentPane().add(scrollPane);
-		
-		lblTitle = new JLabel("Pre-Registration List");
-		lblTitle.setIcon(new ImageIcon(OrderListPanel.class.getResource("/KBN/resources/Marketing/OrderList/Order.png")));
-		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 15));
-		lblTitle.setBounds(10, 11, 255, 40);
-		getContentPane().add(lblTitle);
-		
-		preReg = new preRegList();
-		scrollPane.setViewportView(preReg);
-		
 		panel = new JPanel();
 		panel.setBounds(276, 0, 834, 497);
 		getContentPane().add(panel);
@@ -94,6 +81,27 @@ public class preRegister extends JDialog implements ActionListener {
 		reg.setBackground(new Color(255, 255, 255));
         arr = new ArrayList<>();
 		panel.add(reg);
+		
+		Nav = new JPanel();
+		Nav.setBorder(new LineBorder(new Color(0, 0, 0)));
+		Nav.setBackground(new Color(255, 255, 255));
+		Nav.setBounds(0, 0, 277, 497);
+		getContentPane().add(Nav);
+		Nav.setLayout(null);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(0, 72, 263, 425);
+		scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		Nav.add(scrollPane);
+		
+		preReg = new preRegList();
+		scrollPane.setViewportView(preReg);
+		
+		lblTitle = new JLabel("Pre-Registration List");
+		lblTitle.setBounds(11, 21, 255, 40);
+		Nav.add(lblTitle);
+		lblTitle.setIcon(new ImageIcon(OrderListPanel.class.getResource("/KBN/resources/Marketing/OrderList/Order.png")));
+		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 15));
 		
 		Random rand = new Random();
 		random = 0;

@@ -206,7 +206,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private int OrderCountDash = 0; // Order List
 	private int orderBTNClickCount = 0;
 	private int cancelorderBTNClickCount = 0;
-	private int rowCount; // Pre - Registration
+	private int rowCount = 0; // Pre - Registration
 	private int ClientProfileCounter; // Client Profile OrderList
 	private int ClientProfileCounterHistory; // Client Profile HistoryList
 	private int OwnProdCount;
@@ -318,7 +318,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //        mostSoldProd();
 		dashboard1();
 		btnChecker = btnDashboard;
-		preRegStatus();
 		
 		marketingButtons();
 		
@@ -571,6 +570,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		kbnProd.btnArchive.addActionListener(this);
 		kbnProd.btnSearch.addActionListener(this);
 		
+		kbnProd.btnAddNewProduct.addActionListener(this);
+		kbnProd.btnEditDetails.addActionListener(this);
+		kbnProd.btnArchive_1.addActionListener(this);
+		
 		//KBNProducts Panel
 		rebrandingNew.btnProducts.addActionListener(this);
 		rebrandingNew.btnArchive.addActionListener(this);
@@ -617,6 +620,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		rightClick.setVisible(false);
 		rRightClick.setVisible(false);
+		moduleSelection.setVisible(false);
 		
 		if(e.getSource() == btnDashboard)
 			dashboardPanelFunc();
@@ -709,11 +713,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		
 		//Right Click
-		if(e.getSource() == rightClick.btnEdit)
+		if(e.getSource() == rightClick.btnEdit || e.getSource() == kbnProd.btnEditDetails)
 			prodDetailsFunc();
-		if(e.getSource() == rightClick.btnArchive)
+		if(e.getSource() == rightClick.btnArchive || e.getSource() == kbnProd.btnArchive_1)
 			archiveKBNProducts();
-		if(e.getSource() == rightClick.btnAddItem)
+		if(e.getSource() == rightClick.btnAddItem || e.getSource() == kbnProd.btnAddNewProduct)
 			addItem();
 		
 		if(e.getSource() == rRightClick.btnArchive)
@@ -769,13 +773,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(e.getSource() == custAccount.lblNotif) {
-			preReg = new preRegister();
-			preRegCounter();
-			noticListSetter();
-			preReg.setAccountID(accountID);
-			preReg.setVisible(true);
-		}
 		if(e.getSource() == kbnProd.table) {
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				rightClick.setVisible(true);
@@ -1187,26 +1184,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 //		}
 //	}
 	
-	private void preRegStatus() {
-		try {
-			String sql = "SELECT COUNT(ID) FROM tblpreregistration WHERE Status = 'pending'";
-			st.execute(sql);
-			rs = st.getResultSet();
-			if(rs.next())
-				rowCount = rs.getInt(1);
-			
-			if(rowCount == 0) {
-				custAccount.lblNotif.removeMouseListener(this);
-				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
-			}else {
-				custAccount.lblNotif.removeMouseListener(this);
-				custAccount.lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
-				custAccount.lblNotif.addMouseListener(this);
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error preReg: " + e.getCause());
-		}
-	}
 	
 	private void preRegCounter() {
 		try {
@@ -1218,6 +1195,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				rowCount = rs.getInt(1);
 			
 			preReg.preReg.preRegCount(rowCount);
+			
+			if(rowCount != 0)
+				custAccount.btnCreate.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification-red.png")));
+			else
+				custAccount.btnCreate.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR preRegCounter: " + e.getMessage());
 		}
@@ -2874,8 +2856,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	// Other class button
 	
 	private void custAccountCreateAccount() {
-		custCreateAccount.setVisible(true);
-		custCreateAccount.setAccountID(accountID);
+		preReg = new preRegister();
+		preRegCounter();
+		noticListSetter();
+		preReg.setAccountID(accountID);
+		preReg.setVisible(true);
 	}
 	
 	private void custAccountFunc() {
@@ -3284,8 +3269,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         Component clickedComponent2 = e.getComponent();
         Component clickedComponent3 = e.getComponent();
         Component clickedComponent4 = e.getComponent();
-//        orderCounter();
-        preRegStatus();
 
         // Pre Reg
         if(preReg.preReg.panel != null) {

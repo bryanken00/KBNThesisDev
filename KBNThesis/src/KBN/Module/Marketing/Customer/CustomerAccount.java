@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
 
 public class CustomerAccount extends JPanel implements MouseListener{
 	
@@ -26,67 +27,66 @@ public class CustomerAccount extends JPanel implements MouseListener{
 	public JScrollPane scrollPane;
 	public JTextField txtSearchBar;
 	public JButton btnCreate; 
-	public JLabel lblNewLabel;
-	public JLabel lblNotif;
 	public JButton btnClientProfile;
 	public JButton btnSearch;
 	
 	private String placeholder;
+	private JPanel topNav;
 	
 	public CustomerAccount() {
+		setBackground(new Color(255, 255, 255));
         this.setBounds(0, 0, 989, 699);
         setLayout(null);
+        
+		topNav = new JPanel();
+		topNav.setBorder(new LineBorder(new Color(0, 0, 0)));
+		topNav.setBackground(new Color(255, 255, 255));
+		topNav.setBounds(10, 11, 969, 62);
+		add(topNav);
+		topNav.setLayout(null);
+		
+		txtSearchBar = new JTextField();
+		txtSearchBar.setBounds(10, 17, 400, 28);
+		topNav.add(txtSearchBar);
+		txtSearchBar.setText("Search by Account");
+		txtSearchBar.addMouseListener(this);
+		txtSearchBar.setForeground(Color.GRAY);
+		
+		btnCreate = new JButton("Create");
+		btnCreate.setBounds(533, 13, 120, 35);
+		topNav.add(btnCreate);
+		btnCreate.setHorizontalAlignment(SwingConstants.LEFT);
+		btnCreate.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
+		btnCreate.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnCreate.setFocusable(false);
+		//		btnCreate.setBorderPainted(false);
+				btnCreate.setBackground(Color.WHITE);
+				btnCreate.setBorder(new LineBorder(new Color(0, 0, 0)));
+				
+				btnSearch = new JButton("");
+				btnSearch.setBounds(410, 17, 32, 28);
+				topNav.add(btnSearch);
+				btnSearch.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/CustAccount/search.png")));
+				btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+				btnSearch.setFocusable(false);
+				btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
+				btnSearch.setBackground(Color.WHITE);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(24, 113, 939, 504);
+		scrollPane.setBounds(10, 84, 969, 565);
 		this.add(scrollPane);
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
-		
-		txtSearchBar = new JTextField();
-		txtSearchBar.setText("Search by Account");
-		txtSearchBar.setBounds(24, 59, 400, 28);
-		txtSearchBar.addMouseListener(this);
-		txtSearchBar.setForeground(Color.GRAY);
-		add(txtSearchBar);
-		
-		btnCreate = new JButton("Create");
-		btnCreate.setBounds(602, 57, 120, 28);
-		btnCreate.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnCreate.setFocusable(false);
-//		btnCreate.setBorderPainted(false);
-		btnCreate.setBackground(Color.WHITE);
-		btnCreate.setBorder(new LineBorder(new Color(0, 0, 0)));
-		add(btnCreate);
-		
-		lblNotif = new JLabel("icon");
-		lblNotif.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
-		lblNotif.setBounds(917, 11, 32, 32);
-		add(lblNotif);
 		
 		btnClientProfile = new JButton("Client Profile");
 		btnClientProfile.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnClientProfile.setFocusable(false);
 //		btnClientProfile.setBorderPainted(false);
 		btnClientProfile.setBackground(Color.WHITE);
-		btnClientProfile.setBounds(797, 640, 166, 28);
+		btnClientProfile.setBounds(813, 660, 166, 28);
 		btnClientProfile.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(btnClientProfile);
-		
-		btnSearch = new JButton("");
-		btnSearch.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/CustAccount/search.png")));
-		btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
-		btnSearch.setFocusable(false);
-		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0)));
-		btnSearch.setBackground(Color.WHITE);
-		btnSearch.setBounds(424, 59, 32, 28);
-		add(btnSearch);
-		
-		lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/marketingPanelBG.png")));
-		lblNewLabel.setBounds(0, 0, 989, 699);
-		add(lblNewLabel);
 
 		tableSetup();
 		
