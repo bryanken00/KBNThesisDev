@@ -249,6 +249,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         		+ "WHERE b.Status = 'toPay'\r\n"
         		+ "ORDER BY OrderDate DESC LIMIT 1;";
         
+        System.out.println(sqlTimeDiff);
+        
         
         // Declaration
         dbConn = new DbConnection();
@@ -1268,8 +1270,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			double hour = min / 60;
 			
 			double day;
-			
-			
 			if(hour > 0) {
 				day = hour / 24;
 				double remainingHours = day - (int)day; // get hours in decimal
@@ -1286,6 +1286,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			    String min_ = (min > 1) ? "Minutes" : "Minute";
 			    String label = "New Order " + min + " " + min_ + " ago";
 			    dashboard1.lblTimeDiff.setText(label);
+			    System.out.println(label);
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "timeDiff ERROR: " + e.getMessage());

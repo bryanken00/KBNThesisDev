@@ -340,6 +340,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			if(addItem.checker.equals("Verified")) {
 				String prodName = addItem.txtProductName.getText();
 				String variant = addItem.cbVariant.getSelectedItem() + "";
+				
+				System.out.println(variant);
 				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
 				
 		        LocalDate currentDate = LocalDate.now();
@@ -374,7 +376,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				JMessage("Product Added!");
 				addItem.txtProductName.setText("");
 				addItem.cbVariant.removeAllItems();
-				addItem.txtQuantity.setText("0");
+				addItem.txtQuantity.setText("1");
 				addItem.checker = "Not-Verified";
 				if(addItem.closeChecker.isSelected()) {
 					kbnDataFunc();

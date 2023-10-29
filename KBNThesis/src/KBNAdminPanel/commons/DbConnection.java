@@ -13,7 +13,7 @@ public class DbConnection {
 //	private static String username = "root";
 //	private static String password = "";
 	
-	private static String url = "jdbc:mysql://kbnthesis.c2ezvppz4be9.ap-southeast-1.rds.amazonaws.com:3306/kbndatabase";
+	private static String url = "jdbc:mysql://admin.cqkzw4o58odp.ap-southeast-1.rds.amazonaws.com:3306/kbndatabase?useSSL=false";
 //	private static String url = "jdbc:mysql://kbnthesis.c2ezvppz4be9.ap-southeast-1.rds.amazonaws.com:3306/kbndatabase?useSSL=true&requireSSL=true&verifyServerCertificate=true&useLegacyDatetimeCode=false&serverSslCert=/path/to/rds-combined-ca-bundle.pem";
 	private static String username = "admin";
 	private static String password = "KENKENken0011";

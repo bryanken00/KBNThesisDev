@@ -52,6 +52,7 @@ import com.toedter.calendar.JDateChooser;
 
 import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.Navs;
+import KBNAdminPanel.panels.Courier.CourierCreateAccount;
 import KBNAdminPanel.panels.Courier.CourierPanel;
 import KBNAdminPanel.panels.Courier.RightClick;
 import KBNAdminPanel.panels.Employee.EmployeeCreate;
@@ -99,6 +100,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	// Courier
 	private CourierPanel courierPanel;
 	private RightClick courierRightClick;
+	private CourierCreateAccount courierCreate;
 	
 	// Dashboard
 	private Dashboard dashboard1;
@@ -170,8 +172,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         empPanel = new EmployeePanel();
         empList = new EmployeeList();
         empCreate = new EmployeeCreate();
+        
         courierPanel = new CourierPanel();
         courierRightClick = new RightClick();
+        courierCreate = new CourierCreateAccount();
         
         
         
@@ -252,6 +256,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		
 		// Key Listener
 		courierPanel.table.addKeyListener(this);
+		
+		courierPanel.btnCreate.addActionListener(this);
 		
 		//Forecast
 		forecast.product1.addItemListener(this);
@@ -1135,6 +1141,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 				JOptionPane.showMessageDialog(null, "Error navs.btnListOfCourier: " + e2.getMessage());
 			}
 	    }
+	    	//Courier Register
+	    	if(e.getSource() == courierPanel.btnCreate) {
+	    		courierCreate.setVisible(true);
+	    	}
 		
 	}
 
