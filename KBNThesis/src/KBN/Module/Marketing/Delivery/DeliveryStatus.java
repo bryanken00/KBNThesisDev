@@ -25,7 +25,7 @@ public class DeliveryStatus extends JPanel implements MouseListener{
 	public JButton btnListOfDelivery;
 	public JButton btnCompleted;
 	public JButton btnSearch;
-	private JButton btnDeliveryDetails;
+	public JButton btnDeliveryDetails;
 	
 	public DeliveryStatus() {
 		setBackground(new Color(255, 255, 255));

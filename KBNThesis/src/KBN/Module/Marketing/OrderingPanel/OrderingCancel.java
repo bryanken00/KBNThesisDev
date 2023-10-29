@@ -30,7 +30,7 @@ public class OrderingCancel extends JPanel {
 	public JTable table;
 	
 	public JPanel PanelOrderList;
-	public JPanel panel_1;
+	public JPanel dataPanel;
 	public JPanel topPanel;
 	public JLabel lblCustomer;
 	public JLabel lblOrderDate;
@@ -59,18 +59,18 @@ public class OrderingCancel extends JPanel {
         PanelOrderList.setLayout(null);
         add(PanelOrderList);
         
-        panel_1 = new JPanel();
-        panel_1.setBackground(new Color(255, 255, 255));
-        panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-        panel_1.setBounds(346, 11, 633, 677);
-        add(panel_1);
-        panel_1.setLayout(null);
+        dataPanel = new JPanel();
+        dataPanel.setBackground(new Color(255, 255, 255));
+        dataPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+        dataPanel.setBounds(346, 11, 633, 677);
+        add(dataPanel);
+        dataPanel.setLayout(null);
         
         topPanel = new JPanel();
         topPanel.setBackground(new Color(255, 255, 255));
         topPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
         topPanel.setBounds(10, 10, 613, 105);
-        panel_1.add(topPanel);
+        dataPanel.add(topPanel);
         topPanel.setLayout(null);
         
         lblNewLabel_1 = new JLabel("PO Number");
@@ -122,7 +122,7 @@ public class OrderingCancel extends JPanel {
         tablePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
         tablePanel.setBackground(new Color(255, 255, 255));
         tablePanel.setBounds(10, 126, 613, 395);
-        panel_1.add(tablePanel);
+        dataPanel.add(tablePanel);
         tablePanel.setLayout(null);
         
         JScrollPane scrollPane = new JScrollPane();
@@ -152,7 +152,7 @@ public class OrderingCancel extends JPanel {
         JScrollPane scrollPane_1 = new JScrollPane();
         scrollPane_1.setBounds(10, 532, 613, 134);
         scrollPane_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-        panel_1.add(scrollPane_1);
+        dataPanel.add(scrollPane_1);
         
         cancelReason = new JEditorPane();
         cancelReason.setText("Cancellation Reason: ");

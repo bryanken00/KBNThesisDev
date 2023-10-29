@@ -39,6 +39,7 @@ import KBN.Module.Marketing.ConfirmationProduct.ConfirmationListPanelData;
 import KBN.Module.Marketing.ConfirmationProduct.ConfirmationPanel;
 import KBN.Module.Marketing.Customer.CustomerAccount;
 import KBN.Module.Marketing.Customer.CustomerCreateAccount;
+import KBN.Module.Marketing.Delivery.DeliveryDetails;
 import KBN.Module.Marketing.Delivery.DeliveryStatus;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
@@ -115,7 +116,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private CustomerAccount custAccount;
 	private AuditTrail auditTrail;
-	private DeliveryStatus delStatus;
 	private CustomerCreateAccount custCreateAccount;
 	private OrderingPanel orderPanel;
 	private OrderingCancel cancelOrderPanel;
@@ -130,9 +130,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private ClientProfileScrollablePanel cpsp;
 	private OrderHistory orderHistory;
 	private rebrandingProductsList rp;
+	
 	//deliveries
+	private DeliveryStatus delStatus;
+	private DeliveryDetails delDetails;
 	private DeliveryStatusTable1 dTB1;
 	private DeliveryStatusTable2 dTB2;
+	private String TableChecher = "dTB1";
 	
 	//prod Confirmation
 	private ConfirmationPanel confirmationPanel;
@@ -268,10 +272,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		custAccount = new CustomerAccount();
 		auditTrail = new AuditTrail();
-		delStatus = new DeliveryStatus();
 		custCreateAccount = new CustomerCreateAccount();
 		
 		//Deliveries
+		delStatus = new DeliveryStatus();
+		delDetails = new DeliveryDetails();
 		dTB1 = new DeliveryStatusTable1();
 		dTB2 = new DeliveryStatusTable2();
 		
@@ -608,6 +613,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		delStatus.btnListOfDelivery.addActionListener(this);
 		delStatus.btnCompleted.addActionListener(this);
 		delStatus.btnSearch.addActionListener(this);
+		delStatus.btnDeliveryDetails.addActionListener(this);
 		
 		// Confirmation Product
 		confirmationPanel.btnConfirm.addActionListener(this);
@@ -659,6 +665,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			DeliveryFuncCompleted();
 		if(e.getSource() == delStatus.btnSearch)
 			DeliveryFuncSearch(delStatus.txtSearchbar.getText());
+		if(e.getSource() == delStatus.btnDeliveryDetails)
+			DeliveryDetailsFunc();
 		
 		//Ordering
 		if(e.getSource() == btnOrdering)
@@ -1595,7 +1603,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderCounterSearch(String search) {
 		try {
 			orderBTNClickCount++;
-			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout WHERE OrderRefNumber LIKE '%" + search + "%'";
+			String sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \r\n"
+					+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber\r\n"
+					+ "WHERE a.OrderRefNumber LIKE '%" + search + "%' AND (b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled');";
 			st.execute(sql);
 			rs = st.getResultSet();
 			
@@ -1614,7 +1624,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void setOrderListDataSearch(String search) {
 		try {
-			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber WHERE a.OrderRefNumber LIKE '%" + search + "%'";
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status \n"
+					+ "FROM tblordercheckout AS a \n"
+					+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+					+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+					+ "WHERE a.OrderRefNumber LIKE '%" + search + "%' AND (c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled');";
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -1805,7 +1819,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void orderCounter() {
 		try {
 			orderBTNClickCount++;
-			String sql = "SELECT COUNT(OrderRefNumber) FROM tblordercheckout";
+			String sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \n"
+					+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+					+ "WHERE b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled';";
 			st.execute(sql);
 			rs = st.getResultSet();
 			
@@ -1823,7 +1839,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void setOrderListData() {
 		try {
-			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a JOIN tblcustomerinformation AS b ON a.UserID = b.UserID JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber";
+			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
+					+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+					+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+					+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled';";
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -3559,6 +3578,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void DeliveryFuncDefault() {
+		TableChecher = "dTB1";
 		setVisiblePanel();
 		delStatus.setVisible(true);
 		delStatus.panel1.add(dTB1);
@@ -3570,7 +3590,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status, b.courierID\r\n"
+			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID\r\n"
 					+ "FROM tblordercheckout AS a\r\n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
@@ -3581,21 +3601,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
-				//Date
-	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
-	            Date date = inputFormat.parse(rs.getString(1));
-	            String outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
+				arrDelList.add(rs.getString(1));
+				
 				arrDelList.add(rs.getString(2));
 				arrDelList.add(rs.getString(3));
 				
-				// Date
-				date = inputFormat.parse(rs.getString(4));
-				outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
-				// End of Date
+
+				arrDelList.add(rs.getString(4));
 				arrDelList.add(rs.getString(5));
+				
 				arrDelList.add(rs.getString(6));
 				arrDelList.add(rs.getString(7));
 				dTB1.main.addRow(arrDelList.toArray());
@@ -3608,7 +3622,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void DeliveryFuncCompleted() {
-		
+		TableChecher = "dTB2";
 		delStatus.panel1.add(dTB2);
 		delStatus.panel1.remove(dTB1);
 		delStatus.btnCompleted.setBackground(new Color(75, 119, 71));
@@ -3619,46 +3633,35 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB2.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, e.DeliveryDate, a.address, CONCAT(f.Firstname, ' ', f.Lastname) AS Fullname\r\n"
-					+ "FROM tblordercheckout AS a\r\n"
-					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
-					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
-					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
-					+ "JOIN tblcourierdeliverycompleted AS e ON e.deliveryID = b.deliveryID\r\n"
-					+ "JOIN tblcourierinformation AS f ON f.courierID = b.courierID\r\n"
-					+ "WHERE d.Status = 'Completed'";
+			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), DATE(e.DeliveryDate), a.address, CONCAT(f.Firstname, ' ', f.Lastname) AS Fullname \n"
+					+ "FROM tblordercheckout AS a \n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID \n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+					+ "JOIN tblcourierdeliverycompleted AS e ON e.deliveryID = b.deliveryID \n"
+					+ "JOIN tblcourierinformation AS f ON f.courierID = b.courierID \n"
+					+ "WHERE d.Status = 'Completed';";
 //			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
-				//Date
-	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
-	            Date date = inputFormat.parse(rs.getString(1));
-	            String outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
-				//End of Date
+				
+				arrDelList.add(rs.getString(1));
 				
 				arrDelList.add(rs.getString(2));
 				arrDelList.add(rs.getString(3));
-				// Date
-				date = inputFormat.parse(rs.getString(4));
-				outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
 				
-				date = inputFormat.parse(rs.getString(5));
-				outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
-				//End of Date
+				arrDelList.add(rs.getString(4));
+				arrDelList.add(rs.getString(5));
 				
 				arrDelList.add(rs.getString(6));
 				arrDelList.add(rs.getString(7));
 				dTB2.main.addRow(arrDelList.toArray());
 				arrDelList.clear();
 			}
-			dTB2.table.setModel(dTB2.main);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "DeliveryFuncERROR: " + e.getMessage());
+			System.out.println(e.getMessage());
+			JOptionPane.showMessageDialog(null, "DeliveryFuncCompletedERROR: " + e.getMessage());
 		}
 	}
 	
@@ -3666,7 +3669,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT a.OrderDate, a.OrderRefNumber, b.deliveryID, c.DeliveryDate, a.address, d.Status, b.courierID\r\n"
+			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID\r\n"
 					+ "FROM tblordercheckout AS a\r\n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
@@ -3677,30 +3680,74 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
-				//Date
-	            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
-	            Date date = inputFormat.parse(rs.getString(1));
-	            String outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
+				arrDelList.add(rs.getString(1));
+				
 				arrDelList.add(rs.getString(2));
 				arrDelList.add(rs.getString(3));
 				
-				// Date
-				date = inputFormat.parse(rs.getString(4));
-				outputDate = outputFormat.format(date);
-				arrDelList.add(outputDate);
-				// End of Date
+				arrDelList.add(rs.getString(4));
 				arrDelList.add(rs.getString(5));
+				
 				arrDelList.add(rs.getString(6));
 				arrDelList.add(rs.getString(7));
 				dTB1.main.addRow(arrDelList.toArray());
 				arrDelList.clear();
 			}
-			dTB1.table.setModel(dTB1.main);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR DeliveryFuncSearch: " + e.getMessage());
 		}
+	}
+	
+	private void DeliveryDetailsFunc() {
+		try {
+			delDetails.main.setRowCount(0);
+			String DelDetailRef = "";
+			if(TableChecher.equals("dTB1"))
+				DelDetailRef = dTB1.table.getValueAt(dTB1.table.getSelectedRow(), 1) + "";
+			if(TableChecher.equals("dTB2"))
+				DelDetailRef = dTB2.table.getValueAt(dTB2.table.getSelectedRow(), 1) + "";
+			
+			delDetails.lblRef.setText(DelDetailRef);
+	        String sql = "SELECT CONCAT(b.ProductName, ' (', b.volume, ')') AS Product, b.Quantity, b.Price, (b.Quantity*b.Price) As Total, CONCAT(c.Firstname, ' ', c.Lastname) AS CustomerName, DATE(a.OrderDate), a.address \n"
+	        		+ "FROM tblordercheckout AS a \n"
+	        		+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+	        		+ "JOIN tblcustomerinformation AS c ON a.UserID = c.UserID\n"
+	        		+ "WHERE a.OrderRefNumber = '" + DelDetailRef + "';";
+	        st.execute(sql);
+	        rs = st.getResultSet();
+	        ArrayList temp = new ArrayList<>();
+	        
+	        int TotalQuantity = 0;
+	        int TotalDiscount = 0;
+	        int TotalAmount = 0;
+
+	        while(rs.next()) {
+	        	temp.add(rs.getString(1)); // Product Name
+	        	temp.add(rs.getString(2)); // Quantity
+	        	temp.add(rs.getString(3)); // Price
+	        	temp.add(0); // Discount
+	        	temp.add(rs.getString(4)); // Total Price
+	        	delDetails.main.addRow(temp.toArray());
+	        	delDetails.lblCustName.setText(rs.getString(5));
+	        	delDetails.lblOrderD.setText(rs.getString(6));
+	        	delDetails.lblAdd.setText(rs.getString(7));
+	        	
+	        	TotalQuantity += Integer.parseInt(rs.getString(2));
+	        	double discount = 0.0;
+	        	TotalDiscount += discount;
+	        	TotalAmount += Integer.parseInt(rs.getString(4));
+	        }
+	        
+	        int TotalItem = delDetails.table.getRowCount();
+	        delDetails.lblItemCount.setText("Item: " + TotalItem);
+	        delDetails.lblQuantityCount.setText("Total Quantity: " + TotalQuantity);
+	        delDetails.lblDiscount.setText("Total Discount: " + TotalDiscount);
+	        delDetails.lblTotalAmount.setText("Total Amount: " + TotalAmount);
+		}catch (Exception e) {
+			JOptionPane.showConfirmDialog(null, "ERROR cancelpanelDataSetter: " + e.getMessage());
+		}
+		
+		delDetails.setVisible(true);
 	}
 
 	private void noticListSetter() {

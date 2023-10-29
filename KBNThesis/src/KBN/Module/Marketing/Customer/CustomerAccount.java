@@ -41,7 +41,7 @@ public class CustomerAccount extends JPanel implements MouseListener{
 		topNav = new JPanel();
 		topNav.setBorder(new LineBorder(new Color(0, 0, 0)));
 		topNav.setBackground(new Color(255, 255, 255));
-		topNav.setBounds(10, 11, 969, 62);
+		topNav.setBounds(26, 11, 933, 70);
 		add(topNav);
 		topNav.setLayout(null);
 		
@@ -52,8 +52,8 @@ public class CustomerAccount extends JPanel implements MouseListener{
 		txtSearchBar.addMouseListener(this);
 		txtSearchBar.setForeground(Color.GRAY);
 		
-		btnCreate = new JButton("Create");
-		btnCreate.setBounds(533, 13, 120, 35);
+		btnCreate = new JButton("   Create");
+		btnCreate.setBounds(487, 13, 166, 35);
 		topNav.add(btnCreate);
 		btnCreate.setHorizontalAlignment(SwingConstants.LEFT);
 		btnCreate.setIcon(new ImageIcon(CustomerAccount.class.getResource("/KBN/resources/Marketing/notification.png")));
@@ -73,7 +73,7 @@ public class CustomerAccount extends JPanel implements MouseListener{
 				btnSearch.setBackground(Color.WHITE);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 84, 969, 565);
+		scrollPane.setBounds(26, 107, 933, 532);
 		this.add(scrollPane);
 		
 		table = new JTable();
@@ -84,7 +84,7 @@ public class CustomerAccount extends JPanel implements MouseListener{
 		btnClientProfile.setFocusable(false);
 //		btnClientProfile.setBorderPainted(false);
 		btnClientProfile.setBackground(Color.WHITE);
-		btnClientProfile.setBounds(813, 660, 166, 28);
+		btnClientProfile.setBounds(793, 660, 166, 28);
 		btnClientProfile.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(btnClientProfile);
 
@@ -101,6 +101,10 @@ public class CustomerAccount extends JPanel implements MouseListener{
 		columnDefaultData = new String[] {"User ID","Account","Email", "Contact", "Brand", "Account Type"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
+		
+        Font cellFont = new Font("Arial", Font.PLAIN, 14);
+        table.setFont(cellFont);
+		table.setRowHeight(30);
 	}
 
 	@Override
