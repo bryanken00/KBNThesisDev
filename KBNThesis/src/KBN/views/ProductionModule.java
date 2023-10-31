@@ -340,8 +340,6 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			if(addItem.checker.equals("Verified")) {
 				String prodName = addItem.txtProductName.getText();
 				String variant = addItem.cbVariant.getSelectedItem() + "";
-				
-				System.out.println(variant);
 				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
 				
 		        LocalDate currentDate = LocalDate.now();

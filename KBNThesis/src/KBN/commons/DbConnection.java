@@ -14,9 +14,9 @@ public class DbConnection {
 //	private static String password = "";
 	
 	// Amazon
-	private static String url = "jdbc:mysql://admin.cqkzw4o58odp.ap-southeast-1.rds.amazonaws.com:3306/kbndatabase?useSSL=false";
-	private static String username = "admin";
-	private static String password = "KENKENken0011";
+	private static String url = "jdbc:mysql://127.0.0.1:3306/kbndatabase";
+	private static String username = "root";
+	private static String password = "KENKENken0011@";
 	
 	public Connection getConnection() {
 		try {
