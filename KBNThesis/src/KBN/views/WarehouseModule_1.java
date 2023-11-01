@@ -1051,14 +1051,17 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        	return;
 	        
 			try {
-		        
+				
+				ArrayList procedureStorage = new ArrayList<>();
 				String courier = onDeliver.cbRiderList.getSelectedItem() + "";
 				String courierID = onDeliver.courierID[onDeliver.cbRiderList.getSelectedIndex()] + "";
 				String ref = onDeliver.lblRefNumber.getText();
-				String SQL = "INSERT INTO tblcourierdelivery(OrderRefNumber,courierID) VALUES('" + ref + "','" + courierID + "')";
-				st.execute(SQL);
+				String SQL = "INSERT INTO tblcourierdelivery(OrderRefNumber,courierID) VALUES('" + ref + "','" + courierID + "');";
 				
-		        String SQLSelectDelID = "SELECT DeliveryID FROM tblcourierdelivery WHERE OrderRefNumber = '" + ref + "' AND courierID = '" + courierID + "'";
+//				st.execute(SQL);
+				procedureStorage.add(SQL);
+				
+		        String SQLSelectDelID = "SELECT DeliveryID FROM tblcourierdelivery WHERE OrderRefNumber = '" + ref + "' AND courierID = '" + courierID + "';";
 		        
 		        st.execute(SQLSelectDelID);
 		        rs = st.getResultSet();
@@ -1068,6 +1071,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		        if(rs.next()) {
 		        	dID = rs.getInt(1);
 		        }
+		        dID++;
 
 		        // Format the date and time
 				Date currentDate = new Date();
@@ -1077,13 +1081,34 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(DeliveryID, DeliveryDate) VALUES('" + dID + "','" + formattedDate + "');";
 				
 				
-				st.execute(SQLDeliveryDate);
-				String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "'";
-				st.executeUpdate(SQLUpdate);
+
+				
+//				st.execute(SQLDeliveryDate);
+				procedureStorage.add(SQLDeliveryDate);
+				String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "';";
+//				st.executeUpdate(SQLUpdate);
+				procedureStorage.add(SQLUpdate);
+				
+		        String deleteProcedureSQL = "DROP PROCEDURE IF EXISTS DeliveryProcess;";
+		        
+				String Procedure = "CREATE PROCEDURE DeliveryProcess() \n"
+						+ "BEGIN \n";
+				
+				for(int i = 0; i < procedureStorage.size(); i++) {
+					Procedure += procedureStorage.get(i) + "\n";
+				}
+				Procedure += "\nEND";
+
+				st.execute(deleteProcedureSQL);
+				st.execute(Procedure);
+				
+				// Calling Delivery Process Procedure
+				st.execute("CALL DeliveryProcess();");
 				
 				printingError("Delivery Updated!");
 				
 				onDeliver.dispose();
+				procPanelFunc();
 				
 				
 			} catch (Exception e) {
