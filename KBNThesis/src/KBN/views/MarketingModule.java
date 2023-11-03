@@ -2916,7 +2916,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			custN = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 1) + "";
 			custB = custAccount.table.getValueAt(custAccount.table.getSelectedRow(), 4) + "";
 			
-			if(!"rebranding".equals(AccType))
+			if(!"Rebranding".equals(AccType))
 				return;
 			
 			clientProfileChecker = AccType;

@@ -158,7 +158,7 @@ public class Registration extends JPanel {
 		txtBrand.setBounds(24, 274, 224, 30);
 		add(txtBrand);
 		
-		JLabel lblAccType = new JLabel("Username");
+		JLabel lblAccType = new JLabel("Account Type");
 		lblAccType.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblAccType.setBounds(572, 310, 134, 30);
 		add(lblAccType);
@@ -167,5 +167,8 @@ public class Registration extends JPanel {
 		cbAccType = new JComboBox(accType);
 		cbAccType.setBounds(572, 340, 224, 30);
 		add(cbAccType);
+		
+		lblAccType.setVisible(false);
+		cbAccType.setVisible(false);
 	}
 }
