@@ -452,11 +452,13 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		String itemDate = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 4) + "";
 		String Volume = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 5) + "";
 		
-		String QRCodeName = MN + " " + itemDate +".png";
-		String url = "http://localhost/webdevelopment/thesis1_website/warehouse/?MN=" + MN + "&CN=" + CN + "&S=" + S + "&date=" + itemDate+"&tv=" + Volume;
+		String QRCodeName = MN + ".png";
+		String url = "https://kissedbynature.online/warehouse/?MN=" + MN + "&CN=" + CN + "&S=" + S + "&date=" + itemDate+"&tv=" + Volume;
+		
 		try {
 			genQR.gettingURL(url, QRCodeName);
 		}catch (Exception e1) {
+			System.out.println(e1.getMessage());
 			JOptionPane.showMessageDialog(null, "ERROR QRCODE: " + e1.getMessage());
 		}
 	}
@@ -1157,6 +1159,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		rightClickRawMats.setVisible(false);
 		
 		// Navs
 		if(e.getSource() == wNav.btnRawMats)
