@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 
 import KBN.Module.Marketing.ModuleSelectionMarketing;
 import KBN.Module.Marketing.AuditTrail.AuditTrail;
+import KBN.Module.Marketing.ClientProfile.AddProduct;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
@@ -53,7 +54,6 @@ import KBN.Module.Marketing.OrderingPanel.OrderingPanel;
 import KBN.Module.Marketing.OrderingPanel.onDelivery;
 import KBN.Module.Marketing.RebrandingNew.RebrandingNew;
 import KBN.Module.Marketing.RebrandingNew.RebrandingRightClick;
-import KBN.Module.Marketing.RebrandingProducts.AddProduct;
 import KBN.Module.Marketing.RebrandingProducts.ClientProducts;
 import KBN.Module.Marketing.RebrandingProducts.RebrandingProd;
 import KBN.Module.Marketing.RebrandingProducts.panelGenerator;
@@ -125,11 +125,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private ProductDetails prodDetails;
 	private OrderPanelPopupInstruction orderPanelInstruction;
 	private onDelivery onDeliver;
+	
 	//Client Profile
 	private ClientProfile cp;
 	private ClientProfileScrollablePanel cpsp;
 	private OrderHistory orderHistory;
 	private rebrandingProductsList rp;
+	private AddProduct addProduct;
 	
 	//deliveries
 	private DeliveryStatus delStatus;
@@ -308,6 +310,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		cpsp = new ClientProfileScrollablePanel();
 		orderHistory = new OrderHistory();
 		rp = new rebrandingProductsList();
+		addProduct = new AddProduct();
 			
 		prodDetails = new ProductDetails();
 		orderPanelInstruction = new OrderPanelPopupInstruction();
@@ -610,6 +613,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		cp.lblOrderHistory.addMouseListener(this);
 		cp.lblOrders.addMouseListener(this);
 		cp.lblProducts.addMouseListener(this);
+		cp.lblAddProduct.addMouseListener(this);
 		
 		//Delivery
 		delStatus.btnListOfDelivery.addActionListener(this);
@@ -814,6 +818,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == cp.lblProducts) {
 			clientProfileOwnProductsRefresher(uID);
 			cp.scrollOrderPanel.setViewportView(rp);
+		}
+		if(e.getSource() == cp.lblAddProduct) {
+			addProduct.setUserID(uID);
+			addProduct.renderCategories();
+			addProduct.setVisible(true);
 		}
 		
 		if(e.getComponent() instanceof JButton) {

@@ -46,6 +46,7 @@ public class ClientProfile extends JPanel {
 	private JPanel orderPanelContainer;
 	public JButton btnUpdate;
 	public JLabel lblDiscount;
+	public JLabel lblAddProduct;
 	
 	public ClientProfile() {
 		setBackground(new Color(255, 255, 255));
@@ -295,6 +296,13 @@ public class ClientProfile extends JPanel {
 		scrollOrderPanel = new JScrollPane();
 		scrollOrderPanel.setBounds(23, 55, 635, 452);
 		panelProducts.add(scrollOrderPanel);
+		
+		lblAddProduct = new JLabel("Add Product");
+		lblAddProduct.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAddProduct.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblAddProduct.setBorder(new LineBorder(new Color(8, 104, 0), 1, true));
+		lblAddProduct.setBounds(556, 11, 102, 22);
+		panelProducts.add(lblAddProduct);
 		
 	}
 }
