@@ -288,7 +288,7 @@ public class ProductDetails extends JDialog implements ActionListener{
 	private Image imgLoader(String path) {
 		Image scaledImage = null;
 		try {
-			URL imageUrl = new URL("https://www.kbnskinessentials.shop/Products/resources/" + path);
+			URL imageUrl = new URL("https://kissedbynature.online/Products/resources/" + path);
 			ImageIcon imageIcon = new ImageIcon(imageUrl);
 			Image image = imageIcon.getImage();
 

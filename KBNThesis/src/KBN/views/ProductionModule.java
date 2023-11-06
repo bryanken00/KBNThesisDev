@@ -31,6 +31,7 @@ import KBN.Module.Production.ArchiveList.ArchiveData;
 import KBN.Module.Production.ArchiveList.ArchivePanelMain;
 import KBN.Module.Production.ArchiveList.ViewDetails.ArchiveDataViewDetails;
 import KBN.Module.Production.ArchiveList.ViewDetails.ArchiveDataViewDetailsData;
+import KBN.Module.Production.AuditTrail.AuditTrail;
 import KBN.Module.Production.KBNProducts.KBNData;
 import KBN.Module.Production.KBNProducts.KBNPanelMain;
 import KBN.Module.Production.KBNProducts.ViewDetails.KBNDataViewDetails;
@@ -112,6 +113,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			
 		// Checker
 			private JButton btnChecker;
+			
+	private AuditTrail audittrail;
 
 	private JPanel contentPane;
 	private JPanel panelNav;
@@ -194,13 +197,14 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         addItem = new AddItemProduction();
         addItemRebrand = new AddItemProductionRebranding();
         
-        
+        audittrail = new AuditTrail();
 
         
         panelNav.add(nav);
         container.add(kbnMain);
         container.add(rebrandingMain);
         container.add(archiveMain);
+        container.add(audittrail);
         kbnMain.container.setViewportView(kbnData);
         defaultPanel();
         kbnMain.setVisible(true);
@@ -217,6 +221,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		kbnMain.setVisible(false);
 		rebrandingMain.setVisible(false);
 		archiveMain.setVisible(false);
+		audittrail.setVisible(false);
 		
 		nav.btnAddItem.setVisible(false);
 	}
@@ -229,6 +234,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.btnArchiveList.addActionListener(this);
 		nav.btnKBNProduct.addActionListener(this);
 		nav.btnRebrandingProduct.addActionListener(this);
+		nav.btnAuditTrail.addActionListener(this);
 		
 		// KBN
 		kbnMain.btnSearch.addActionListener(this);
@@ -270,10 +276,12 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.btnArchiveList.setBackground(new Color(255, 255, 255));
 		nav.btnKBNProduct.setBackground(new Color(255, 255, 255));
 		nav.btnRebrandingProduct.setBackground(new Color(255, 255, 255));
+		nav.btnAuditTrail.setBackground(new Color(255, 255, 255));
 
 		nav.btnArchiveList.setForeground(new Color(0, 0, 0));
 		nav.btnKBNProduct.setForeground(new Color(0, 0, 0));
 		nav.btnRebrandingProduct.setForeground(new Color(0, 0, 0));
+		nav.btnAuditTrail.setForeground(new Color(0, 0, 0));
 	}
 	
 	// KBN Data
@@ -672,6 +680,43 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		}
 	}
 	
+	private void auditTrailData() {
+		navColor();
+		nav.btnAuditTrail.setBackground(new Color(8, 104, 0));
+		nav.btnAuditTrail.setForeground(new Color(255, 255,255));
+        defaultPanel();
+        
+        try {
+        	audittrail.main.setRowCount(0);
+			String SQL = "SELECT DATE_FORMAT(a.DateAction, '%Y-%m-%d') AS formatted_date, \n"
+					+ "       DATE_FORMAT(a.DateAction, '%h:%i %p') AS formatted_time, \n"
+					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
+					+ "       a.Description \n"
+					+ "FROM audittrailproduction As a \n"
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+			st.execute(SQL);
+			ArrayList temp = new ArrayList<>();
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				String formattedText = "<html><center>" + rs.getString(1) + "<br>" + rs.getString(2) + "</center></html>";
+//				temp.add(rs.getString(1) + ", " + rs.getString(2));
+				temp.add(formattedText);
+				temp.add(rs.getString(3));
+				
+				String[] splitted = rs.getString(4).split(" - ");
+				temp.add("<html><b>" + splitted[0] + "</b> - " + splitted[1] + "</html>");
+				audittrail.main.addRow(temp.toArray());
+				temp.clear();
+			}
+        	
+        }catch (Exception e) {
+        	JMessage("Error auditTrailData: " + e.getMessage());
+		}
+        
+        audittrail.setVisible(true);
+	}
+	
 	private void RebranddeleteDetails(int index) {
 		try {
 			int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete\n" + rebrandingDetailsData.lblProductName[index].getText() + "?", "Confirmation", JOptionPane.YES_NO_OPTION);
@@ -975,7 +1020,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+		moduleSelection.setVisible(false);
 		// Navs
 			if(e.getSource() == nav.btnKBNProduct)
 				kbnDataFunc();
@@ -1002,6 +1047,10 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			
 			if(e.getSource() == addItemRebrand.btnAddItem)
 				rebrandingAdd();
+			
+			if(e.getSource() == nav.btnAuditTrail) {
+		        auditTrailData();
+			}
 		
 		// KBNData Buttons
 			if(kbnData.btnViewDetails != null) {
@@ -1069,6 +1118,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			warehouseModule.setVisible(true);
 			this.dispose();
 		}
+		
+
 			
 
 	}

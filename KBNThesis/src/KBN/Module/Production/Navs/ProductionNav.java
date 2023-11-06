@@ -17,6 +17,7 @@ public class ProductionNav extends JPanel {
 	public JButton btnKBNProduct;
 	public JButton btnRebrandingProduct;
 	public JButton btnArchiveList;
+	public JButton btnAuditTrail;
 	
 	public ProductionNav() {
 		setBounds(0, 0, 255, 721);
@@ -80,6 +81,14 @@ public class ProductionNav extends JPanel {
 		btnAddItem.setBackground(Color.WHITE);
 		btnAddItem.setBounds(10, 97, 235, 46);
 		add(btnAddItem);
+		
+		btnAuditTrail = new JButton("Audit Trail");
+		btnAuditTrail.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnAuditTrail.setFocusable(false);
+		btnAuditTrail.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		btnAuditTrail.setBackground(Color.WHITE);
+		btnAuditTrail.setBounds(10, 589, 235, 46);
+		add(btnAuditTrail);
 		
 	}
 }
