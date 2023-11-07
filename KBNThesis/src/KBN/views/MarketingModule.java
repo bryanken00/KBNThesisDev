@@ -251,7 +251,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         		+ "WHERE b.Status = 'toPay'\r\n"
         		+ "ORDER BY OrderDate DESC LIMIT 1;";
         
-        System.out.println(sqlTimeDiff);
+//        System.out.println(sqlTimeDiff);
         
         
         // Declaration
@@ -1295,7 +1295,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			    String min_ = (min > 1) ? "Minutes" : "Minute";
 			    String label = "New Order " + min + " " + min_ + " ago";
 			    dashboard1.lblTimeDiff.setText(label);
-			    System.out.println(label);
+//			    System.out.println(label);
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "timeDiff ERROR: " + e.getMessage());
@@ -2102,30 +2102,30 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rRightClick.btnArchive.setText("Archive");
 		rebrandingProdButtonChecker = "Products";
 		
-		setVisiblePanel();
-		
-		rebrandingNew.main.setRowCount(0);
-		
 		rebrandingNew.btnProducts.setBackground(new Color(75, 119, 71));
 		rebrandingNew.btnProducts.setForeground(Color.WHITE);
 		rebrandingNew.btnArchive.setBackground(Color.WHITE);
 		rebrandingNew.btnArchive.setForeground(Color.BLACK);
 		
+		setVisiblePanel();
+		
+		rebrandingNew.main.setRowCount(0);
         try {
 
-        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
-        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
-        			+ "SUM(a.Sold) AS TotalSold,\r\n"
-        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
-        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
-        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
-        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
-        			+ "c.FinishProduct\r\n"
-        			+ "FROM tblrebrandingproducts AS a\r\n"
-        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
-        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
-        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
+        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, \n"
+        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, \n"
+        			+ "COALESCE(SUM(a.Sold), 0) AS TotalSold, \n"
+        			+ "COALESCE(SUM(c.FinishProduct - a.sold), 0) AS Available, \n"
+        			+ "COALESCE(c.FinishProduct, 0) AS FinishProduct, \n"
+        			+ "COALESCE((SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1 \n"
+        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber \n"
+        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return'),0) AS Returna \n"
+        			+ "FROM tblrebrandingproducts AS a \n"
+        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID \n"
+        			+ "LEFT JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID \n"
+        			+ "WHERE b.AccountType = 'Rebranding' \n"
         			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
+        	
         	st.execute(sql);
         	rs = st.getResultSet();
         	ArrayList temp = new ArrayList<>();
@@ -2157,34 +2157,26 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		rebrandingNew.main.setRowCount(0);
 		
-		rebrandingNew.btnProducts.setBackground(new Color(75, 119, 71));
-		rebrandingNew.btnProducts.setForeground(Color.WHITE);
-		rebrandingNew.btnArchive.setBackground(Color.WHITE);
-		rebrandingNew.btnArchive.setForeground(Color.BLACK);
+		rebrandingNew.btnArchive.setBackground(new Color(75, 119, 71));
+		rebrandingNew.btnArchive.setForeground(Color.WHITE);
+		rebrandingNew.btnProducts.setBackground(Color.WHITE);
+		rebrandingNew.btnProducts.setForeground(Color.BLACK);
 		
         try {
         	
-        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
-        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
-        			+ "SUM(a.Sold) AS TotalSold,\r\n"
-        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
-        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
-        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
-        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
-        			+ "c.FinishProduct\r\n"
-        			+ "FROM tblrebrandingproductsarchive AS a\r\n"
-        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
-        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
-        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
+        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, \n"
+        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, \n"
+        			+ "COALESCE(SUM(a.Sold), 0) AS TotalSold, \n"
+        			+ "COALESCE(SUM(c.FinishProduct - a.sold), 0) AS Available, \n"
+        			+ "COALESCE(c.FinishProduct, 0) AS FinishProduct, \n"
+        			+ "COALESCE((SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1 \n"
+        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber \n"
+        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return'),0) AS Returna \n"
+        			+ "FROM tblrebrandingproductsarchive AS a \n"
+        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID \n"
+        			+ "LEFT JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID \n"
+        			+ "WHERE b.AccountType = 'Rebranding' \n"
         			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
-        	
-//        	String sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, SUM(a.Sold) AS TotalSold, c.FinishProduct\r\n"
-//        			+ "FROM tblrebrandingproductsarchive AS a\r\n"
-//        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
-//        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
-//        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
-//        			+ "GROUP BY a.userID, Product\r\n"
-//        			+ "ORDER BY TotalSold DESC;";
         	
         	st.execute(sql);
         	rs = st.getResultSet();
@@ -2220,33 +2212,33 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		String sql = "";
 		
 		if(!search.equals("Search by Product Name, Client Name"))
-			sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
-        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
-        			+ "SUM(a.Sold) AS TotalSold,\r\n"
-        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
-        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
-        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
-        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
-        			+ "c.FinishProduct\r\n"
-        			+ "FROM " + checker__ + " AS a\r\n"
-        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
-        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
-        			+ "WHERE b.AccountType = 'Rebranding' AND (a.prodName LIKE '%" + search + "%' OR CONCAT(b.Firstname, ' ', b.Lastname) LIKE '%" + search + "%')\r\n"
-        			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
+    		sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, \n"
+    			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, \n"
+    			+ "COALESCE(SUM(a.Sold), 0) AS TotalSold, \n"
+    			+ "COALESCE(SUM(c.FinishProduct - a.sold), 0) AS Available, \n"
+    			+ "COALESCE(c.FinishProduct, 0) AS FinishProduct, \n"
+    			+ "COALESCE((SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1 \n"
+    			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber \n"
+    			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return'),0) AS Returna \n"
+    			+ "FROM " + checker__ + " AS a \n"
+    			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID \n"
+    			+ "LEFT JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID \n"
+    			+ "WHERE b.AccountType = 'Rebranding' AND (a.prodName LIKE '%" + search + "%' OR CONCAT(b.Firstname, ' ', b.Lastname) LIKE '%" + search + "%') \n"
+    			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
 		else
-        	sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName,\r\n"
-        			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product,\r\n"
-        			+ "SUM(a.Sold) AS TotalSold,\r\n"
-        			+ "SUM(c.FinishProduct - a.sold) AS Available,\r\n"
-        			+ "(SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1\r\n"
-        			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber\r\n"
-        			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return') AS Returna,\r\n"
-        			+ "c.FinishProduct\r\n"
-        			+ "FROM " + checker__ + " AS a\r\n"
-        			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID\r\n"
-        			+ "JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID\r\n"
-        			+ "WHERE b.AccountType = 'Rebranding'\r\n"
-        			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
+			sql = "SELECT a.prodID, a.userID, CONCAT(b.Firstname, ' ', b.Lastname) AS FullName, \n"
+	    			+ "CONCAT(a.prodName, ' (', a.prodVolume,')') AS Product, \n"
+	    			+ "COALESCE(SUM(a.Sold), 0) AS TotalSold, \n"
+	    			+ "COALESCE(SUM(c.FinishProduct - a.sold), 0) AS Available, \n"
+	    			+ "COALESCE(c.FinishProduct, 0) AS FinishProduct, \n"
+	    			+ "COALESCE((SELECT SUM(a1.Quantity) FROM tblordercheckoutdata AS a1 \n"
+	    			+ "JOIN tblorderstatus AS b1 ON a1.OrderRefNumber = b1.OrderRefNumber \n"
+	    			+ "WHERE a1.ProductName = a.prodName AND a1.volume = a.prodVolume AND b1.status = 'Return'),0) AS Returna \n"
+	    			+ "FROM " + checker__ + " AS a \n"
+	    			+ "JOIN tblcustomerinformation AS b ON a.userID = b.UserID \n"
+	    			+ "LEFT JOIN tblrebrandingfinishproduct AS c ON a.prodID = c.ID \n"
+	    			+ "WHERE b.AccountType = 'Rebranding' \n"
+	    			+ "GROUP BY a.userID, Product ORDER BY TotalSold DESC;";
         
         try {
         	
@@ -3670,7 +3662,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				arrDelList.clear();
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			JOptionPane.showMessageDialog(null, "DeliveryFuncCompletedERROR: " + e.getMessage());
 		}
 	}
