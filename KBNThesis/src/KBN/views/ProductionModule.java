@@ -61,6 +61,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		
 		// Username
 		private dataSetter dataSet;
+		private String accountID = "";
 		
 		// KBN Product
 		private KBNPanelMain kbnMain;
@@ -269,6 +270,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.lblUsername.setText(dataSet.getUsername());
 		AccountLevel = dataSet.getAccLevel();
 		userName = dataSet.getUsername();
+		accountID = dataSet.getAccountID();
 	}
 	
 	// Navs Color
@@ -282,6 +284,16 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		nav.btnKBNProduct.setForeground(new Color(0, 0, 0));
 		nav.btnRebrandingProduct.setForeground(new Color(0, 0, 0));
 		nav.btnAuditTrail.setForeground(new Color(0, 0, 0));
+	}
+	
+	private void auditTrailInsert(String Description) {
+		String sql = "INSERT INTO audittrailproduction(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','" + Description + "');";
+		
+		try {
+			st.execute(sql);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR auditTrailInsert: " + e.getMessage());
+		}
 	}
 	
 	// KBN Data
@@ -344,11 +356,24 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	
 	private void kbnAdd() {
 		try {
-			addItem.btnVerifyFuncKBN();
+
+			String prodName = addItem.txtProductName.getText();
+			String variant = addItem.cbVariant.getSelectedItem() + "";
+			
+			String SQL = "SELECT prodVolume AS Variant FROM tblproducts WHERE LOWER(prodName) = LOWER('" + prodName + "')";
+			st.execute(SQL);
+			rs = st.getResultSet();
+			int counter = 0;
+			while(rs.next())
+				counter++;
+			
+			if(counter > 0)
+				addItem.checker = "Verified";
+			
 			if(addItem.checker.equals("Verified")) {
-				String prodName = addItem.txtProductName.getText();
-				String variant = addItem.cbVariant.getSelectedItem() + "";
 				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
+				
+				st.execute("DROP PROCEDURE IF EXISTS confirmProductAddKBN;");
 				
 		        LocalDate currentDate = LocalDate.now();
 		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -365,10 +390,10 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				if(rs.next()) {
 					checker__++;
 				}
-				
+				ArrayList arrTemp = new ArrayList<>();
 				if(checker__ == 0) {
 					String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy,ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'KBN');";
-					st.execute(SQLTracking);
+					arrTemp.add(SQLTracking);
 				}
 				
 				String SQLConfirmDATA = "INSERT INTO tblconfirmationproduct (TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded) \n"
@@ -376,9 +401,39 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 						+ "FROM tblconfirmationtracking AS a \n"
 						+ "JOIN tblproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant + "' \n"
 						+ "GROUP BY b.prodName, b.prodVolume;";
+				arrTemp.add(SQLConfirmDATA);
 				
-
-				st.execute(SQLConfirmDATA);
+				String Procedures = "CREATE PROCEDURE confirmProductAddKBN()\r\n"
+						+ "BEGIN\r\n"
+						+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+						+ "    BEGIN\r\n"
+						+ "        ROLLBACK;\r\n"
+						+ "        RESIGNAL;\r\n"
+						+ "    END;\r\n"
+						+ "\r\n"
+						+ "    START TRANSACTION;\r\n"
+						+ "";
+				
+				for(int i = 0; i < arrTemp.size(); i++) {
+					Procedures = Procedures + arrTemp.get(i);
+				}
+				
+				Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+						+ "    COMMIT;\r\n"
+						+ "END;";
+				
+				arrTemp.clear();
+				
+				
+				st.execute(Procedures);
+				st.execute("CALL confirmProductAddKBN();");
+				
+				// Audit Trail
+				String productName =  quantity + "pcs, "+ prodName + " (" + variant + ")";
+				auditTrailInsert("Added KBN Product - " + productName);
+				
+				System.out.println(addItem.cbVariant.getSelectedItem());
+				
 				JMessage("Product Added!");
 				addItem.txtProductName.setText("");
 				addItem.cbVariant.removeAllItems();
@@ -508,6 +563,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					st.execute(Procedures);
 					st.execute("CALL deleteKBN();");
 					
+					auditTrailInsert("Delete KBN Product - TrackingID = " + KBNDetailsData.TrackingID + ", ID = " + KBNDetailsData.productID[index]);
+					
 					viewDetails(trackingIndex);
 					kbnDataFunc();
 					arrTemp.clear();
@@ -557,6 +614,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					st.execute("DROP PROCEDURE IF EXISTS deleteKBN;");
 					st.execute(Procedures);
 					st.execute("CALL deleteKBN();");
+					
+					auditTrailInsert("Delete KBN Product - TrackingID = " + KBNDetailsData.TrackingID + ", ID = " + KBNDetailsData.productID[index]);
 					arrTemp.clear();
 					viewDetails(trackingIndex);
 				}
@@ -642,6 +701,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	        String formattedDate = currentDate.format(formatter);
 	        
+
+			st.execute("DROP PROCEDURE IF EXISTS confirmProductAddRebranding;");
+	        
+	        ArrayList arrTemp = new ArrayList<>();
+	        
 			String checker = "SELECT TrackingID "
 					+ "FROM tblconfirmationtracking WHERE DateAdded >= CURDATE() AND STATUS = 'PENDING' AND ProductType = 'REBRANDING'";
 			
@@ -654,7 +718,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			
 			if(checker__ == 0) {
 				String SQLTracking = "INSERT INTO tblconfirmationtracking(DateAdded,Status, AddedBy, ProductType) VALUES(NOW(),'PENDING','" + userName + "', 'REBRANDING');";
-				st.execute(SQLTracking);
+				arrTemp.add(SQLTracking);
 			}
 			String SQLRebrandingConfirmDATA = "INSERT INTO tblconfirmationproductRebranding (UserID, TrackingID, ProductName, ProductVariant, ProductQuantity, TimeAdded)\r\n"
 					+ "SELECT '" + userID + "', MAX(a.TrackingID), b.prodName, b.prodVolume, '" + quantity + "', CURRENT_TIME\r\n"
@@ -662,8 +726,38 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					+ "JOIN tblrebrandingproducts AS b ON b.prodName = '" + prodName + "' AND b.prodVolume = '" + variant +"' \r\n"
 					+ "GROUP BY b.prodName, b.prodVolume;";
 			
-
-			st.execute(SQLRebrandingConfirmDATA);
+			arrTemp.add(SQLRebrandingConfirmDATA);
+			
+			String Procedures = "CREATE PROCEDURE confirmProductAddRebranding()\r\n"
+					+ "BEGIN\r\n"
+					+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+					+ "    BEGIN\r\n"
+					+ "        ROLLBACK;\r\n"
+					+ "        RESIGNAL;\r\n"
+					+ "    END;\r\n"
+					+ "\r\n"
+					+ "    START TRANSACTION;\r\n"
+					+ "";
+			
+			for(int i = 0; i < arrTemp.size(); i++) {
+				Procedures = Procedures + arrTemp.get(i);
+			}
+			
+			Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+					+ "    COMMIT;\r\n"
+					+ "END;";
+			
+			arrTemp.clear();
+			
+			
+			st.execute(Procedures);
+			st.execute("CALL confirmProductAddRebranding();");
+			
+			
+			// Audit Trail
+			String productName =  quantity + "pcs, "+ prodName + " (" + variant + ")";
+			auditTrailInsert("Added KBN Product - " + productName);
+			
 			JMessage("Product Added!");
 			
 			addItemRebrand.cbProductName.removeAllItems();
@@ -773,6 +867,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					st.execute(Procedures);
 					st.execute("CALL deleteREBRANDING();");
 					
+					auditTrailInsert("Delete Rebranding Product - TrackingID = " + rebrandingDetailsData.TrackingID + ", ID = " + rebrandingDetailsData.productID[index]);
+					
 					RebrandViewDetails(rebrandingtrackingIndex);
 					rebrandingFunc();
 					rebrandingTrackView.dispose();
@@ -822,6 +918,9 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					st.execute("DROP PROCEDURE IF EXISTS deleteREBRANDING;");
 					st.execute(Procedures);
 					st.execute("CALL deleteREBRANDING();");
+
+					auditTrailInsert("Delete Rebranding Product - TrackingID = " + rebrandingDetailsData.TrackingID + ", ID = " + rebrandingDetailsData.productID[index]);
+					
 					RebrandViewDetails(rebrandingtrackingIndex);
 				}
 			}else {

@@ -199,8 +199,10 @@ public class AddItemProduction extends JDialog implements ActionListener {
 			if(counter > 0)
 				checker = "Verified";
 			
-			for (String item : cat) {
-			    cbVariant.addItem(item);
+			if(cbVariant != null) {
+				for (String item : cat) {
+				    cbVariant.addItem(item);
+				}
 			}
 
 			cat.clear();
