@@ -11,6 +11,8 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import KBN.commons.DbConnection;
+import KBN.commons.EmailDocumentFilter;
+import KBN.commons.NumberOnlyDocumentFilter;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -37,6 +39,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.PlainDocument;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
@@ -221,6 +224,20 @@ public class ProductDetails extends JDialog implements ActionListener{
 		
 		btnAddImg.addActionListener(this);
 		btnSave.addActionListener(this);
+		
+
+		NumberOnlyDocumentFilter numberFiler = new NumberOnlyDocumentFilter(10);
+        EmailDocumentFilter emailFilter = new EmailDocumentFilter(64);
+        
+		PlainDocument prodName = (PlainDocument) txtProdName.getDocument();
+		PlainDocument prodVariant = (PlainDocument) txtVariant.getDocument();
+		PlainDocument price = (PlainDocument) txtPrice.getDocument();
+		
+		
+		prodName.setDocumentFilter(emailFilter);
+		prodVariant.setDocumentFilter(emailFilter);
+		price.setDocumentFilter(numberFiler);
+		
 	}
 	
 	public void ProductDetails(String prodID) {

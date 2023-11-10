@@ -6,8 +6,11 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.PlainDocument;
 
 import KBN.commons.DbConnection;
+import KBN.commons.EmailDocumentFilter;
+import KBN.commons.NumberOnlyDocumentFilter;
 import KBN.commons.dataSetter;
 
 import javax.swing.JLabel;
@@ -199,6 +202,18 @@ public class AddProduct extends JDialog implements ActionListener {
 		btnAddImg.addActionListener(this);
 		btnAddNew.addActionListener(this);
 		btnSave.addActionListener(this);
+		
+		NumberOnlyDocumentFilter numberFiler = new NumberOnlyDocumentFilter(10);
+        EmailDocumentFilter emailFilter = new EmailDocumentFilter(64);
+        
+		PlainDocument prodName = (PlainDocument) txtProduct.getDocument();
+		PlainDocument prodVariant = (PlainDocument) txtVariant.getDocument();
+		PlainDocument price = (PlainDocument) txtPrice.getDocument();
+		
+		
+		prodName.setDocumentFilter(emailFilter);
+		prodVariant.setDocumentFilter(emailFilter);
+		price.setDocumentFilter(numberFiler);
 	}
 	
 	public void renderCategories() {
