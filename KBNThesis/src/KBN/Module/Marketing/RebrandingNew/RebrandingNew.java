@@ -42,6 +42,7 @@ public class RebrandingNew extends JPanel implements MouseListener {
 	public JButton btnProducts;
 	public JButton btnArchive;
 	public JButton btnSearch;
+	public JButton btnArchiveProduct;
 	
 	public RebrandingNew() {
 		setBackground(new Color(255, 255, 255));
@@ -49,7 +50,7 @@ public class RebrandingNew extends JPanel implements MouseListener {
 		setLayout(null);
         
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(26, 146, 933, 511);
+		scrollPane.setBounds(26, 146, 933, 498);
 		add(scrollPane);
 		
 		table = new JTable(){
@@ -114,6 +115,14 @@ public class RebrandingNew extends JPanel implements MouseListener {
 		btnSearch.setBackground(Color.WHITE);
 		btnSearch.setBounds(884, 61, 32, 32);
 		add(btnSearch);
+		
+		btnArchiveProduct = new JButton("Archive");
+		btnArchiveProduct.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnArchiveProduct.setFocusable(false);
+		btnArchiveProduct.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnArchiveProduct.setBackground(Color.WHITE);
+		btnArchiveProduct.setBounds(801, 657, 158, 35);
+		add(btnArchiveProduct);
 		
 		tableSetup();
 		

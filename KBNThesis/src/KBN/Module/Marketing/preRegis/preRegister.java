@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -145,8 +147,35 @@ public class preRegister extends JDialog implements ActionListener {
 		
 		if(e.getSource() == reg.btnRegister) {
 			try {
-				String ID = mModule.regID;
 				st = dbConn.getConnection().createStatement();
+				//Email checker
+		        if (isValidEmail(reg.txtEmail.getText())) {
+		        	// Nothing
+		        } else {
+		        	JOptionPane.showMessageDialog(null, "Invalid Email");
+		        	return;
+		        }
+		        System.out.println(reg.txtContact.getText().charAt(0));
+		        System.out.println(reg.txtContact.getText().charAt(1));
+		        if(reg.txtContact.getText().charAt(0) != '0' && reg.txtContact.getText().charAt(1) != '9' && reg.txtContact.getText().length() != 11) {
+		        	JOptionPane.showMessageDialog(null, "Invalid Contact!");
+		        	return;
+		        }
+		        
+		        String SQLEmail = "SELECT Email FROM tblcustomerinformation WHERE Email = '" + reg.txtEmail.getText() + "'";
+		        st.execute(SQLEmail);
+		        rs = st.getResultSet();
+		        int emailVerification = 0;
+		        while(rs.next())
+		        	emailVerification++;
+		        
+		        if(emailVerification != 0) {
+		        	JOptionPane.showMessageDialog(null, "Email already exist.");
+		        	return;
+		        }
+				
+				
+				String ID = mModule.regID;
 				st.execute("DROP PROCEDURE IF EXISTS `CreateAccountWithRollback`;");
 				String sql = "SELECT Username FROM tblcustomeraccount;";
 				st.execute(sql);
@@ -175,7 +204,7 @@ public class preRegister extends JDialog implements ActionListener {
 					String Description = reg.txtBrand.getText();
 					String Email = reg.txtEmail.getText();
 					String accType = "";
-					if(Description.equals("KBN")) {
+					if(Description.equals("KBN") || Description.equals("")) {
 						accType = "";
 						Description = "";
 					}
@@ -219,6 +248,13 @@ public class preRegister extends JDialog implements ActionListener {
 			}
 		}
 	}
+	
+    public boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
 	
 	public void setAccountID(String id) {
 		this.accountID = id;

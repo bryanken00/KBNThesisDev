@@ -584,10 +584,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		kbnProd.btnEditDetails.addActionListener(this);
 		kbnProd.btnArchive_1.addActionListener(this);
 		
-		//KBNProducts Panel
+		//Rebranding Panel
 		rebrandingNew.btnProducts.addActionListener(this);
 		rebrandingNew.btnArchive.addActionListener(this);
 		rebrandingNew.btnSearch.addActionListener(this);
+		rebrandingNew.btnArchiveProduct.addActionListener(this);
 		
 		//RightClick
 		rightClick.btnAddItem.addActionListener(this);
@@ -734,7 +735,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		if(e.getSource() == rightClick.btnAddItem || e.getSource() == kbnProd.btnAddNewProduct)
 			addItem();
 		
-		if(e.getSource() == rRightClick.btnArchive)
+		if(e.getSource() == rRightClick.btnArchive || e.getSource() == rebrandingNew.btnArchiveProduct)
 			rebrandingarchiveKBNProducts();
 		
 		
@@ -1085,6 +1086,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 			//final execute if 2 query is no error
 			st.execute(proccessIfNoError);
+			JOptionPane.showMessageDialog(null, "Product Archive Successfully!");
 
 			if(kbnProdButtonChecker.equals("Products")) {
 				KBNPanelFunc();
@@ -1162,6 +1164,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			
 			//final execute if 2 query is no error
 			st.execute(proccessIfNoError);
+			
+			JOptionPane.showMessageDialog(null, "Product Archive Successfully!");
 
 			if(rebrandingProdButtonChecker.equals("Products")) {
 				rebrandingNewPanelFunc();
@@ -1174,35 +1178,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			JOptionPane.showMessageDialog(null, "ErrorArchiveKBN: " + e.getMessage());
 		}
 	}
-	
-//	private void mostSoldProd() {
-//		try {
-//			String sqlAllTime = "SELECT ProdName, prodVolume, Sold FROM tblproducts ORDER BY Sold DESC LIMIT 1";
-//			st.execute(sqlAllTime);
-//			rs = st.getResultSet();
-//			if(rs.next())
-//				dashboard.lblMostSoldProd.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
-//			
-//			int currentYear = LocalDate.now().getYear();
-//			int currentMonth = LocalDate.now().getMonthValue();
-//			String sqlMonthly = "SELECT a.prodName, a.prodVolume, SUM(c.Quantity) AS Quantity "
-//					+ "FROM tblproducts AS a "
-//					+ "JOIN tblordercheckout AS b "
-//					+ "JOIN tblordercheckoutdata AS c ON c.OrderRefNumber = b.OrderRefNumber AND c.ProductName = a.prodName AND c.volume = a.prodVolume "
-//					+ "WHERE EXTRACT(YEAR FROM b.OrderDate) = " + currentYear + " "
-//					+ "AND EXTRACT(MONTH FROM b.OrderDate) = " + currentMonth + " "
-//					+ "GROUP BY a.prodID, a.prodName, a.prodVolume "
-//					+ "ORDER BY SUM(c.Quantity) DESC LIMIT 1";
-////			System.out.println(sqlMonthly); //debug
-//			st.execute(sqlMonthly);
-//			rs = st.getResultSet();
-//			if(rs.next())
-//				dashboard.lblMonthlyMostSold.setText("<html>" + rs.getString(1) + "(" + rs.getString(2) + ")" + "<br>Sold:" + rs.getString(3) + "</html>");
-//		}catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, "ERROR mostSoldProd: " + e.getMessage());
-//		}
-//	}
-	
 	
 	private void preRegCounter() {
 		try {

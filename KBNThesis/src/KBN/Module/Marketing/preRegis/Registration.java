@@ -1,17 +1,25 @@
 package KBN.Module.Marketing.preRegis;
 
 import javax.swing.JPanel;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.text.PlainDocument;
+
+import KBN.commons.CompositeDocumentFilter;
+import KBN.commons.EmailDocumentFilter;
+import KBN.commons.NumberOnlyDocumentFilter;
+
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 import java.awt.Color;
 import javax.swing.JComboBox;
 
-public class Registration extends JPanel {
+public class Registration extends JPanel implements KeyListener{
 	
 	public JTextField txtLN;
 	public JTextField txtEmail;
@@ -170,5 +178,53 @@ public class Registration extends JPanel {
 		
 		lblAccType.setVisible(false);
 		cbAccType.setVisible(false);
+        
+        PlainDocument LN = (PlainDocument) txtLN.getDocument();
+        PlainDocument FN = (PlainDocument) txtFN.getDocument();
+        PlainDocument MI = (PlainDocument) txtMI.getDocument();
+        PlainDocument emailInput = (PlainDocument) txtEmail.getDocument();
+        PlainDocument brand = (PlainDocument) txtBrand.getDocument();
+        PlainDocument contactNum = (PlainDocument) txtContact.getDocument();
+        
+
+        // Create instances of CompositeDocumentFilter
+        CompositeDocumentFilter LNFilter = new CompositeDocumentFilter(20);
+        CompositeDocumentFilter FNFilter = new CompositeDocumentFilter(20);
+        CompositeDocumentFilter MIFilter = new CompositeDocumentFilter(2);
+        EmailDocumentFilter emailFilter = new EmailDocumentFilter(64);
+        NumberOnlyDocumentFilter numberFiler = new NumberOnlyDocumentFilter(11);
+        
+        
+        LN.setDocumentFilter(LNFilter);
+        FN.setDocumentFilter(FNFilter);
+        MI.setDocumentFilter(MIFilter);
+        emailInput.setDocumentFilter(emailFilter);
+        brand.setDocumentFilter(emailFilter);
+        contactNum.setDocumentFilter(numberFiler);
+        
+        txtEmail.addKeyListener(this);
+        
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		if(txtEmail.getText().contains("@")) {
+			if(e.getKeyChar() == '@') {
+				e.consume();
+			}
+		}
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
