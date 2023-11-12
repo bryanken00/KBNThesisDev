@@ -972,7 +972,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void dashboardPanelFunc() {
 		setVisiblePanel();
 //		mostSoldProd();
+		timeDiff();
 		chartdataSetter();
+		dashboard1();
 		dashboard1.setVisible(true);
 	}
 	
@@ -1269,6 +1271,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			} else {
 			    String min_ = (min > 1) ? "Minutes" : "Minute";
 			    String label = "New Order " + min + " " + min_ + " ago";
+			    if(min == 0.0)
+			    	label = "No new order.";
 			    dashboard1.lblTimeDiff.setText(label);
 //			    System.out.println(label);
 			}

@@ -28,6 +28,7 @@ import javax.swing.border.EmptyBorder;
 
 import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Warehouse.Archive.ArchiveList;
+import KBN.Module.Warehouse.FinishProduct.Finishproduct;
 import KBN.Module.Warehouse.ModuleSelection.ModuleSelectionWarehouse;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
@@ -100,6 +101,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private JPanel panelNav;
 	private JPanel container;
 	
+	// Finish Product
+	private Finishproduct FinishProduct;
+	
 	
 	private ModuleSelectionWarehouse moduleSelection;
 	private MarketingModule marketingModule;
@@ -171,6 +175,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         procOrder = new ProcessOrder();
         onDeliver = new onDelivery();
         
+        // Finish Product
+        FinishProduct = new Finishproduct();
+        
         // QR Code
         genQR = new genQRCode();
         // Add Item
@@ -185,6 +192,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         container.add(arcList); // Archive
         container.add(summary); // Summary
         container.add(procOrder); // ProcessOrder
+        container.add(FinishProduct); // Finish product
         
         // Defaults
         setUsername();
@@ -331,6 +339,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		arcList.setVisible(false);
 		summary.setVisible(false);
 		procOrder.setVisible(false);
+		FinishProduct.setVisible(false);
 		
 		// Navs
 		wNav.btnCompute.setVisible(false);
@@ -741,6 +750,28 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}
 	}
 	
+	// Finish Product
+	private void finishProduct() {
+		NavsColor();
+		wNav.btnFinishProduct.setBackground(new Color(75, 119, 71));
+		wNav.btnFinishProduct.setForeground(Color.WHITE);
+		panelVisible();
+		FinishProduct.setVisible(true);
+		
+		try {
+			String sql = "SELECT prodID, prodName, prodVolume, prodCategory, Quantity FROM tblproducts";
+			st.execute(sql);
+			rs = st.getResultSet();
+			while(rs.next()) {
+				Object[] data = {rs.getString(1), (rs.getString(2) + "(" + rs.getString(3) + ")"), rs.getString(4), rs.getString(5)};
+				FinishProduct.main.addRow(data);
+			}
+		}catch (Exception e) {
+			printingError("Error finishProduct: " + e.getMessage());
+		}
+		
+	}
+	
 	// Summary
 	private void summaryFunc() {
 		NavsColor();
@@ -842,14 +873,14 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 //	        		+ "WHERE c.status != 'Completed' AND c.status != 'toShip' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
 //	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
 	        
-	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price), CONCAT(f.FirstName, ' ', f.LastName) AS Name\r\n"
-	        		+ "FROM tblordercheckout AS a \r\n"
-	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \r\n"
-	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblordercheckoutdata AS d ON d.OrderRefNumber = a.OrderRefNumber \r\n"
-	        		+ "JOIN tblorderapproved AS e On a.OrderRefNumber = e.OrderRefNumber\r\n"
-	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID\r\n"
-	        		+ "WHERE c.status = 'Approved' \r\n"
+	        String sql = "SELECT a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status, COUNT(d.OrderRefNumber), SUM(d.Quantity*d.Price), CONCAT(f.FirstName, ' ', f.LastName) AS Name \n"
+	        		+ "FROM tblordercheckout AS a \n"
+	        		+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+	        		+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "JOIN tblordercheckoutdata AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+	        		+ "JOIN tblorderapproved AS e On a.OrderRefNumber = e.OrderRefNumber \n"
+	        		+ "JOIN tblaccountinfo AS f ON e.ApprovedBy = f.AccountID \n"
+	        		+ "WHERE c.status = 'Approved' \n"
 	        		+ "GROUP BY a.OrderRefNumber, a.UserID, CONCAT(b.FirstName, b.LastName), c.Status";
 	        
 	        st.execute(sql);
@@ -1078,6 +1109,38 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}
 		
 		private void setDeliveryStatus() {
+			try {
+				
+			
+			String courier = onDeliver.cbRiderList.getSelectedItem() + "";
+			String courierID = onDeliver.courierID[onDeliver.cbRiderList.getSelectedIndex()] + "";
+			String ref = onDeliver.lblRefNumber.getText();
+			
+			
+			ArrayList<Integer> valueChecker = new ArrayList<>();
+			
+			String sql = "SELECT  SUM(d.Quantity - b.Quantity) AS Stocks\r\n"
+					+ "FROM tblordercheckout AS a \r\n"
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \r\n"
+					+ "JOIN tblcustomerinformation AS c ON a.UserID = c.UserID \r\n"
+					+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume \r\n"
+					+ "WHERE a.OrderRefNumber = '" + ref + "';";
+			st.execute(sql);
+			rs = st.getResultSet();
+			while(rs.next())
+				valueChecker.add(rs.getInt(1));
+			
+			boolean validation = true;
+			
+			for(int i = 0; i < valueChecker.size(); i++) {
+				if(valueChecker.get(i) < 0)
+					validation = false;
+			}
+			
+			if(validation == false) {
+				printingError("Out of stock");
+				return;
+			}
 			
 	        int choice = JOptionPane.showConfirmDialog(
 	                null, // Parent component (null for default)
@@ -1088,12 +1151,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        if (choice == JOptionPane.NO_OPTION)
 	        	return;
 	        
-			try {
+
+		        
 				
 				ArrayList procedureStorage = new ArrayList<>();
-				String courier = onDeliver.cbRiderList.getSelectedItem() + "";
-				String courierID = onDeliver.courierID[onDeliver.cbRiderList.getSelectedIndex()] + "";
-				String ref = onDeliver.lblRefNumber.getText();
+
 				String SQL = "INSERT INTO tblcourierdelivery(OrderRefNumber,courierID) VALUES('" + ref + "','" + courierID + "');";
 				
 //				st.execute(SQL);
@@ -1200,6 +1262,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				productionModule = new ProductionModule();
 				productionModule.setVisible(true);
 				this.dispose();
+			}
+			
+		// Finish Product
+			if(e.getSource() == wNav.btnFinishProduct) {
+				finishProduct();
 			}
 		
 		/// Archive List		
