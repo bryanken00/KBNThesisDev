@@ -30,6 +30,7 @@ import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Warehouse.Archive.ArchiveList;
 import KBN.Module.Warehouse.FinishProduct.Finishproduct;
 import KBN.Module.Warehouse.ModuleSelection.ModuleSelectionWarehouse;
+import KBN.Module.Warehouse.Packaging.PackagingMaterials;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
 import KBN.Module.Warehouse.ProcessOrder.onDelivery;
@@ -64,6 +65,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private onDelivery onDeliver;
 	private ManualAdd manual;
 	private addNew addNew; // add new Material
+	
+	
+	// Packaging
+	private PackagingMaterials packMats;
 	
 	// QR Code Generator
 	private genQRCode genQR;
@@ -169,6 +174,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         // Class Declaration
         wNav = new WarehouseNav();
         rawMats = new RawMaterials();
+        packMats = new PackagingMaterials();
         arcList = new ArchiveList();
         summary = new SummaryPanel();
         exportT = new exportTable();
@@ -193,6 +199,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         container.add(summary); // Summary
         container.add(procOrder); // ProcessOrder
         container.add(FinishProduct); // Finish product
+        container.add(packMats);
         
         // Defaults
         setUsername();
@@ -340,6 +347,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		summary.setVisible(false);
 		procOrder.setVisible(false);
 		FinishProduct.setVisible(false);
+		packMats.setVisible(false);
 		
 		// Navs
 		wNav.btnCompute.setVisible(false);
@@ -451,6 +459,15 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth";
 		rawMatsTable(sql);
         rawMats.setVisible(true);
+	}
+	
+	private void wNavPackagingMaterialFunc() {
+		NavsColor();
+		wNav.btnPackMats.setBackground(new Color(75, 119, 71));
+		wNav.btnPackMats.setForeground(Color.WHITE);
+		wNav.btnAddItem.setText("Add Item");
+		panelVisible();
+		packMats.setVisible(true);
 	}
 	
 	// QR Code Generator
@@ -1214,6 +1231,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		// Navs
 		if(e.getSource() == wNav.btnRawMats)
 			wNavRawMatsFunc();
+		
+		if(e.getSource() == wNav.btnPackMats)
+			wNavPackagingMaterialFunc();
 			
 			// QR Code
 			if(e.getSource() == wNav.btnQRCode || e.getSource() == rightClickRawMats.btnQRGen)
