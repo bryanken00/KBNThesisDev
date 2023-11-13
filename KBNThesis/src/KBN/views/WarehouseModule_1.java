@@ -1160,25 +1160,13 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				
 //				st.execute(SQL);
 				procedureStorage.add(SQL);
-				
-		        String SQLSelectDelID = "SELECT DeliveryID FROM tblcourierdelivery WHERE OrderRefNumber = '" + ref + "' AND courierID = '" + courierID + "';";
-		        
-		        st.execute(SQLSelectDelID);
-		        rs = st.getResultSet();
-		        
-		        int dID = 0;
-		        
-		        if(rs.next()) {
-		        	dID = rs.getInt(1);
-		        }
-		        dID++;
 
 		        // Format the date and time
 				Date currentDate = new Date();
 		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		        String formattedDate = dateFormat.format(currentDate);
 				
-				String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(DeliveryID, DeliveryDate) VALUES('" + dID + "','" + formattedDate + "');";
+				String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(OrderRefNumber, DeliveryDate) VALUES('" + ref + "','" + formattedDate + "');";
 				
 				
 

@@ -9,8 +9,10 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.text.PlainDocument;
 
 import KBN.commons.DbConnection;
+import KBN.commons.NumberOnlyDocumentFilter;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -173,6 +175,13 @@ public class AddItemProduction extends JDialog implements ActionListener {
 		closeChecker.setFocusable(false);
 		closeChecker.setBorder(new LineBorder(new Color(8, 104, 0), 1, true));
 		container.add(closeChecker);
+		
+		PlainDocument QuantityPlainDocu = (PlainDocument) txtQuantity.getDocument();
+		
+		NumberOnlyDocumentFilter QuantityFilter = new NumberOnlyDocumentFilter(11);
+		
+		QuantityPlainDocu.setDocumentFilter(QuantityFilter);
+		
 	}
 	
 	public void btnVerifyFuncKBN() {

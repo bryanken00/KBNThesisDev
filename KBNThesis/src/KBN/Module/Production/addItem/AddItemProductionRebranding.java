@@ -10,7 +10,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.text.PlainDocument;
 
+import KBN.commons.CompositeDocumentFilter;
 import KBN.commons.DbConnection;
 
 import java.awt.Color;
@@ -192,6 +194,12 @@ public class AddItemProductionRebranding extends JDialog {
 		panel_3.add(cbClientName);
 		
 		userID = new ArrayList<>();
+		
+		PlainDocument QuantityPlainDocu = (PlainDocument) txtQuantity.getDocument();
+		
+		CompositeDocumentFilter QuantityFilter = new CompositeDocumentFilter(20);
+		
+		QuantityPlainDocu.setDocumentFilter(QuantityFilter);
 	}
 	
 	public void getClientName() {

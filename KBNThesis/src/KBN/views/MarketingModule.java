@@ -2424,6 +2424,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	//Confirmation Panel Func
 	private void confrimationPanelFunc(){
 		setVisiblePanel();
+		confirmationPanel.btnConfirm.setVisible(false);
 		confirmationPanel.setVisible(true);
 		ConfirmProductPanelMouseListeners();
 		confirmationCounter();
@@ -2826,7 +2827,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        String formattedDate = dateFormat.format(currentDate);
 			
-			String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(DeliveryID, DeliveryDate) VALUES('" + dID + "','" + formattedDate + "');";
+			String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(OrderRefNumber, DeliveryDate) VALUES('" + ref + "','" + formattedDate + "');";
 			
 //			System.out.println(SQLDeliveryDate);
 			
@@ -3517,14 +3518,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	        } else if(status.equals("Approved")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnToShip.addActionListener(this);;
 	        }
 	        else if(status.equalsIgnoreCase("toship")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
 	        	orderPanel.btnToShip.removeActionListener(this);
 	        	orderPanel.btnApproved.setBackground(new Color(13, 164, 0));
 	        	orderPanel.btnToShip.setBackground(new Color(13, 164, 0));
-	        	orderPanel.btnDelivery.addActionListener(this);
 	        }else if(status.equalsIgnoreCase("Delivery")) {
 	        	orderPanel.btnApproved.removeActionListener(this);
 	        	orderPanel.btnToShip.removeActionListener(this);
@@ -3571,12 +3570,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID\r\n"
-					+ "FROM tblordercheckout AS a\r\n"
-					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
-					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
-					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
-					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID\r\n"
+			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID \n"
+					+ "FROM tblordercheckout AS a \n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.OrderRefNumber = c.OrderRefNumber \n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID \n"
 					+ "WHERE d.Status = 'Delivery'";
 //			System.out.println(SQL);
 			st.execute(SQL);
@@ -3617,7 +3616,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), DATE(e.DeliveryDate), a.address, CONCAT(f.Firstname, ' ', f.Lastname) AS Fullname \n"
 					+ "FROM tblordercheckout AS a \n"
 					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
-					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID \n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.OrderRefNumber = c.OrderRefNumber \n"
 					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
 					+ "JOIN tblcourierdeliverycompleted AS e ON e.deliveryID = b.deliveryID \n"
 					+ "JOIN tblcourierinformation AS f ON f.courierID = b.courierID \n"
@@ -3649,12 +3648,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID\r\n"
+			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID \n"
 					+ "FROM tblordercheckout AS a\r\n"
-					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber\r\n"
-					+ "JOIN tblcourierdeliverydate AS c ON b.deliveryID = c.deliveryID\r\n"
-					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
-					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID\r\n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.OrderRefNumber = c.OrderRefNumber \n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
+					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID \n"
 					+ "WHERE d.Status = 'Delivery' AND (b.CourierID LIKE '%" + search + "%' OR a.OrderRefNumber LIKE '%" + search + "%')";
 //			System.out.println(SQL);
 			st.execute(SQL);
