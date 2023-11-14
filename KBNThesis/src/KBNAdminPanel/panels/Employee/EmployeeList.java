@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.border.LineBorder;
 
 public class EmployeeList extends JPanel {
 	
@@ -15,12 +16,15 @@ public class EmployeeList extends JPanel {
 	
 	
 	public EmployeeList() {
-//		setBounds(1, 1, 967, 611);
-		setBounds(0, 0, 969, 613);
+		setBorder(new LineBorder(new Color(0, 0, 0)));
+		setBounds(1, 1, 966, 610);
+//		setBounds(0, 0, 969, 613);
 		setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 0, 967, 66);
+		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel.setBackground(new Color(255, 255, 255));
+		panel.setBounds(0, 0, 966, 66);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -57,7 +61,7 @@ public class EmployeeList extends JPanel {
 		panel.add(lblAction);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 66, 967, 545);
+		scrollPane.setBounds(0, 66, 966, 544);
 		scrollPane.getHorizontalScrollBar().setUnitIncrement(10);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		add(scrollPane);

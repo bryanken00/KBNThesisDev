@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JSeparator;
+import javax.swing.border.LineBorder;
 import javax.swing.ImageIcon;
 
 public class EmployeeListGenerator extends JPanel {
@@ -47,6 +48,7 @@ public class EmployeeListGenerator extends JPanel {
 
 	public EmployeeListGenerator() {
 		setBounds(0, 66, 967, 258);
+		setBackground(new Color(255, 255, 255));
 		setLayout(null);
 		
 //		panel = new JPanel();
@@ -147,6 +149,7 @@ public class EmployeeListGenerator extends JPanel {
 				x += 77;
 			panel[i] = new JPanel();
 			panel[i].setBounds(0, x, 967, 77);
+			panel[i].setBackground(new Color(255, 255, 255));
 			panel[i].setLayout(null);
 			add(panel[i]);
 			
@@ -175,12 +178,14 @@ public class EmployeeListGenerator extends JPanel {
 			btnAction[i].setFont(new Font("Tahoma", Font.PLAIN, 18));
 //			btnAction[i].setIcon(new ImageIcon(EmployeeListGenerator.class.getResource("/KBNAdminPanel/resources/Employee/dots.png")));
 			btnAction[i].setFocusable(false);
-			btnAction[i].setBorderPainted(false);
+//			btnAction[i].setBorderPainted(false);
 			btnAction[i].setBackground(Color.WHITE);
+			btnAction[i].setBorder(new LineBorder(new Color(0, 0, 0)));
 			panel[i].add(btnAction[i]);
 			
 			separator[i] = new JSeparator();
 			separator[i].setBounds(10, 65, 947, 7);
+			separator[i].setForeground(Color.BLACK);
 			panel[i].add(separator[i]);
 		}
 	}
