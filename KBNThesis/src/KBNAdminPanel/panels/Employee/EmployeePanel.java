@@ -65,8 +65,6 @@ public class EmployeePanel extends JPanel {
 		btnCreate.setBounds(856, 11, 103, 31);
 		header.add(btnCreate);
 		
-
-		
 		container = new JPanel();
 		container.setBackground(new Color(255, 255, 255));
 		container.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));

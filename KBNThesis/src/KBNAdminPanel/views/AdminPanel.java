@@ -62,6 +62,8 @@ import KBNAdminPanel.panels.Employee.EmployeePanel;
 import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
+import KBNAdminPanel.panels.ForecastGraph.ForecastPanel;
+import KBNAdminPanel.panels.ForecastGraph.GraphGenerator;
 import KBNAdminPanel.panels.SalesReport.SalesReportPanel;
 import KBNAdminPanel.panels.dashboard.Dashboard;
 import KBNAdminPanel.panels.dashboard.DashboardSalesChartData;
@@ -81,6 +83,11 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	private ForecastGraphs forecastgraph;
 	private barGen bar1;
 	private barGen bar2;
+	
+	
+	//Forecast
+	private ForecastPanel forecastPanel;
+	private GraphGenerator grapGen;
 	
 	// Employee
 	private EmployeePanel empPanel;
@@ -168,6 +175,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         bar1 = new barGen();
         bar2 = new barGen();
         
+        // Forecast New
+        forecastPanel = new ForecastPanel();
+        grapGen = new GraphGenerator();
+        
         //Employee
         empPanel = new EmployeePanel();
         empList = new EmployeeList();
@@ -208,6 +219,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		//Container
 		container.add(salesPanel);
 		container.add(forecast);
+		container.add(forecastPanel);
+		forecastPanel.container.setViewportView(grapGen);
 		container.add(empPanel);
 		container.add(empCreate);
 		container.add(courierPanel);
@@ -234,6 +247,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		empPanel.setVisible(false);
 		empCreate.setVisible(false);
 		courierPanel.setVisible(false);
+		forecastPanel.setVisible(false);
 	}
 	
 	private void actList() {
@@ -1006,11 +1020,11 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
-			forecast.setVisible(true);
-			renderingKBNProducts();
-			LocalDate firstDateOfCurrentMonth = currentDate.withDayOfMonth(1);
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
-			forecastgraph.lblPresent.setText(firstDateOfCurrentMonth.format(formatter));
+			forecastPanel.setVisible(true);
+//			renderingKBNProducts();
+//			LocalDate firstDateOfCurrentMonth = currentDate.withDayOfMonth(1);
+//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
+//			forecastgraph.lblPresent.setText(firstDateOfCurrentMonth.format(formatter));
 		}
 		
 		if(e.getSource() == forecast.btnCompareToDate) {
