@@ -41,7 +41,7 @@ public class SendEmail {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(EmailAdd));
             message.setSubject("KBN Account");
-            message.setText("KBN account \nUsername:" + user + "\nPassword:" + pass_ + "\nLogin Here: https://kissbynature.shop/homepage/");
+            message.setText("KBN account \nUsername:" + user + "\nPassword:" + pass_ + "\nLogin Here: https://kissedbynature.online/homepage/");
 
             // Send the email
             Transport.send(message);

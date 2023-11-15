@@ -1959,20 +1959,27 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             List<String> date = new ArrayList<String>();
             int max = 0;
 
-    		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
-    				+ "GROUP BY b.OrderDate "
-    				+ "ORDER BY SUM(a.Quantity) DESC LIMIT 1";
+    		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate \n"
+    				+ "FROM tblordercheckoutdata AS a \n"
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
+    				+ "JOIN tblorderstatus AS c ON a.OrderRefNumber = c.OrderRefNumber \n"
+    				+ "WHERE c.Status = 'Completed' \n"
+    				+ "GROUP BY DATE(b.OrderDate) ORDER BY SUM(a.Quantity) DESC LIMIT 1;";
     		
     		st.execute(sqlMaxCounterYaxis);
     		rs = st.getResultSet();
     		
     		if(rs.next())
     			max = rs.getInt(1);
+    		
+    		
             	
-    		String X_axis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
-    				+ "GROUP BY b.OrderDate ";
+    		String X_axis = "SELECT SUM(a.Quantity) AS Score, b.OrderDate AS Order_Date \n"
+    				+ "FROM tblordercheckoutdata AS a \n"
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
+    				+ "JOIN tblorderstatus AS c ON c.OrderRefNumber = a.OrderRefNumber \n"
+    				+ "WHERE c.Status = 'Completed' \n"
+    				+ "GROUP BY DATE(Order_Date);";
     		
     		st.execute(X_axis);
     		rs = st.getResultSet();
@@ -1985,9 +1992,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         	    String formattedDate = dateFormat.format(orderDate);
                 date.add(formattedDate);
     		}
+    		System.out.println(max);
 
             dashChartData = new DashboardSalesChartData(scores, max, date);
-//            dashChartData.setBounds(20, 25, 563, 383);
             dashChartData.setBounds(0, 0, 381, 286);
             dashboard1.panelGraph.add(dashChartData);
             
@@ -3577,7 +3584,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
 					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID \n"
 					+ "WHERE d.Status = 'Delivery'";
-//			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {

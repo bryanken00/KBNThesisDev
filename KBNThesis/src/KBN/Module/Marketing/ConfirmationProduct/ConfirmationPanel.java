@@ -96,7 +96,7 @@ public class ConfirmationPanel extends JPanel {
         lblTotalQuantity = new JLabel("Total Quantity:");
         lblTotalQuantity.setForeground(new Color(0, 0, 0));
         lblTotalQuantity.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblTotalQuantity.setBounds(189, 637, 136, 24);
+        lblTotalQuantity.setBounds(10, 637, 250, 24);
         container.add(lblTotalQuantity);
         
         btnConfirm = new JButton("Confirm");
@@ -111,7 +111,7 @@ public class ConfirmationPanel extends JPanel {
         lblTotalItem = new JLabel("Total Item: ");
         lblTotalItem.setForeground(new Color(0, 0, 0));
         lblTotalItem.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblTotalItem.setBounds(353, 637, 136, 24);
+        lblTotalItem.setBounds(270, 637, 219, 24);
         container.add(lblTotalItem);
         tableSetup();
         

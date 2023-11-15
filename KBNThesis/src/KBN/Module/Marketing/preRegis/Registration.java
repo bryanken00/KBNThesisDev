@@ -113,6 +113,7 @@ public class Registration extends JPanel implements KeyListener{
 		txtPassword.setEditable(false);
 		txtPassword.setColumns(10);
 		txtPassword.setBounds(309, 340, 224, 30);
+		txtPassword.setFocusable(false);
 		add(txtPassword);
 		
 		btnRegister = new JButton("Register");
