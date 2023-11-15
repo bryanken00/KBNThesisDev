@@ -371,6 +371,10 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 				addItem.checker = "Verified";
 			
 			if(addItem.checker.equals("Verified")) {
+				if(addItem.txtQuantity.getText().isEmpty()) {
+					JMessage("Please fill complete the form.");
+					return;
+				}
 				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
 				
 				st.execute("DROP PROCEDURE IF EXISTS confirmProductAddKBN;");

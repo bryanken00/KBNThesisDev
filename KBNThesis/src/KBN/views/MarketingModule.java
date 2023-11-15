@@ -1971,8 +1971,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
     		
     		if(rs.next())
     			max = rs.getInt(1);
-    		
-    		
             	
     		String X_axis = "SELECT SUM(a.Quantity) AS Score, b.OrderDate AS Order_Date \n"
     				+ "FROM tblordercheckoutdata AS a \n"
@@ -1992,7 +1990,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
         	    String formattedDate = dateFormat.format(orderDate);
                 date.add(formattedDate);
     		}
-    		System.out.println(max);
 
             dashChartData = new DashboardSalesChartData(scores, max, date);
             dashChartData.setBounds(0, 0, 381, 286);

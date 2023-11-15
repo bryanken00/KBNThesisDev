@@ -155,9 +155,10 @@ public class preRegister extends JDialog implements ActionListener {
 		        	JOptionPane.showMessageDialog(null, "Invalid Email");
 		        	return;
 		        }
-		        System.out.println(reg.txtContact.getText().charAt(0));
-		        System.out.println(reg.txtContact.getText().charAt(1));
-		        if(reg.txtContact.getText().charAt(0) != '0' && reg.txtContact.getText().charAt(1) != '9' && reg.txtContact.getText().length() != 11) {
+		        
+		        if(reg.txtContact.getText().charAt(0) != '0' ||
+		        		reg.txtContact.getText().charAt(1) != '9' ||
+		        		reg.txtContact.getText().length() != 11) {
 		        	JOptionPane.showMessageDialog(null, "Invalid Contact!");
 		        	return;
 		        }
