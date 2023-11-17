@@ -1001,6 +1001,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void archiveKBNProducts() {
 		String dropDelimiter = "DROP PROCEDURE IF EXISTS InsertAndDeleteWithRollback;";
+		if(kbnProd.table.getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
 		try {
 			String ID = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 0) + "";
 			String prodName = kbnProd.table.getValueAt(kbnProd.table.getSelectedRow(), 1) + "";
@@ -1104,6 +1108,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void rebrandingarchiveKBNProducts() {
 		String dropDelimiter = "DROP PROCEDURE IF EXISTS InsertAndDeleteWithRollbackRebranding;";
+		if(rebrandingNew.table.getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
 		try {
 			String ID = rebrandingNew.table.getValueAt(rebrandingNew.table.getSelectedRow(), 0) + "";
 			String prodName = rebrandingNew.table.getValueAt(rebrandingNew.table.getSelectedRow(), 3) + "";
@@ -1831,7 +1839,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
 					+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
 					+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
-					+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled';";
+					+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
+					+ "ORDER BY a.OrderDate DESC;";
 			st.execute(sql);
 			rs = st.getResultSet();
 			int i = 0;
@@ -3259,6 +3268,24 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			}
 	}// END OF WEEKLY
 	
+	
+	private void resetColorOrdering() {
+		for(int i = 0; i < OrderCount; i++) {
+			orderPanel.orderLPanel.opd.orderList[i].setBackground(Color.WHITE);
+		}
+	}
+	
+	private void resetColorCancel() {
+		for(int i = 0; i < CancelOrderCount; i++) {
+			cancelOrderPanel.orderLPanel.opd.orderList[i].setBackground(Color.WHITE);
+		}
+	}
+	
+	private void resetColorConfirm() {
+		for(int i = 0; i < confirmationCounter; i++) {
+			confirmListPanelData.confirmList[i].setBackground(Color.WHITE);
+		}
+	}
 
 
 	@Override
@@ -3292,6 +3319,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             for (int i = 0; i < OrderCount; i++) {
                 if (clickedComponent == orderPanel.orderLPanel.opd.orderList[i]) {
                     OrderListIndexClicked = i;
+                    resetColorOrdering();
+                    orderPanel.orderLPanel.opd.orderList[i].setBackground(new Color(131,255,165));
                     orderPanel.main.setRowCount(0);
                     orderPanel.table.setModel(orderPanel.main);
                     panelDataSetter();
@@ -3305,6 +3334,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             for (int i = 0; i < CancelOrderCount; i++) {
                 if (clickedComponent == cancelOrderPanel.orderLPanel.opd.orderList[i]) {
                     CancelOrderListIndexClicked = i;
+                    resetColorCancel();
+                    cancelOrderPanel.orderLPanel.opd.orderList[i].setBackground(new Color(131,255,165));
                     cancelOrderPanel.main.setRowCount(0);
                     cancelOrderPanel.table.setModel(cancelOrderPanel.main);
                     cancelpanelDataSetter();
@@ -3318,6 +3349,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             for (int i = 0; i < confirmationCounter; i++) {
                 if (clickedComponent == confirmListPanelData.confirmList[i]) {
                 	ConfirmProductList = i;
+                    resetColorConfirm();
+                    confirmListPanelData.confirmList[i].setBackground(new Color(131,255,165));
                 	confirmationPanel.main.setRowCount(0);
                 	confirmationPanel.btnConfirm.setVisible(true);
                 	if(confirmListPanelData.Status[ConfirmProductList].equals("COMPLETED"))
@@ -3681,6 +3714,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	}
 	
 	private void DeliveryDetailsFunc() {
+		if(TableChecher == "dTB1") {
+			if(dTB1.table.getSelectedRow() == -1) {
+				JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+		}
+		if(TableChecher == "dTB2") {
+			if(dTB2.table.getSelectedRow() == -1) {
+				JOptionPane.showMessageDialog(this, "Please select a row in the table.", "No Row Selected", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+		}
 		try {
 			delDetails.main.setRowCount(0);
 			String DelDetailRef = "";
