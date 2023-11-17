@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.border.LineBorder;
+import javax.swing.text.PlainDocument;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -21,6 +22,8 @@ import java.util.Date;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
+
+import KBN.commons.NumberOnlyDocumentFilter;
 
 public class ManualAdd extends JDialog implements ActionListener{
 	public JTextField txtMaterialName;
@@ -92,13 +95,12 @@ public class ManualAdd extends JDialog implements ActionListener{
 		lblSupplier.setBounds(10, 212, 122, 14);
 		panel.add(lblSupplier);
 		
-		JLabel lblDateRelease = new JLabel("Date of Released:");
+		JLabel lblDateRelease = new JLabel("Date Added:");
 		lblDateRelease.setFont(new Font("Tahoma", Font.BOLD, 14));
 		lblDateRelease.setBounds(10, 282, 122, 14);
 		panel.add(lblDateRelease);
 		
 		dateNow = new JDateChooser();
-//		dateNow.setDate(new Date());
 		dateNow.setBorder(new LineBorder(new Color(0, 0, 0)));
 		dateNow.setBounds(37, 307, 339, 34);
 		panel.add(dateNow);
@@ -130,6 +132,11 @@ public class ManualAdd extends JDialog implements ActionListener{
 		btnNew.setBackground(Color.WHITE);
 		btnNew.setBounds(13, 432, 135, 35);
 		panel.add(btnNew);
+		
+
+		PlainDocument RV = (PlainDocument) txtReleasedVolume.getDocument();
+		NumberOnlyDocumentFilter numberFiler = new NumberOnlyDocumentFilter(11);
+		RV.setDocumentFilter(numberFiler);
 	}
 
 	@Override

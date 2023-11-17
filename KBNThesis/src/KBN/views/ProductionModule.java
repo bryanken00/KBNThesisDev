@@ -1039,7 +1039,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			while(rs.next()) {
 				archiveData.lblTrackingID[i].setText(rs.getString(1));
 				archiveData.lblDate[i].setText(rs.getString(2));
-				archiveData.lblStatus[i].setText(rs.getString(3));
+				archiveData.lblStatus[i].setText("Cancelled");
 				i++;
 			}
 		} catch (Exception e) {
