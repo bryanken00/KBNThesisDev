@@ -30,7 +30,9 @@ import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Warehouse.Archive.ArchiveList;
 import KBN.Module.Warehouse.FinishProduct.Finishproduct;
 import KBN.Module.Warehouse.ModuleSelection.ModuleSelectionWarehouse;
+import KBN.Module.Warehouse.Packaging.ManualAddPackaging;
 import KBN.Module.Warehouse.Packaging.PackagingMaterials;
+import KBN.Module.Warehouse.Packaging.addItemPackaging;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrder;
 import KBN.Module.Warehouse.ProcessOrder.ProcessOrderData;
 import KBN.Module.Warehouse.ProcessOrder.onDelivery;
@@ -69,6 +71,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Packaging
 	private PackagingMaterials packMats;
+	private addItemPackaging AddItemPackaging;
+	private ManualAddPackaging manualPackaging;
 	
 	// QR Code Generator
 	private genQRCode genQR;
@@ -108,6 +112,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Finish Product
 	private Finishproduct FinishProduct;
+	
+	
+	// Add Item Detector
+	private String addItemChecker = "RawMats";
 	
 	
 	private ModuleSelectionWarehouse moduleSelection;
@@ -174,7 +182,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         // Class Declaration
         wNav = new WarehouseNav();
         rawMats = new RawMaterials();
+        
         packMats = new PackagingMaterials();
+        manualPackaging = new ManualAddPackaging();
         arcList = new ArchiveList();
         summary = new SummaryPanel();
         exportT = new exportTable();
@@ -200,6 +210,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         container.add(procOrder); // ProcessOrder
         container.add(FinishProduct); // Finish product
         container.add(packMats);
+        
+        // Navs
+		wNav.btnRawMats.setBackground(new Color(75, 119, 71));
+		wNav.btnRawMats.setForeground(Color.WHITE);
         
         // Defaults
         setUsername();
@@ -339,6 +353,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			
 			// On Delivery
 			onDeliver.btnConfirm.addActionListener(this);
+			
+		// Packaging
+		manualPackaging.btnNew.addActionListener(this);
+		manualPackaging.btnNew.addActionListener(this);
 	}
 	
 	private void panelVisible() {
@@ -449,6 +467,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Raw Materials Panel
 	private void wNavRawMatsFunc() {
+		addItemChecker = "RawMats";
 		NavsColor();
 		wNav.btnRawMats.setBackground(new Color(75, 119, 71));
 		wNav.btnRawMats.setForeground(Color.WHITE);
@@ -462,11 +481,13 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	}
 	
 	private void wNavPackagingMaterialFunc() {
+		addItemChecker = "PackMats";
 		NavsColor();
 		wNav.btnPackMats.setBackground(new Color(75, 119, 71));
 		wNav.btnPackMats.setForeground(Color.WHITE);
 		wNav.btnAddItem.setText("Add Item");
 		panelVisible();
+		wNav.btnAddItem.setVisible(true);
 		packMats.setVisible(true);
 	}
 	
@@ -491,7 +512,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	//Manual Add Item
 	private void manualAddItem() {
-		manual.setVisible(true);
 	}
 	
 	private void manualAddSubmit() {
@@ -1238,8 +1258,20 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			// QR Code
 			if(e.getSource() == wNav.btnQRCode || e.getSource() == rightClickRawMats.btnQRGen)
 				generateQRCode();
-			if(e.getSource() == wNav.btnAddItem)
-				manualAddItem();
+			if(e.getSource() == wNav.btnAddItem) {
+				if(addItemChecker.equals("RawMats")) {
+					manual.setVisible(true);
+				} else if(addItemChecker.equals("PackMats")) {
+					manualPackaging.setVisible(true);
+				}
+			}
+			
+			// Packaging
+			if(e.getSource() == manualPackaging.btnNew) {
+				System.out.println("test");
+//		        AddItemPackaging = new addItemPackaging();
+//				AddItemPackaging.setVisible(true);
+			}
 			
 			if(e.getSource() == manual.btnSubmit)
 				manualAddSubmit();

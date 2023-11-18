@@ -14,6 +14,7 @@ import javax.swing.text.PlainDocument;
 
 import KBN.commons.CompositeDocumentFilter;
 import KBN.commons.DbConnection;
+import KBN.commons.NumberOnlyDocumentFilter;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -197,7 +198,7 @@ public class AddItemProductionRebranding extends JDialog {
 		
 		PlainDocument QuantityPlainDocu = (PlainDocument) txtQuantity.getDocument();
 		
-		CompositeDocumentFilter QuantityFilter = new CompositeDocumentFilter(20);
+		NumberOnlyDocumentFilter QuantityFilter = new NumberOnlyDocumentFilter(11);
 		
 		QuantityPlainDocu.setDocumentFilter(QuantityFilter);
 	}

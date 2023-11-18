@@ -359,7 +359,12 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 
 			String prodName = addItem.txtProductName.getText();
 			String variant = addItem.cbVariant.getSelectedItem() + "";
+			int quantity = Integer.parseInt(addItem.txtQuantity.getText());
 			
+			if(quantity == 0) {
+				JMessage("Please input valid quantity.");
+				return;
+			}
 			String SQL = "SELECT prodVolume AS Variant FROM tblproducts WHERE LOWER(prodName) = LOWER('" + prodName + "')";
 			st.execute(SQL);
 			rs = st.getResultSet();
@@ -375,7 +380,7 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 					JMessage("Please fill complete the form.");
 					return;
 				}
-				int quantity = Integer.parseInt(addItem.txtQuantity.getText());
+				
 				
 				st.execute("DROP PROCEDURE IF EXISTS confirmProductAddKBN;");
 				
@@ -700,6 +705,10 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			String prodName = addItemRebrand.cbProductName.getSelectedItem() + "";
 			String variant = addItemRebrand.cbVariant.getSelectedItem() + "";
 			int quantity = Integer.parseInt(addItemRebrand.txtQuantity.getText());
+			if(quantity == 0) {
+				JMessage("Please input valid quantity.");
+				return;
+			}
 			
 	        LocalDate currentDate = LocalDate.now();
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
