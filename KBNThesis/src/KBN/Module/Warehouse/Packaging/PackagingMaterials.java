@@ -104,15 +104,9 @@ public class PackagingMaterials extends JPanel implements MouseListener{
 		String[] columnDefaultData = new String[] {"ID","MATERIAL NAME", "VARIANT", "DATE", "CURRENT VOLUME", "RELEASED", "REJECT", "HOLD", "PROD RETURN"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
-		for(int i = 0; i < 4; i++) {
-			if(i == 2) {
-				continue;
-			}else {
-				table.getColumnModel().getColumn(i).setMinWidth(0);
-				table.getColumnModel().getColumn(i).setMaxWidth(0);
-				table.getColumnModel().getColumn(i).setWidth(0);
-			}
-		}
+			table.getColumnModel().getColumn(0).setMinWidth(0);
+			table.getColumnModel().getColumn(0).setMaxWidth(0);
+			table.getColumnModel().getColumn(0).setWidth(0);
 		tableSorter();
 	}
 

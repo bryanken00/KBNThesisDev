@@ -80,6 +80,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	// Account
 	private dataSetter dataSet;
 	private String accLevel = "";
+	private String accountID = "";
 	
 	//SQL
 	private DbConnection dbConn;
@@ -183,8 +184,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         wNav = new WarehouseNav();
         rawMats = new RawMaterials();
         
+        // Packaging
         packMats = new PackagingMaterials();
         manualPackaging = new ManualAddPackaging();
+        
+        
         arcList = new ArchiveList();
         summary = new SummaryPanel();
         exportT = new exportTable();
@@ -238,6 +242,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private void setUsername() {
 		dataSet = new dataSetter();
 		accLevel = dataSet.getAccLevel();
+		accountID = dataSet.getAccountID();
 		wNav.lblUsername.setText(dataSet.getUsername());
 	}
 	
@@ -356,7 +361,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			
 		// Packaging
 		manualPackaging.btnNew.addActionListener(this);
-		manualPackaging.btnNew.addActionListener(this);
+		manualPackaging.btnSubmit.addActionListener(this);
 	}
 	
 	private void panelVisible() {
@@ -428,6 +433,42 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}
 	}
 	
+	// Packaging Material
+	private void PackagingMatsTable(String sql) {
+		rawMats.main.setRowCount(0);
+		rawMats.revalidate();
+		arrSQLResult = new ArrayList<>();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			// itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME
+			while(rs.next()) {
+				arrSQLResult.add(rs.getString(1)); // ID
+				arrSQLResult.add(rs.getString(2)); // Material
+				arrSQLResult.add(rs.getString(3)); // Variant
+				
+				//Date
+	            date = inputFormat.parse(rs.getString(4));
+	            String outputDate = outputFormat.format(date);
+				arrSQLResult.add(outputDate);
+				// END OF DATE
+				
+				arrSQLResult.add(rs.getString(5)); // Current Vol
+				arrSQLResult.add(rs.getString(6)); // RELEASE Vol
+				arrSQLResult.add(rs.getString(7)); // REJECT Vol
+				arrSQLResult.add(rs.getString(8)); // HOLD Vol
+				arrSQLResult.add(rs.getString(9)); // RECEIVED Vol
+				packMats.main.addRow(arrSQLResult.toArray());
+				arrSQLResult.clear();
+			}
+		}catch (Exception e) {
+			printingError("Table ERROR: " + e.getMessage());
+		}
+	}
+	
 	// Archive List
 	private void printingArchiveList(String sql) {
 		arcList.main.getDataVector().removeAllElements();
@@ -487,6 +528,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		wNav.btnPackMats.setForeground(Color.WHITE);
 		wNav.btnAddItem.setText("Add Item");
 		panelVisible();
+		String sql = "SELECT itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME \n"
+				+ "FROM tblcurrentmonthPackaging;";
+		PackagingMatsTable(sql);
 		wNav.btnAddItem.setVisible(true);
 		packMats.setVisible(true);
 	}
@@ -510,10 +554,17 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}
 	}
 	
-	//Manual Add Item
-	private void manualAddItem() {
+	
+	// Packaging
+	private void manualAddPackaging() {
+		try {
+			// to continue;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error manualAddPackaging: " + e.getMessage());
+		}
 	}
 	
+	// Manual Add
 	private void manualAddSubmit() {
 		int choice = JOptionPane.showConfirmDialog(null, "Do you want to proceed?", "Confirmation", JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
@@ -1258,6 +1309,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			// QR Code
 			if(e.getSource() == wNav.btnQRCode || e.getSource() == rightClickRawMats.btnQRGen)
 				generateQRCode();
+			
+			
+			// Add Item Nav
 			if(e.getSource() == wNav.btnAddItem) {
 				if(addItemChecker.equals("RawMats")) {
 					manual.setVisible(true);
@@ -1268,10 +1322,13 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			
 			// Packaging
 			if(e.getSource() == manualPackaging.btnNew) {
-				System.out.println("test");
-//		        AddItemPackaging = new addItemPackaging();
-//				AddItemPackaging.setVisible(true);
+//				System.out.println("test");
+		        AddItemPackaging = new addItemPackaging();
+		        AddItemPackaging.setUserID(accountID);
+				AddItemPackaging.setVisible(true);
 			}
+			if(e.getSource() == manualPackaging.btnSubmit)
+				manualAddPackaging();
 			
 			if(e.getSource() == manual.btnSubmit)
 				manualAddSubmit();
