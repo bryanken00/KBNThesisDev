@@ -51,6 +51,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.toedter.calendar.JDateChooser;
 
 import KBNAdminPanel.commons.DbConnection;
+import KBNAdminPanel.panels.GraphTest;
 import KBNAdminPanel.panels.Navs;
 import KBNAdminPanel.panels.Courier.CourierCreateAccount;
 import KBNAdminPanel.panels.Courier.CourierPanel;
@@ -119,6 +120,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	// Dashboard
 	private int OrderCountDash = 0; // Order List
 	private String sqlTimeDiff;
+	
+	//GraphTest
+	private GraphTest graphTest;
 	
 	
 	//Database
@@ -1021,6 +1025,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		if(e.getSource() == navs.btnForecasting) {
 			panelVisible();
 			forecastPanel.setVisible(true);
+			graphTest = new GraphTest(products, OrderCountDash, products);
+			grapGen.setBounds(0, 0, 918, 164);
+			grapGen.last[0].add(graphTest);
 //			renderingKBNProducts();
 //			LocalDate firstDateOfCurrentMonth = currentDate.withDayOfMonth(1);
 //			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");

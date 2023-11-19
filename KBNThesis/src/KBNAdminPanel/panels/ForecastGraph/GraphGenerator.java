@@ -13,11 +13,11 @@ import javax.swing.JLabel;
 import java.awt.Font;
 
 public class GraphGenerator extends JPanel {
-	private JLabel lblProductName[];
-	private JPanel panel[];
-		private JPanel last[];
-		private JPanel present[];
-		private JPanel future[];
+	public JLabel lblProductName[];
+	public JPanel panel[];
+	public JPanel last[];
+	public JPanel present[];
+	public JPanel future[];
 		
 	private int prodCount = 0;
 
