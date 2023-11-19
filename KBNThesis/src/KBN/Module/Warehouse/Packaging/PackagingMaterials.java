@@ -101,7 +101,7 @@ public class PackagingMaterials extends JPanel implements MouseListener{
 	
 	private void tableSetup() {
 		main = new DefaultTableModel();
-		String[] columnDefaultData = new String[] {"ID","MATERIAL NAME", "VARIANT", "DATE", "CURRENT VOLUME", "RELEASED", "REJECT", "HOLD", "PROD RETURN"};
+		String[] columnDefaultData = new String[] {"ID","MATERIAL NAME","CATEGORIES",  "VARIANT", "DATE", "CURRENT VOLUME", "RELEASED", "REJECT", "HOLD", "PROD RETURN"};
 		main.setColumnIdentifiers(columnDefaultData);
 		table.setModel(main);
 			table.getColumnModel().getColumn(0).setMinWidth(0);

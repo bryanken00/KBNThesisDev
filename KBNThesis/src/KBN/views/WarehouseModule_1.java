@@ -435,8 +435,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Packaging Material
 	private void PackagingMatsTable(String sql) {
-		rawMats.main.setRowCount(0);
-		rawMats.revalidate();
+		packMats.main.setRowCount(0);
+		packMats.revalidate();
 		arrSQLResult = new ArrayList<>();
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -444,10 +444,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			st.execute(sql);
 			rs = st.getResultSet();
 			
-			// itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME
+			// itemID, MATERIAL_NAME, CATEGORIES, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME
 			while(rs.next()) {
 				arrSQLResult.add(rs.getString(1)); // ID
 				arrSQLResult.add(rs.getString(2)); // Material
+				arrSQLResult.add(rs.getString(10)); // Category
 				arrSQLResult.add(rs.getString(3)); // Variant
 				
 				//Date
@@ -528,23 +529,37 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		wNav.btnPackMats.setForeground(Color.WHITE);
 		wNav.btnAddItem.setText("Add Item");
 		panelVisible();
-		String sql = "SELECT itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME \n"
+		String sql = "SELECT itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME, CATEGORIES \n"
 				+ "FROM tblcurrentmonthPackaging;";
 		PackagingMatsTable(sql);
 		wNav.btnAddItem.setVisible(true);
+		wNav.btnQRCode.setVisible(true);
 		packMats.setVisible(true);
 	}
 	
 	// QR Code Generator
 	private void generateQRCode() {
-		String MN = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 2) + "";
-		String CN = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 3) + "";
-		String S = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 1) + "";
-		String itemDate = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 4) + "";
-		String Volume = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 5) + "";
 		
-		String QRCodeName = MN + ".png";
-		String url = "https://kissedbynature.online/warehouse/?MN=" + MN + "&CN=" + CN + "&S=" + S + "&date=" + itemDate+"&tv=" + Volume;
+		
+		String QRCodeName = "";
+		String url = "";
+		if(addItemChecker.equals("RawMats")) {
+			String MN = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 2) + "";
+			String CN = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 3) + "";
+			String S = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 1) + "";
+			String itemDate = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 4) + "";
+			String Volume = rawMats.table.getValueAt(rawMats.table.getSelectedRow(), 5) + "";
+			
+			QRCodeName = "Raw Material_" + MN + ".png";
+			url = "https://kissedbynature.online/warehouse/?MN=" + MN + "&CN=" + CN + "&S=" + S + "&date=" + itemDate+"&tv=" + Volume;
+		} else {
+			// "ID","MATERIAL NAME", "VARIANT", "DATE", "CURRENT VOLUME", "RELEASED", "REJECT", "HOLD", "PROD RETURN"
+			String MN = packMats.table.getValueAt(packMats.table.getSelectedRow(), 1) + "";
+			String CT = packMats.table.getValueAt(packMats.table.getSelectedRow(), 2) + "";
+			String VR = packMats.table.getValueAt(packMats.table.getSelectedRow(), 3) + "";
+			QRCodeName = "Packaging Material_" + MN + ".png";
+			url = "https://kissedbynature.online/warehouse/?MN=" + MN + "&CN=" + CT + "&VR=" + VR + "";
+		}
 		
 		try {
 			genQR.gettingURL(url, QRCodeName);
