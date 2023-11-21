@@ -11,11 +11,16 @@ import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import com.toedter.calendar.JMonthChooser;
+import com.toedter.calendar.JYearChooser;
+import java.awt.Panel;
 
 public class ForecastPanel extends JPanel {
-	public JButton btnForecast;
 	public JPanel Graph;
+	public JButton btnForecast;
 	public JComboBox comboBox;
+	public JMonthChooser monthChooser;
+	public JYearChooser yearChooser;
 	
 	public ForecastPanel() {
 		setBounds(0, 0, 1009, 721);
@@ -28,17 +33,38 @@ public class ForecastPanel extends JPanel {
 		panel.setLayout(null);
 		
 		JPanel header = new JPanel();
-		header.setBounds(10, 11, 969, 129);
+		header.setBounds(10, 11, 969, 58);
 		header.setLayout(null);
 		header.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		header.setBackground(Color.WHITE);
 		panel.add(header);
 		
-		JLabel lblEmployeeList = new JLabel("Time Series: Simple Moving Average (SMA):");
+		JLabel lblEmployeeList = new JLabel("Time Series: Simple Moving Average (SMA)");
 		lblEmployeeList.setHorizontalAlignment(SwingConstants.LEFT);
-		lblEmployeeList.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblEmployeeList.setBounds(10, 11, 352, 31);
+		lblEmployeeList.setFont(new Font("Tahoma", Font.PLAIN, 28));
+		lblEmployeeList.setBounds(10, 5, 949, 47);
 		header.add(lblEmployeeList);
+		
+		Graph = new JPanel();
+		Graph.setLayout(null);
+		Graph.setBorder(new LineBorder(new Color(0, 0, 0)));
+		Graph.setBounds(10, 151, 969, 537);
+		panel.add(Graph);
+		
+		JPanel panel_ = new JPanel();
+		panel_.setBackground(new Color(255, 255, 255));
+		panel_.setBounds(10, 75, 969, 58);
+		panel.add(panel_);
+		panel_.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		panel_.setLayout(null);
+		
+		monthChooser = new JMonthChooser();
+		monthChooser.setBounds(630, 13, 103, 31);
+		panel_.add(monthChooser);
+		
+		yearChooser = new JYearChooser();
+		yearChooser.setBounds(743, 13, 103, 31);
+		panel_.add(yearChooser);
 		
 		btnForecast = new JButton("Forecast");
 		btnForecast.setForeground(Color.WHITE);
@@ -46,19 +72,13 @@ public class ForecastPanel extends JPanel {
 		btnForecast.setFocusable(false);
 		btnForecast.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnForecast.setBackground(new Color(8, 104, 0));
-		btnForecast.setBounds(856, 71, 103, 31);
-		header.add(btnForecast);
+		btnForecast.setBounds(856, 13, 103, 31);
+		panel_.add(btnForecast);
 		
 		comboBox = new JComboBox();
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		comboBox.setBounds(372, 5, 587, 43);
-		header.add(comboBox);
-		
-		Graph = new JPanel();
-		Graph.setLayout(null);
-		Graph.setBorder(new LineBorder(new Color(0, 0, 0)));
-		Graph.setBounds(10, 151, 969, 537);
-		panel.add(Graph);
+		comboBox.setBounds(10, 7, 587, 43);
+		panel_.add(comboBox);
 		
 	}
 }

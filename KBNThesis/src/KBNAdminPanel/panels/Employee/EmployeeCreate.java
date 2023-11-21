@@ -259,13 +259,13 @@ public class EmployeeCreate extends JPanel {
         birthDate.setMaxSelectableDate(maxDate.getTime());
 		panel.add(birthDate);
 
-		String[] depAdmin = {"Marketing", "Production", "Warehouse"};
+		String[] depAdmin = {"All"};
 		cbDepartment = new JComboBox(depAdmin);
 		cbDepartment.setBackground(new Color(255, 255, 255));
 		cbDepartment.setBounds(537, 464, 171, 31);
 		panel.add(cbDepartment);
 		
-		String[] accType = {"Admin","Staff","Cashier"}; 
+		String[] accType = {"Admin", "Manager","Staff","Cashier"}; 
 		cbAccType = new JComboBox(accType);
 		cbAccType.setBackground(new Color(255, 255, 255));
 		cbAccType.setBounds(376, 464, 151, 31);

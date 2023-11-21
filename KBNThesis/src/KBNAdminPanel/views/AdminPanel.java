@@ -235,7 +235,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		forecastgraph.graph2.add(bar2);
 		
 
-		dashboard1();
+//		dashboard1();
 		dashboard1.setVisible(true);
 		
 		btnChecker = navs.btnDashboard;
@@ -678,8 +678,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			
 			List<String> date = new ArrayList<>();
             int max = 0;
-			int year = 2023;
-			int month = 11;
+            
+			int year = forecastPanel.yearChooser.getYear();
+			int month = forecastPanel.monthChooser.getMonth();
 			
 			String getScoreDate = "";
 	        
@@ -1038,26 +1039,45 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		    	return;
 		    }
 		    if(!isUpdateEmpInfo) {
-			    String getAccountID = "SELECT COUNT(AccountID) FROM tblAccount";
+		    	st.execute("DROP PROCEDURE IF EXISTS createEmpAccount;");
+			    String getAccountID = "SELECT COUNT(AccountID) FROM tblaccount";
 			    st.execute(getAccountID);
 			    rs = st.getResultSet();
 			    int accID = 0;
 			    if(rs.next())
 			    	accID = rs.getInt(1) + 1;
-			    String insertAcc = "INSERT INTO tblAccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
+			    String insertAcc = "INSERT INTO tblaccount(Username, Password, accType, Department, Position) VALUES('" + Username + "','" + password + "','" + Type + "','" + Department + "','" + Position + "');";
 			    String insertAccInfo = "INSERT INTO tblaccountinfo(AccountID,FirstName,MiddleName,LastName,Address,Birthdate,Age,Gender,EmailAdd,Contact) VALUES('" + accID + "','" + FirstName + "','" + MiddleName + "','" + LastName + "','" + Address + "','" + Birthdate + "','" + Age + "','" + Gender + "','" + Email + "','" + Contact + "');";
 			    
-			    int insertAcc_1 = st.executeUpdate(insertAcc);
-			    int insertAccInfo_1 = 0;
+			    ArrayList arrTemp = new ArrayList<>();
 			    
-			    if (insertAcc_1 > 0) 
-			    	insertAccInfo_1 = st.executeUpdate(insertAccInfo);
-			    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
-			    	JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
-			    else {
-			    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
-			    }
+			    arrTemp.add(insertAcc);
+			    arrTemp.add(insertAccInfo);
+			    
+				String Procedures = "CREATE PROCEDURE createEmpAccount()\r\n"
+						+ "BEGIN\r\n"
+						+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+						+ "    BEGIN\r\n"
+						+ "        ROLLBACK;\r\n"
+						+ "        RESIGNAL;\r\n"
+						+ "    END;\r\n"
+						+ "\r\n"
+						+ "    START TRANSACTION;\r\n"
+						+ "";
+				
+				for(int i = 0; i < arrTemp.size(); i++) {
+					Procedures = Procedures + arrTemp.get(i);
+				}
+				
+				Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+						+ "    COMMIT;\r\n"
+						+ "END;";
+			    
+				st.execute(Procedures);
+				st.execute("CALL createEmpAccount();");
+				JOptionPane.showMessageDialog(null, "Account registered successfully.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
 		    } else {
+		    	st.execute("DROP PROCEDURE IF EXISTS updateEmpAccount;");
 		    	String accID = accoudIdEmpUpdate;
 		    	
 		    	String SQLUpdateAccInfo = "Update tblaccountinfo\r\n"
@@ -1080,17 +1100,34 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		    			+ "Position = '" + Position + "'\r\n"
 		    			+ "WHERE AccountID = '" + accID + "';";
 		    	
-			    int insertAcc_1 = st.executeUpdate(SQLUpdateAcc);
-			    int insertAccInfo_1 = 0;
-			    if (insertAcc_1 > 0) 
-			    	insertAccInfo_1 = st.executeUpdate(SQLUpdateAccInfo);
-			    if(insertAcc_1 > 0 && insertAccInfo_1 > 0)
-			    	JOptionPane.showMessageDialog(null, "Account Update successfully.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
-			    else {
-			    	JOptionPane.showMessageDialog(null, "Something Wrong", "Contact Developer", JOptionPane.INFORMATION_MESSAGE);
-			    }
+			    ArrayList arrTemp = new ArrayList<>();
 			    
-
+			    arrTemp.add(SQLUpdateAccInfo);
+			    arrTemp.add(SQLUpdateAcc);
+			    
+				String Procedures = "CREATE PROCEDURE updateEmpAccount()\r\n"
+						+ "BEGIN\r\n"
+						+ "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+						+ "    BEGIN\r\n"
+						+ "        ROLLBACK;\r\n"
+						+ "        RESIGNAL;\r\n"
+						+ "    END;\r\n"
+						+ "\r\n"
+						+ "    START TRANSACTION;\r\n"
+						+ "";
+				
+				for(int i = 0; i < arrTemp.size(); i++) {
+					Procedures = Procedures + arrTemp.get(i);
+				}
+				
+				Procedures = Procedures + "    -- If successful, commit the transaction\r\n"
+						+ "    COMMIT;\r\n"
+						+ "END;";
+			    
+				st.execute(Procedures);
+				st.execute("CALL updateEmpAccount();");
+		    	JOptionPane.showMessageDialog(null, "Account Update successfully.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+		    	
 		        empGen = new EmployeeListGenerator();
 				empList.scrollPane.setViewportView(empGen);
 				panelVisible();
@@ -1480,9 +1517,15 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	empCreate.cbPosition.setModel(nullmodel);
 	        	
 	        	String[] depAdmin = {"Marketing", "Production", "Warehouse"};
+	        	String[] Staff = {"Marketing", "Warehouse"};
 	        	String[] depCashier = {"Cashier"};
+	        	String[] marketingStaffPosition = {"Inventory and Ordering"};
 	        	
 	        	if (accType.equals("Admin")) {
+	        	    model.addElement("All");
+	        	    empCreate.cbPosition.setModel(adminPosition);
+	        	    empCreate.cbDepartment.setModel(model);
+	        	} else if(accType.equals("Manager")) {
 	        	    for (String item : depAdmin) {
 	        	        model.addElement(item);
 	        	    }
@@ -1495,12 +1538,11 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	    empCreate.cbDepartment.setModel(model);
 	        	    empCreate.cbPosition.setModel(model);
 	        	} else if(accType.equals("Staff")) {
-	        	    for (String item : depAdmin) {
+	        	    for (String item : Staff) {
 	        	        model.addElement(item);
 	        	    }
 	        	    empCreate.cbDepartment.setModel(model);
 	        	    
-		        	String[] marketingStaffPosition = {"Inventory-Ordering"};
 	        	    for (String item : marketingStaffPosition) {
 	        	    	modelPost.addElement(item);
 	        	    }
@@ -1509,8 +1551,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        }
 	        
 	        if (e.getSource() == empCreate.cbDepartment) {
-	        	String[] marketingStaffPosition = {"Inventory-Ordering"};
-	        	String[] warehouseStaffPosition = {"GenerateQR-Inventory","First-inFirst-out"};
+	        	String[] marketingStaffPosition = {"Inventory and Ordering"};
+	        	String[] warehouseStaffPosition = {"Materials Inventory"};
 	        	
 	        	if(accType.equals("Staff") && department.equals("Marketing")) {
 	        	    for (String item : marketingStaffPosition) {

@@ -494,7 +494,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			btnCanncelledOrder.setEnabled(true);
 			btnOrdering.setEnabled(true);
 			
-		}else if(AccountLevel.equals("Admin--") || AccountLevel.equals("Admin-Marketing-All")) {
+		}else if(AccountLevel.equals("Admin--") || AccountLevel.equals("Manager-Marketing-All")) {
 			btnKbn.setEnabled(true);
 			btnRebranding.setEnabled(true);
 			

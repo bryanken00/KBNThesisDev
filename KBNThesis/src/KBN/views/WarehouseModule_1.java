@@ -278,7 +278,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	}
 	
 	private void warehouseButtons() {
-		if(accLevel.equals("Admin--") || accLevel.equals("Admin-Warehouse-All")) {
+		if(accLevel.equals("Admin--") || accLevel.equals("Manager-Warehouse-All")) {
 			
 			wNav.btnAddItem.setEnabled(true);
 			wNav.btnQRCode.setEnabled(true);
