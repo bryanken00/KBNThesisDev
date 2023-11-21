@@ -10,13 +10,12 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 
 public class ForecastPanel extends JPanel {
-	
-	public JPanel container;
+	public JButton btnForecast;
 	public JPanel Graph;
-	public JLabel lblProductName;
-	private JButton btnForecast;
+	public JComboBox comboBox;
 	
 	public ForecastPanel() {
 		setBounds(0, 0, 1009, 721);
@@ -29,16 +28,16 @@ public class ForecastPanel extends JPanel {
 		panel.setLayout(null);
 		
 		JPanel header = new JPanel();
-		header.setBounds(10, 11, 969, 53);
+		header.setBounds(10, 11, 969, 129);
 		header.setLayout(null);
 		header.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		header.setBackground(Color.WHITE);
 		panel.add(header);
 		
-		JLabel lblEmployeeList = new JLabel("Time Series: Simple Moving Average (SMA)");
-		lblEmployeeList.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel lblEmployeeList = new JLabel("Time Series: Simple Moving Average (SMA):");
+		lblEmployeeList.setHorizontalAlignment(SwingConstants.LEFT);
 		lblEmployeeList.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblEmployeeList.setBounds(10, 11, 356, 31);
+		lblEmployeeList.setBounds(10, 11, 352, 31);
 		header.add(lblEmployeeList);
 		
 		btnForecast = new JButton("Forecast");
@@ -47,25 +46,18 @@ public class ForecastPanel extends JPanel {
 		btnForecast.setFocusable(false);
 		btnForecast.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnForecast.setBackground(new Color(8, 104, 0));
-		btnForecast.setBounds(856, 11, 103, 31);
+		btnForecast.setBounds(856, 71, 103, 31);
 		header.add(btnForecast);
 		
-		container = new JPanel();
-		container.setBounds(10, 75, 969, 613);
-		container.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		container.setBackground(Color.WHITE);
-		panel.add(container);
-		container.setLayout(null);
-		
-		lblProductName = new JLabel("Product Name");
-		lblProductName.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblProductName.setBounds(10, 11, 949, 43);
-		container.add(lblProductName);
+		comboBox = new JComboBox();
+		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		comboBox.setBounds(372, 5, 587, 43);
+		header.add(comboBox);
 		
 		Graph = new JPanel();
-		Graph.setBorder(new LineBorder(new Color(0, 0, 0)));
-		Graph.setBounds(10, 65, 949, 537);
-		container.add(Graph);
 		Graph.setLayout(null);
+		Graph.setBorder(new LineBorder(new Color(0, 0, 0)));
+		Graph.setBounds(10, 151, 969, 537);
+		panel.add(Graph);
 	}
 }

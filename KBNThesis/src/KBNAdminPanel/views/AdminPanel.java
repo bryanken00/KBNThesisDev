@@ -280,6 +280,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		forecast.product3.addItemListener(this);
 		forecast.product4.addItemListener(this);
 		forecast.product5.addItemListener(this);
+		forecastPanel.btnForecast.addActionListener(this);
 		
 		forecast.btnCompareToDate.addActionListener(this);
 		
@@ -647,6 +648,180 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			quantity = 0;
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
+		}
+	}
+	
+	// Forecast
+	private void getForecastGraph() {
+		try {
+			List<String> date = new ArrayList<>();
+            int max = 0;
+            
+			int year = 2023;
+			int month = 11;
+			
+			String getScoreDate = "";
+	        
+            List<String> dates = date;
+            List<Integer> firstDataset = new ArrayList<>();
+            
+	        LocalDate firstDayOfMonthFirst = LocalDate.of(year, month, 1); // October 2023
+	        LocalDate currentMondayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+	        LocalDate currentSundayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+	        int FirstIndex = 0;
+	        
+	        while (currentMondayFirst.getMonth() == firstDayOfMonthFirst.getMonth()) {
+		        ArrayList<Integer> arrTemp = new ArrayList<>();
+	            if (currentSundayFirst.isBefore(currentMondayFirst)) {
+	                currentSundayFirst = currentSundayFirst.plusWeeks(1);
+	            }
+	            
+				getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+						+ "FROM tblordercheckout AS a \n"
+						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+						+ "AND (a.OrderDate > '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
+						+ "GROUP BY a.OrderRefNumber \n"
+						+ "order by a.OrderDate DESC;";
+				
+				st.execute(getScoreDate);
+				
+				rs = st.getResultSet();
+				
+				while(rs.next()) {
+					arrTemp.add(rs.getInt(3));
+				}
+				
+				int divider = arrTemp.size();
+				
+				if(divider == 0)
+					divider = 1;
+				
+				int tempAdd = 0;
+				
+				for(int i = 0; i < arrTemp.size(); i++) {
+					tempAdd += arrTemp.get(i);
+				}
+				
+				int finalAverage = Math.round(tempAdd / divider);
+//				System.out.println("1. " + finalAverage);
+				
+				FirstIndex++;
+	            firstDataset.add(finalAverage);
+		   		
+	            currentMondayFirst = currentMondayFirst.plusWeeks(1);
+	            currentSundayFirst = currentSundayFirst.plusWeeks(1);
+	        }
+	        
+
+            List<Integer> secondDataset = new ArrayList<>();
+	        
+	        LocalDate firstDayOfMonthSecond = LocalDate.of(year, 10, 1); // October 2023
+	        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+	        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+	        int secondindex = 0;
+	        while (currentMondaySecond.getMonth() == firstDayOfMonthSecond.getMonth()) {
+	        	ArrayList<Integer> arrTemp = new ArrayList<>();
+	        	if (currentSundaySecond.isBefore(currentMondaySecond)) {
+	        		currentSundaySecond = currentSundaySecond.plusWeeks(1);
+	        	}
+	        	
+	        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+	        			+ "FROM tblordercheckout AS a \n"
+	        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+	        			+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+	        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
+	        			+ "GROUP BY a.OrderRefNumber \n"
+	        			+ "order by a.OrderDate DESC;";
+	        	
+	        	st.execute(getScoreDate);
+	        	
+	        	rs = st.getResultSet();
+	        	
+	        	while(rs.next())
+	        		arrTemp.add(rs.getInt(3));
+	        	
+	        	int divider = arrTemp.size();
+	        	
+	        	if(divider == 0)
+	        		divider = 1;
+	        	
+	        	int tempAdd = 0;
+	        	
+	        	for(int i = 0; i < arrTemp.size(); i++) {
+	        		tempAdd += arrTemp.get(i);
+	        	}
+	        	
+	        	int finalAverage = Math.round(tempAdd / divider);
+//				System.out.println("2. " + finalAverage);
+	        	
+	        	secondDataset.add(finalAverage);
+	        	
+	        	currentMondaySecond = currentMondaySecond.plusWeeks(1);
+	        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
+
+	        	secondindex++;
+	        	
+	        }
+	        
+            List<Integer> AverageFuture = new ArrayList<>();
+	        
+			String getMax = "SELECT round(AVG(b.Quantity)) AS AVGMonthh \n"
+					+ "FROM tblordercheckout AS a \n"
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+					+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+					+ "GROUP BY a.OrderRefNumber \n"
+					+ "order by AVGMonthh DESC LIMIT 1;";
+			
+			st.execute(getMax);
+			rs = st.getResultSet();
+			if(rs.next())
+				max = rs.getInt(1);
+			
+			
+//			st.execute(getScoreDate);
+//			rs = st.getResultSet();
+//			while(rs.next()) {
+//				forecastPanel.lblProductName.setText(rs.getString(2));
+//			}
+//			
+			int minVal = 0;
+			if(FirstIndex < secondindex)
+				minVal = FirstIndex;
+			else
+				minVal = secondindex;
+			
+	        for (int i = firstDataset.size() - 1; i >= minVal; i--) {
+	            firstDataset.remove(i);
+	        }
+	        
+	        for (int i = secondDataset.size() - 1; i >= minVal; i--) {
+	        	secondDataset.remove(i);
+	        }
+
+			for(int i = 0; i < minVal; i++) {
+				date.add("week " + (i+1));
+			}
+			
+
+            
+            for(int i = 0; i < minVal; i++) {
+            	int sum = Math.round((Integer.parseInt(firstDataset.get(i).toString()) + Integer.parseInt(secondDataset.get(i).toString()))/2);
+            	AverageFuture.add(sum);
+            }
+
+            List<List<Integer>> datasets = new ArrayList<>();
+            datasets.add(firstDataset);
+            datasets.add(secondDataset);
+            datasets.add(AverageFuture);
+			
+            GraphTest graphTest = new GraphTest(datasets, max, dates);
+			forecastPanel.Graph.add(graphTest);
+            graphTest.setBounds(0, 0, 949, 537);
+            graphTest.setVisible(true);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error Forcast: " + e.getMessage());
 		}
 	}
 	
@@ -1022,176 +1197,33 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		if(e.getSource() == navs.btnForecasting) {
             try {
 				panelVisible();
-	            List<String> date = new ArrayList<>();
-	            int max = 0;
-	            
-				int year = 2023;
-				int month = 11;
+				forecastPanel.comboBox.removeAllItems();
+				String SQLKBN = "SELECT \n"
+						+ "	CONCAT(a.prodName, ' (', a.prodVolume, ')') AS Product \n"
+						+ "FROM tblproducts AS a;";
 				
-				String getScoreDate = "";
-		        
-	            List<String> dates = date;
-	            List<Integer> firstDataset = new ArrayList<>();
-	            
-		        LocalDate firstDayOfMonthFirst = LocalDate.of(year, month, 1); // October 2023
-		        LocalDate currentMondayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
-		        LocalDate currentSundayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-		        int FirstIndex = 0;
-		        
-		        while (currentMondayFirst.getMonth() == firstDayOfMonthFirst.getMonth()) {
-			        ArrayList<Integer> arrTemp = new ArrayList<>();
-		            if (currentSundayFirst.isBefore(currentMondayFirst)) {
-		                currentSundayFirst = currentSundayFirst.plusWeeks(1);
-		            }
-		            
-					getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
-							+ "FROM tblordercheckout AS a \n"
-							+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-							+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
-							+ "AND (a.OrderDate > '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
-							+ "GROUP BY a.OrderRefNumber \n"
-							+ "order by a.OrderDate DESC;";
-					
-					st.execute(getScoreDate);
-					
-					rs = st.getResultSet();
-					
-					while(rs.next()) {
-						arrTemp.add(rs.getInt(3));
-					}
-					
-					int divider = arrTemp.size();
-					
-					if(divider == 0)
-						divider = 1;
-					
-					int tempAdd = 0;
-					
-					for(int i = 0; i < arrTemp.size(); i++) {
-						tempAdd += arrTemp.get(i);
-					}
-					
-					int finalAverage = Math.round(tempAdd / divider);
-//					System.out.println("1. " + finalAverage);
-					
-					FirstIndex++;
-		            firstDataset.add(finalAverage);
-			   		
-		            currentMondayFirst = currentMondayFirst.plusWeeks(1);
-		            currentSundayFirst = currentSundayFirst.plusWeeks(1);
-		        }
-		        
-
-	            List<Integer> secondDataset = new ArrayList<>();
-		        
-		        LocalDate firstDayOfMonthSecond = LocalDate.of(year, 10, 1); // October 2023
-		        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
-		        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-
-		        int secondindex = 0;
-		        while (currentMondaySecond.getMonth() == firstDayOfMonthSecond.getMonth()) {
-		        	ArrayList<Integer> arrTemp = new ArrayList<>();
-		        	if (currentSundaySecond.isBefore(currentMondaySecond)) {
-		        		currentSundaySecond = currentSundaySecond.plusWeeks(1);
-		        	}
-		        	
-		        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
-		        			+ "FROM tblordercheckout AS a \n"
-		        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-		        			+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
-		        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
-		        			+ "GROUP BY a.OrderRefNumber \n"
-		        			+ "order by a.OrderDate DESC;";
-		        	
-		        	st.execute(getScoreDate);
-		        	
-		        	rs = st.getResultSet();
-		        	
-		        	while(rs.next())
-		        		arrTemp.add(rs.getInt(3));
-		        	
-		        	int divider = arrTemp.size();
-		        	
-		        	if(divider == 0)
-		        		divider = 1;
-		        	
-		        	int tempAdd = 0;
-		        	
-		        	for(int i = 0; i < arrTemp.size(); i++) {
-		        		tempAdd += arrTemp.get(i);
-		        	}
-		        	
-		        	int finalAverage = Math.round(tempAdd / divider);
-//					System.out.println("2. " + finalAverage);
-		        	
-		        	secondDataset.add(finalAverage);
-		        	
-		        	currentMondaySecond = currentMondaySecond.plusWeeks(1);
-		        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
-
-		        	secondindex++;
-		        	
-		        }
-		        
-	            List<Integer> AverageFuture = new ArrayList<>();
-		        
-				String getMax = "SELECT round(AVG(b.Quantity)) AS AVGMonthh \n"
-						+ "FROM tblordercheckout AS a \n"
-						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-						+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
-						+ "GROUP BY a.OrderRefNumber \n"
-						+ "order by AVGMonthh DESC LIMIT 1;";
+				String SQLRebrand = "SELECT \n"
+						+ "	CONCAT(a.prodName, ' (', a.prodVolume, ')') AS reBrand \n"
+						+ "FROM tblrebrandingproducts AS a;";
 				
-				st.execute(getMax);
+				st.execute(SQLKBN);
 				rs = st.getResultSet();
-				if(rs.next())
-					max = rs.getInt(1);
+				while(rs.next()) 
+					forecastPanel.comboBox.addItem(rs.getString(1));
 				
-				st.execute(getScoreDate);
+				st.execute(SQLRebrand);
 				rs = st.getResultSet();
-				while(rs.next()) {
-					forecastPanel.lblProductName.setText(rs.getString(2));
-				}
+				while(rs.next())
+					forecastPanel.comboBox.addItem(rs.getString(1));
 				
-				int minVal = 0;
-				if(FirstIndex < secondindex)
-					minVal = FirstIndex;
-				else
-					minVal = secondindex;
-				
-		        for (int i = firstDataset.size() - 1; i >= minVal; i--) {
-		            firstDataset.remove(i);
-		        }
-		        
-		        for (int i = secondDataset.size() - 1; i >= minVal; i--) {
-		        	secondDataset.remove(i);
-		        }
-
-				for(int i = 0; i < minVal; i++) {
-					date.add("week " + (i+1));
-				}
-				
-
-	            
-	            for(int i = 0; i < minVal; i++) {
-	            	int sum = Math.round((Integer.parseInt(firstDataset.get(i).toString()) + Integer.parseInt(secondDataset.get(i).toString()))/2);
-	            	AverageFuture.add(sum);
-	            }
-
-	            List<List<Integer>> datasets = new ArrayList<>();
-	            datasets.add(firstDataset);
-	            datasets.add(secondDataset);
-	            datasets.add(AverageFuture);
-				
-	            GraphTest graphTest = new GraphTest(datasets, max, dates);
-				forecastPanel.Graph.add(graphTest);
-	            graphTest.setBounds(0, 0, 949, 537);
-	            graphTest.setVisible(true);
-
 				forecastPanel.setVisible(true);
 			} catch (Exception e2) {
 				JOptionPane.showMessageDialog(null, "Error navs.btnForecasting: " + e2.getMessage());
 			}
+		}
+		
+		if(e.getSource() == forecastPanel.btnForecast) {
+			getForecastGraph();
 		}
 		
 		if(e.getSource() == forecast.btnCompareToDate) {
