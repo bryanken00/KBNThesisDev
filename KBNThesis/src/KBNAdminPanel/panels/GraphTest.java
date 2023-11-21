@@ -1,111 +1,113 @@
 package KBNAdminPanel.panels;
-
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javax.swing.*;
 
 public class GraphTest extends JPanel {
-   private int MAX_SCORE = 20;
-   private static final int BORDER_GAP = 50;
-   private static final int MOVE_AMOUNT = 10;
-   private static final Color GRAPH_COLOR = new Color(8, 104, 0);
-   private static final Color GRAPH_POINT_COLOR = Color.BLACK;
-   private static final Stroke GRAPH_STROKE = new BasicStroke(3f);
-   private static final int GRAPH_POINT_WIDTH = 12;
-   private static final int Y_HATCH_CNT = 10;
-   private List<Integer> scores;
-   private List<String> date;
+    private int MAX_SCORE = 100;
+    private static final int BORDER_GAP = 50;
+    private static final int MOVE_AMOUNT = 10;
+    private static final Color GRAPH_POINT_COLOR = Color.BLACK;
+    private static final Stroke GRAPH_STROKE = new BasicStroke(3f);
+    private static final int GRAPH_POINT_WIDTH = 8;
+    private static final int Y_HATCH_CNT = 10;
+    private List<List<Integer>> datasets;
+    private List<String> date;
 
-   public GraphTest(List<Integer> scores, int max, List<String> date) {
-      this.scores = scores;
-      this.MAX_SCORE = max;
-      this.date = date;
-      
-      setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-   }
+    // Define an array of colors for each dataset
+    private static final Color[] LINE_COLORS = {Color.BLUE, Color.RED, Color.GREEN};
 
-   public void paintComponent(Graphics g) {
-	    super.paintComponent(g);
-	    setBackground(Color.WHITE);
-	    Graphics2D g2 = (Graphics2D) g;
-	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    public GraphTest(List<List<Integer>> datasets, int max, List<String> date) {
+        this.datasets = datasets;
+        this.MAX_SCORE = max;
+        this.date = date;
 
-	    double xScale = ((double) getWidth() - 2 * BORDER_GAP) / (scores.size() - 1);
-	    double yScale = ((double) getHeight() - 2 * BORDER_GAP) / (MAX_SCORE - 1);
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+    }
 
-	    List<Point> graphPoints = new ArrayList<Point>();
-	    for (int i = 0; i < scores.size(); i++) {
-	        int x1 = (int) (i * xScale + BORDER_GAP);
-	        int y1 = (int) ((MAX_SCORE - scores.get(i)) * yScale + BORDER_GAP - MOVE_AMOUNT);
-	        graphPoints.add(new Point(x1, y1));
-	    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        setBackground(Color.WHITE);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-	    // Create x and y axes
-	    g2.drawLine(BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT, BORDER_GAP, BORDER_GAP - MOVE_AMOUNT);
-	    g2.drawLine(BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT, getWidth() - BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT);
+        double xScale = ((double) getWidth() - 2 * BORDER_GAP) / (date.size() - 1);
+        double yScale = ((double) getHeight() - 2 * BORDER_GAP) / (MAX_SCORE - 1);
 
-	    // Create hatch marks for y-axis
-	    for (int i = 0; i < Y_HATCH_CNT; i++) {
-	        int x0 = BORDER_GAP;
-	        int x1 = GRAPH_POINT_WIDTH + BORDER_GAP;
-	        int y0 = getHeight() - (((i + 1) * (getHeight() - BORDER_GAP * 2)) / Y_HATCH_CNT + BORDER_GAP) - MOVE_AMOUNT;
-	        int y1 = y0;
-	        g2.drawLine(x0, y0, x1, y1);
+        // Iterate over each dataset and draw its corresponding line
+        for (int i = 0; i < datasets.size(); i++) {
+            List<Integer> dataset = datasets.get(i);
+            List<Point> graphPoints = new ArrayList<>();
+            for (int j = 0; j < dataset.size(); j++) {
+                int x1 = (int) (j * xScale + BORDER_GAP);
+                int y1 = (int) ((MAX_SCORE - dataset.get(j)) * yScale + BORDER_GAP - MOVE_AMOUNT);
+                graphPoints.add(new Point(x1, y1));
+            }
 
-	        String label = Integer.toString((MAX_SCORE / Y_HATCH_CNT) * (i + 1));
-	        g2.drawString(label, x0 - 25, y0 + 5);
-	    }
+            // Draw the graph lines for the current dataset
+            Stroke oldStroke = g2.getStroke();
+            g2.setColor(LINE_COLORS[i % LINE_COLORS.length]); // Cycle through colors
+            g2.setStroke(GRAPH_STROKE);
+            for (int j = 0; j < graphPoints.size() - 1; j++) {
+                int x1 = graphPoints.get(j).x;
+                int y1 = graphPoints.get(j).y;
+                int x2 = graphPoints.get(j + 1).x;
+                int y2 = graphPoints.get(j + 1).y;
+                g2.drawLine(x1, y1, x2, y2);
+            }
 
-	    // Create hatch marks for x-axis
-	    for (int i = 0; i < scores.size() - 1; i++) {
-	        int x0 = (int) ((i * xScale) + BORDER_GAP);
-	        int x1 = x0;
-	        int y0 = getHeight() - BORDER_GAP;
-	        int y1 = y0 - GRAPH_POINT_WIDTH;
-	        g2.drawLine(x0, y0, x1, y1);
+            g2.setStroke(oldStroke);
+            g2.setColor(GRAPH_POINT_COLOR);
 
-	        String label = date.get(i);
-	        int labelWidth = g2.getFontMetrics().stringWidth(label);
-	        int labelHeight = g2.getFontMetrics().getHeight();
-	        Graphics2D g2d = (Graphics2D) g2.create();
-	        g2d.translate(x0, y0 + GRAPH_POINT_WIDTH + 15);
-	        g2d.rotate(-Math.PI / 2);
-	        g2d.drawString(label, -labelHeight - 5, 0); // Adjust the position as needed
-	        g2d.dispose();
-	    }
+            // Draw the graph points for the current dataset
+            for (Point point : graphPoints) {
+                int x = point.x - GRAPH_POINT_WIDTH / 2;
+                int y = point.y - GRAPH_POINT_WIDTH / 2;
+                int ovalW = GRAPH_POINT_WIDTH;
+                int ovalH = GRAPH_POINT_WIDTH;
+                g2.fillOval(x, y, ovalW, ovalH);
+            }
+        }
 
-	    // Draw the graph lines
-	    Stroke oldStroke = g2.getStroke();
-	    g2.setColor(GRAPH_COLOR);
-	    g2.setStroke(GRAPH_STROKE);
-	    for (int i = 0; i < graphPoints.size() - 1; i++) {
-	        int x1 = graphPoints.get(i).x;
-	        int y1 = graphPoints.get(i).y;
-	        int x2 = graphPoints.get(i + 1).x;
-	        int y2 = graphPoints.get(i + 1).y;
-	        g2.drawLine(x1, y1, x2, y2);
-	    }
+        // Draw x and y axes, hatch marks, and labels
+        drawAxesAndLabels(g2, xScale, yScale);
+    }
 
-	    g2.setStroke(oldStroke);
-	    g2.setColor(GRAPH_POINT_COLOR);
+    private void drawAxesAndLabels(Graphics2D g2, double xScale, double yScale) {
+        // Draw x and y axes
+        g2.drawLine(BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT, BORDER_GAP, BORDER_GAP - MOVE_AMOUNT);
+        g2.drawLine(BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT, getWidth() - BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT);
 
-	    // Draw the graph points
-	    for (int i = 0; i < graphPoints.size(); i++) {
-	        int x = graphPoints.get(i).x - GRAPH_POINT_WIDTH / 2;
-	        int y = graphPoints.get(i).y - GRAPH_POINT_WIDTH / 2;
-	        int ovalW = GRAPH_POINT_WIDTH;
-	        int ovalH = GRAPH_POINT_WIDTH;
-	        g2.fillOval(x, y, ovalW, ovalH);
-	    }
-	}
+        // Create hatch marks for y-axis
+        for (int i = 0; i < Y_HATCH_CNT; i++) {
+            int x0 = BORDER_GAP;
+            int x1 = GRAPH_POINT_WIDTH + BORDER_GAP;
+            int y0 = getHeight() - (((i + 1) * (getHeight() - BORDER_GAP * 2)) / Y_HATCH_CNT + BORDER_GAP) - MOVE_AMOUNT;
+            int y1 = y0;
+            g2.drawLine(x0, y0, x1, y1);
 
+            String label = Integer.toString((MAX_SCORE / Y_HATCH_CNT) * (i + 1));
+            g2.drawString(label, x0 - 25, y0 + 5);
+        }
+
+        // Create hatch marks for x-axis
+        for (int i = 0; i < date.size(); i++) {
+            int x0 = (int) ((i * xScale) + BORDER_GAP);
+            int x1 = x0;
+            int y0 = getHeight() - BORDER_GAP;
+            int y1 = y0 - GRAPH_POINT_WIDTH;
+            g2.drawLine(x0, y0, x1, y1);
+
+            String label = date.get(i);
+            int labelWidth = g2.getFontMetrics().stringWidth(label);
+            int labelHeight = g2.getFontMetrics().getHeight();
+            Graphics2D g2d = (Graphics2D) g2.create();
+            g2d.translate(x0, y0 + GRAPH_POINT_WIDTH + 15);
+            g2d.rotate(-Math.PI / 2);
+            g2d.drawString(label, -labelHeight - 5, 0);
+            g2d.dispose();
+        }
+    }
 }

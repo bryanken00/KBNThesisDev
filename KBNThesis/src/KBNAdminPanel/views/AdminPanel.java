@@ -25,6 +25,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +65,6 @@ import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
 import KBNAdminPanel.panels.ForecastGraph.ForecastPanel;
-import KBNAdminPanel.panels.ForecastGraph.GraphGenerator;
 import KBNAdminPanel.panels.SalesReport.SalesReportPanel;
 import KBNAdminPanel.panels.dashboard.Dashboard;
 import KBNAdminPanel.panels.dashboard.DashboardSalesChartData;
@@ -88,7 +88,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	
 	//Forecast
 	private ForecastPanel forecastPanel;
-	private GraphGenerator grapGen;
 	
 	// Employee
 	private EmployeePanel empPanel;
@@ -181,7 +180,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         
         // Forecast New
         forecastPanel = new ForecastPanel();
-        grapGen = new GraphGenerator();
         
         //Employee
         empPanel = new EmployeePanel();
@@ -224,7 +222,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		container.add(salesPanel);
 		container.add(forecast);
 		container.add(forecastPanel);
-		forecastPanel.container.setViewportView(grapGen);
 		container.add(empPanel);
 		container.add(empCreate);
 		container.add(courierPanel);
@@ -1023,15 +1020,178 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		
 		
 		if(e.getSource() == navs.btnForecasting) {
-			panelVisible();
-			forecastPanel.setVisible(true);
-			graphTest = new GraphTest(products, OrderCountDash, products);
-			grapGen.setBounds(0, 0, 918, 164);
-			grapGen.last[0].add(graphTest);
-//			renderingKBNProducts();
-//			LocalDate firstDateOfCurrentMonth = currentDate.withDayOfMonth(1);
-//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
-//			forecastgraph.lblPresent.setText(firstDateOfCurrentMonth.format(formatter));
+            try {
+				panelVisible();
+	            List<String> date = new ArrayList<>();
+	            int max = 0;
+	            
+				int year = 2023;
+				int month = 11;
+				
+				String getScoreDate = "";
+		        
+	            List<String> dates = date;
+	            List<Integer> firstDataset = new ArrayList<>();
+	            
+		        LocalDate firstDayOfMonthFirst = LocalDate.of(year, month, 1); // October 2023
+		        LocalDate currentMondayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+		        LocalDate currentSundayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+		        int FirstIndex = 0;
+		        
+		        while (currentMondayFirst.getMonth() == firstDayOfMonthFirst.getMonth()) {
+			        ArrayList<Integer> arrTemp = new ArrayList<>();
+		            if (currentSundayFirst.isBefore(currentMondayFirst)) {
+		                currentSundayFirst = currentSundayFirst.plusWeeks(1);
+		            }
+		            
+					getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+							+ "FROM tblordercheckout AS a \n"
+							+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+							+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+							+ "AND (a.OrderDate > '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
+							+ "GROUP BY a.OrderRefNumber \n"
+							+ "order by a.OrderDate DESC;";
+					
+					st.execute(getScoreDate);
+					
+					rs = st.getResultSet();
+					
+					while(rs.next()) {
+						arrTemp.add(rs.getInt(3));
+					}
+					
+					int divider = arrTemp.size();
+					
+					if(divider == 0)
+						divider = 1;
+					
+					int tempAdd = 0;
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						tempAdd += arrTemp.get(i);
+					}
+					
+					int finalAverage = Math.round(tempAdd / divider);
+//					System.out.println("1. " + finalAverage);
+					
+					FirstIndex++;
+		            firstDataset.add(finalAverage);
+			   		
+		            currentMondayFirst = currentMondayFirst.plusWeeks(1);
+		            currentSundayFirst = currentSundayFirst.plusWeeks(1);
+		        }
+		        
+
+	            List<Integer> secondDataset = new ArrayList<>();
+		        
+		        LocalDate firstDayOfMonthSecond = LocalDate.of(year, 10, 1); // October 2023
+		        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+		        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+		        int secondindex = 0;
+		        while (currentMondaySecond.getMonth() == firstDayOfMonthSecond.getMonth()) {
+		        	ArrayList<Integer> arrTemp = new ArrayList<>();
+		        	if (currentSundaySecond.isBefore(currentMondaySecond)) {
+		        		currentSundaySecond = currentSundaySecond.plusWeeks(1);
+		        	}
+		        	
+		        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+		        			+ "FROM tblordercheckout AS a \n"
+		        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+		        			+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+		        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
+		        			+ "GROUP BY a.OrderRefNumber \n"
+		        			+ "order by a.OrderDate DESC;";
+		        	
+		        	st.execute(getScoreDate);
+		        	
+		        	rs = st.getResultSet();
+		        	
+		        	while(rs.next())
+		        		arrTemp.add(rs.getInt(3));
+		        	
+		        	int divider = arrTemp.size();
+		        	
+		        	if(divider == 0)
+		        		divider = 1;
+		        	
+		        	int tempAdd = 0;
+		        	
+		        	for(int i = 0; i < arrTemp.size(); i++) {
+		        		tempAdd += arrTemp.get(i);
+		        	}
+		        	
+		        	int finalAverage = Math.round(tempAdd / divider);
+//					System.out.println("2. " + finalAverage);
+		        	
+		        	secondDataset.add(finalAverage);
+		        	
+		        	currentMondaySecond = currentMondaySecond.plusWeeks(1);
+		        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
+
+		        	secondindex++;
+		        	
+		        }
+		        
+	            List<Integer> AverageFuture = new ArrayList<>();
+		        
+				String getMax = "SELECT round(AVG(b.Quantity)) AS AVGMonthh \n"
+						+ "FROM tblordercheckout AS a \n"
+						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+						+ "GROUP BY a.OrderRefNumber \n"
+						+ "order by AVGMonthh DESC LIMIT 1;";
+				
+				st.execute(getMax);
+				rs = st.getResultSet();
+				if(rs.next())
+					max = rs.getInt(1);
+				
+				st.execute(getScoreDate);
+				rs = st.getResultSet();
+				while(rs.next()) {
+					forecastPanel.lblProductName.setText(rs.getString(2));
+				}
+				
+				int minVal = 0;
+				if(FirstIndex < secondindex)
+					minVal = FirstIndex;
+				else
+					minVal = secondindex;
+				
+		        for (int i = firstDataset.size() - 1; i >= minVal; i--) {
+		            firstDataset.remove(i);
+		        }
+		        
+		        for (int i = secondDataset.size() - 1; i >= minVal; i--) {
+		        	secondDataset.remove(i);
+		        }
+
+				for(int i = 0; i < minVal; i++) {
+					date.add("week " + (i+1));
+				}
+				
+
+	            
+	            for(int i = 0; i < minVal; i++) {
+	            	int sum = Math.round((Integer.parseInt(firstDataset.get(i).toString()) + Integer.parseInt(secondDataset.get(i).toString()))/2);
+	            	AverageFuture.add(sum);
+	            }
+
+	            List<List<Integer>> datasets = new ArrayList<>();
+	            datasets.add(firstDataset);
+	            datasets.add(secondDataset);
+	            datasets.add(AverageFuture);
+				
+	            GraphTest graphTest = new GraphTest(datasets, max, dates);
+				forecastPanel.Graph.add(graphTest);
+	            graphTest.setBounds(0, 0, 949, 537);
+	            graphTest.setVisible(true);
+
+				forecastPanel.setVisible(true);
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "Error navs.btnForecasting: " + e2.getMessage());
+			}
 		}
 		
 		if(e.getSource() == forecast.btnCompareToDate) {
