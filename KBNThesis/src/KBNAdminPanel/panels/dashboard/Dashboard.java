@@ -48,18 +48,24 @@ public class Dashboard extends JPanel {
 	public JTable tableLeastSelling;
 	public DefaultTableModel maintableTopSelling;
 	public DefaultTableModel maintableLeastSelling;
+	private JPanel container;
 
 	public Dashboard() {
-		setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		setBackground(Color.WHITE);
-		setBounds(0, 0, 989, 699);
+		setBounds(0, 0, 1009, 721);
 		setLayout(null);
+		
+		container = new JPanel();
+		container.setBackground(new Color(255, 255, 255));
+		container.setBounds(10, 11, 989, 699);
+		add(container);
+		container.setLayout(null);
 		
 		JPanel panelDaily = new JPanel();
 		panelDaily.setBackground(Color.WHITE);
 		panelDaily.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panelDaily.setBounds(10, 11, 120, 140);
-		add(panelDaily);
+		container.add(panelDaily);
 		panelDaily.setLayout(null);
 		
 		LineBorder border = new LineBorder(new Color(0, 0, 0), 1, true);
@@ -86,7 +92,7 @@ public class Dashboard extends JPanel {
 		panelWeekly.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panelWeekly.setLayout(null);
 		panelWeekly.setBounds(140, 11, 120, 140);
-		add(panelWeekly);
+		container.add(panelWeekly);
 		
 		lblWeekly = new JLabel("Weekly Sales");
 		lblWeekly.setForeground(Color.WHITE);
@@ -110,7 +116,7 @@ public class Dashboard extends JPanel {
 		panelMonthly.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panelMonthly.setLayout(null);
 		panelMonthly.setBounds(10, 157, 120, 140);
-		add(panelMonthly);
+		container.add(panelMonthly);
 		
 		lblMonthly = new JLabel("Monthly Sales");
 		lblMonthly.setForeground(Color.WHITE);
@@ -134,7 +140,7 @@ public class Dashboard extends JPanel {
 		panelYearly.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panelYearly.setLayout(null);
 		panelYearly.setBounds(140, 157, 120, 140);
-		add(panelYearly);
+		container.add(panelYearly);
 		
 		lblYearly = new JLabel("Yearly Sales");
 		lblYearly.setForeground(Color.WHITE);
@@ -156,13 +162,13 @@ public class Dashboard extends JPanel {
 		panelGraph = new JPanel();
 		panelGraph.setLayout(null);
 		panelGraph.setBounds(270, 11, 381, 286);
-		add(panelGraph);
+		container.add(panelGraph);
 		
 		panelOrderList = new JPanel();
 		panelOrderList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panelOrderList.setBackground(Color.WHITE);
 		panelOrderList.setBounds(661, 11, 318, 677);
-		add(panelOrderList);
+		container.add(panelOrderList);
 		panelOrderList.setLayout(null);
 		
 		lblTimeDiff = new JLabel("New Order 1 Minute ago");
@@ -189,7 +195,7 @@ public class Dashboard extends JPanel {
 		panelStocks.setBackground(Color.WHITE);
 		panelStocks.setBorder(border);
 		panelStocks.setBounds(10, 308, 641, 380);
-		add(panelStocks);
+		container.add(panelStocks);
 		panelStocks.setLayout(null);
 		
 		JPanel paneOutofStock = new JPanel();

@@ -59,5 +59,6 @@ public class ForecastPanel extends JPanel {
 		Graph.setBorder(new LineBorder(new Color(0, 0, 0)));
 		Graph.setBounds(10, 151, 969, 537);
 		panel.add(Graph);
+		
 	}
 }

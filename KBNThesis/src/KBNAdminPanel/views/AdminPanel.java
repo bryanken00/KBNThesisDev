@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -38,6 +40,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -88,6 +91,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	
 	//Forecast
 	private ForecastPanel forecastPanel;
+	private GraphTest graphTest;
 	
 	// Employee
 	private EmployeePanel empPanel;
@@ -119,10 +123,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	// Dashboard
 	private int OrderCountDash = 0; // Order List
 	private String sqlTimeDiff;
-	
-	//GraphTest
-	private GraphTest graphTest;
-	
 	
 	//Database
 	private DbConnection dbConn;
@@ -654,9 +654,30 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	// Forecast
 	private void getForecastGraph() {
 		try {
+
+			forecastPanel.Graph.removeAll();
+			forecastPanel.Graph.revalidate();
+			forecastPanel.Graph.repaint();
+			
+			String product = forecastPanel.comboBox.getSelectedItem() + "";
+
+	        
+	        String prodName = "";
+	        String prodVariant = "";
+
+	        String[] parts = product.split("\\(|\\)");
+
+	        // Ensure that there are at least two parts
+	        if (parts.length >= 2) {
+	            // Trim to remove leading and trailing whitespaces
+	            prodName = parts[0].trim();
+	            prodVariant = parts[1].trim();
+	        } else {
+	            System.out.println("Invalid format");
+	        }
+			
 			List<String> date = new ArrayList<>();
             int max = 0;
-            
 			int year = 2023;
 			int month = 11;
 			
@@ -679,7 +700,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 				getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
 						+ "FROM tblordercheckout AS a \n"
 						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-						+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+						+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
 						+ "AND (a.OrderDate > '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
 						+ "GROUP BY a.OrderRefNumber \n"
 						+ "order by a.OrderDate DESC;";
@@ -700,11 +721,13 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 				int tempAdd = 0;
 				
 				for(int i = 0; i < arrTemp.size(); i++) {
-					tempAdd += arrTemp.get(i);
+					if(arrTemp.get(i) == 0)
+						tempAdd += 1;
+					else
+						tempAdd += arrTemp.get(i);
 				}
 				
 				int finalAverage = Math.round(tempAdd / divider);
-//				System.out.println("1. " + finalAverage);
 				
 				FirstIndex++;
 	            firstDataset.add(finalAverage);
@@ -712,7 +735,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	            currentMondayFirst = currentMondayFirst.plusWeeks(1);
 	            currentSundayFirst = currentSundayFirst.plusWeeks(1);
 	        }
-	        
 
             List<Integer> secondDataset = new ArrayList<>();
 	        
@@ -730,7 +752,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
 	        			+ "FROM tblordercheckout AS a \n"
 	        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-	        			+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
+	        			+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
 	        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
 	        			+ "GROUP BY a.OrderRefNumber \n"
 	        			+ "order by a.OrderDate DESC;";
@@ -739,8 +761,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	
 	        	rs = st.getResultSet();
 	        	
-	        	while(rs.next())
+	        	while(rs.next()) {
 	        		arrTemp.add(rs.getInt(3));
+	        	}
+	        	
 	        	
 	        	int divider = arrTemp.size();
 	        	
@@ -750,11 +774,13 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	int tempAdd = 0;
 	        	
 	        	for(int i = 0; i < arrTemp.size(); i++) {
-	        		tempAdd += arrTemp.get(i);
+					if(arrTemp.get(i) == 0)
+						tempAdd += 1;
+					else
+						tempAdd += arrTemp.get(i);
 	        	}
 	        	
 	        	int finalAverage = Math.round(tempAdd / divider);
-//				System.out.println("2. " + finalAverage);
 	        	
 	        	secondDataset.add(finalAverage);
 	        	
@@ -766,26 +792,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        }
 	        
             List<Integer> AverageFuture = new ArrayList<>();
-	        
-			String getMax = "SELECT round(AVG(b.Quantity)) AS AVGMonthh \n"
-					+ "FROM tblordercheckout AS a \n"
-					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-					+ "WHERE b.ProductName = 'Isopropyl Alcohol' AND volume = '1 Liter' \n"
-					+ "GROUP BY a.OrderRefNumber \n"
-					+ "order by AVGMonthh DESC LIMIT 1;";
-			
-			st.execute(getMax);
-			rs = st.getResultSet();
-			if(rs.next())
-				max = rs.getInt(1);
-			
-			
-//			st.execute(getScoreDate);
-//			rs = st.getResultSet();
-//			while(rs.next()) {
-//				forecastPanel.lblProductName.setText(rs.getString(2));
-//			}
-//			
+            
 			int minVal = 0;
 			if(FirstIndex < secondindex)
 				minVal = FirstIndex;
@@ -815,15 +822,53 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
             datasets.add(firstDataset);
             datasets.add(secondDataset);
             datasets.add(AverageFuture);
+            
+    		JLabel graphLegend = new JLabel("Red - Previous     Blue - Present     Green - Possible Future");
+    		graphLegend.setHorizontalAlignment(SwingConstants.CENTER);
+    		
+    		int a = findMaxValue(firstDataset);
+    		int b = findMaxValue(secondDataset);
+    		
+
+    		if (a > b) {
+    		    max = a;
+    		} else {
+    		    max = b;
+    		}
+    		
+    		if(max <= 20)
+    			max = 50;
 			
-            GraphTest graphTest = new GraphTest(datasets, max, dates);
+            graphTest = new GraphTest(datasets, max, dates);
+			graphTest.revalidate();
+            
 			forecastPanel.Graph.add(graphTest);
-            graphTest.setBounds(0, 0, 949, 537);
-            graphTest.setVisible(true);
+            graphTest.setBounds(0, 0, 969, 537);
+            
+            forecastPanel.Graph.add(forecastPanel.Graph.add(graphLegend));
+    		graphLegend.setBounds(529, 11, 430, 14);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error Forcast: " + e.getMessage());
 		}
 	}
+	
+    private static int findMaxValue(List<Integer> list) {
+        if (list == null || list.isEmpty()) {
+            throw new IllegalArgumentException("List is null or empty");
+        }
+
+        // Initialize max to the first element of the list
+        int max = list.get(0);
+
+        // Iterate through the list to find the maximum value
+        for (int value : list) {
+            if (value > max) {
+                max = value;
+            }
+        }
+
+        return max;
+    }
 	
 	//Employee
 	private void setEmployeeCount() {
