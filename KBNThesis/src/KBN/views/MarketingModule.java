@@ -352,13 +352,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelButton.add(separator);
 		
 		btnDashboard = new JButton("Dashboard");
-		btnDashboard.setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+		btnDashboard.setBackground(new Color(75, 119, 71));
 		btnDashboard.setHorizontalTextPosition(JLabel.CENTER);
 		btnDashboard.setVerticalTextPosition(JLabel.CENTER);
 		btnDashboard.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnDashboard.setFocusable(false);
-		btnDashboard.setBorderPainted(false);
-		btnDashboard.setBackground(Color.WHITE);
+		btnDashboard.setForeground(Color.WHITE);
 		btnDashboard.setBounds(10, 98, 241, 35);
 		panelButton.add(btnDashboard);
 		
@@ -375,7 +374,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnKbn.setEnabled(false);
 		btnKbn.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnKbn.setFocusable(false);
-		btnKbn.setBorderPainted(false);
 		btnKbn.setBackground(Color.WHITE);
 		btnKbn.setBounds(10, 168, 241, 35);
 		panelButton.add(btnKbn);
@@ -384,7 +382,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnRebranding.setEnabled(false);
 		btnRebranding.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnRebranding.setFocusable(false);
-		btnRebranding.setBorderPainted(false);
 		btnRebranding.setBackground(Color.WHITE);
 		btnRebranding.setBounds(10, 214, 241, 35);
 		panelButton.add(btnRebranding);
@@ -393,7 +390,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnCanncelledOrder.setEnabled(false);
 		btnCanncelledOrder.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnCanncelledOrder.setFocusable(false);
-		btnCanncelledOrder.setBorderPainted(false);
 		btnCanncelledOrder.setBackground(Color.WHITE);
 		btnCanncelledOrder.setBounds(10, 508, 241, 35);
 		panelButton.add(btnCanncelledOrder);
@@ -402,7 +398,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnConfirmation.setEnabled(false);
 		btnConfirmation.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnConfirmation.setFocusable(false);
-		btnConfirmation.setBorderPainted(false);
 		btnConfirmation.setBackground(Color.WHITE);
 		btnConfirmation.setBounds(10, 370, 241, 35);
 		panelButton.add(btnConfirmation);
@@ -417,7 +412,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnCustomerAccount.setEnabled(false);
 		btnCustomerAccount.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnCustomerAccount.setFocusable(false);
-		btnCustomerAccount.setBorderPainted(false);
 		btnCustomerAccount.setBackground(Color.WHITE);
 		btnCustomerAccount.setBounds(10, 278, 241, 35);
 		panelButton.add(btnCustomerAccount);
@@ -426,7 +420,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnClientProfile.setEnabled(false);
 		btnClientProfile.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnClientProfile.setFocusable(false);
-		btnClientProfile.setBorderPainted(false);
 		btnClientProfile.setBackground(Color.WHITE);
 		btnClientProfile.setBounds(10, 324, 241, 35);
 		panelButton.add(btnClientProfile);
@@ -435,7 +428,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnOrdering.setEnabled(false);
 		btnOrdering.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnOrdering.setFocusable(false);
-		btnOrdering.setBorderPainted(false);
 		btnOrdering.setBackground(Color.WHITE);
 		btnOrdering.setBounds(10, 416, 241, 35);
 		panelButton.add(btnOrdering);
@@ -444,7 +436,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnDeliveryStatus.setEnabled(false);
 		btnDeliveryStatus.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnDeliveryStatus.setFocusable(false);
-		btnDeliveryStatus.setBorderPainted(false);
 		btnDeliveryStatus.setBackground(Color.WHITE);
 		btnDeliveryStatus.setBounds(10, 462, 241, 35);
 		panelButton.add(btnDeliveryStatus);
@@ -453,7 +444,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnReturnProducts.setEnabled(false);
 		btnReturnProducts.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnReturnProducts.setFocusable(false);
-		btnReturnProducts.setBorderPainted(false);
 		btnReturnProducts.setBackground(Color.WHITE);
 		btnReturnProducts.setBounds(10, 554, 241, 35);
 		panelButton.add(btnReturnProducts);
@@ -462,7 +452,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnAuditTrail.setEnabled(false);
 		btnAuditTrail.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
 		btnAuditTrail.setFocusable(false);
-		btnAuditTrail.setBorderPainted(false);
 		btnAuditTrail.setBackground(Color.WHITE);
 		btnAuditTrail.setBounds(10, 600, 241, 35);
 		panelButton.add(btnAuditTrail);
@@ -480,6 +469,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		panelTab.setBounds(265, 11, 989, 699);
 		contentPane.add(panelTab);
 		panelTab.setLayout(null);
+
+		btnDashboard.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnKbn.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnRebranding.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnCanncelledOrder.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnConfirmation.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnCustomerAccount.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnClientProfile.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnOrdering.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnDeliveryStatus.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnReturnProducts.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnAuditTrail.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
 	}
 	
@@ -507,20 +508,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			btnReturnProducts.setEnabled(true);
 			btnAuditTrail.setEnabled(true);
 		}
-	}
-
-	private void buttonColors() {
-		btnDashboard.setBackground(Color.WHITE);
-		btnKbn.setBackground(Color.WHITE);
-		btnRebranding.setBackground(Color.WHITE);
-		btnCanncelledOrder.setBackground(Color.WHITE);
-		btnConfirmation.setBackground(Color.WHITE);
-		btnCustomerAccount.setBackground(Color.WHITE);
-		btnClientProfile.setBackground(Color.WHITE);
-		btnOrdering.setBackground(Color.WHITE);
-		btnDeliveryStatus.setBackground(Color.WHITE);
-		btnReturnProducts.setBackground(Color.WHITE);
-		btnAuditTrail.setBackground(Color.WHITE);
 	}
 	
 	private void setActionList() {
@@ -827,27 +814,44 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		
 		if(e.getComponent() instanceof JButton) {
-			
-			btnDashboard.setIcon(null);
-			btnKbn.setIcon(null);
-			btnRebranding.setIcon(null);
-			btnCanncelledOrder.setIcon(null);
-			btnConfirmation.setIcon(null);
-			btnCustomerAccount.setIcon(null);
-			btnClientProfile.setIcon(null);
-			btnOrdering.setIcon(null);
-			btnDeliveryStatus.setIcon(null);
-			btnReturnProducts.setIcon(null);
-			btnAuditTrail.setIcon(null);
-			
+			NavBTNDefault();
 			Component c = e.getComponent();
 			btnChecker = (JButton) e.getComponent();
-			if(btnChecker == c)
-				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+			if(btnChecker == c) {
+				((JButton)c).setBackground(new Color(75, 119, 71));
+				((JButton)c).setForeground(Color.WHITE);
+			}
 			
 		}else
 			return;
 		
+	}
+	
+	private void NavBTNDefault() {
+		btnDashboard.setBackground(Color.WHITE);
+		btnKbn.setBackground(Color.WHITE);
+		btnRebranding.setBackground(Color.WHITE);
+		btnCanncelledOrder.setBackground(Color.WHITE);
+		btnConfirmation.setBackground(Color.WHITE);
+		btnCustomerAccount.setBackground(Color.WHITE);
+		btnClientProfile.setBackground(Color.WHITE);
+		btnOrdering.setBackground(Color.WHITE);
+		btnDeliveryStatus.setBackground(Color.WHITE);
+		btnReturnProducts.setBackground(Color.WHITE);
+		btnAuditTrail.setBackground(Color.WHITE);
+		
+		
+		btnDashboard.setForeground(Color.BLACK);
+		btnKbn.setForeground(Color.BLACK);
+		btnRebranding.setForeground(Color.BLACK);
+		btnCanncelledOrder.setForeground(Color.BLACK);
+		btnConfirmation.setForeground(Color.BLACK);
+		btnCustomerAccount.setForeground(Color.BLACK);
+		btnClientProfile.setForeground(Color.BLACK);
+		btnOrdering.setForeground(Color.BLACK);
+		btnDeliveryStatus.setForeground(Color.BLACK);
+		btnReturnProducts.setForeground(Color.BLACK);
+		btnAuditTrail.setForeground(Color.BLACK);
 	}
 
 
@@ -859,6 +863,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		
+		
 		if(e.getSource() == orderPanel.orderLPanel.lblInstruction) {
 			orderPanelInstruction.setBounds(e.getX() + 910, e.getY() + 250, 174, 144);
 			orderPanelInstruction.setVisible(true);
@@ -866,9 +871,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		if(e.getComponent() instanceof JButton) {
 			Component c = e.getComponent();
-			((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
-			((JButton)c).setHorizontalTextPosition(JLabel.CENTER);
-			((JButton)c).setVerticalTextPosition(JLabel.CENTER);
+			((JButton)c).setBackground(new Color(75, 119, 71));
+			((JButton)c).setForeground(Color.WHITE);
 		}else
 			return;
 
@@ -885,10 +889,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			Component c = e.getComponent();
 
 			if(btnChecker == c) {
-				((JButton)c).setIcon(new ImageIcon(MarketingModule.class.getResource("/KBN/resources/Marketing/marketingButton.png")));
+				((JButton)c).setBackground(new Color(75, 119, 71));
+				((JButton)c).setForeground(Color.WHITE);
 			}else {
-				((JButton)c).setIcon(null);
-				((JButton)c).setBackground(Color.white);
+				((JButton)c).setBackground(Color.WHITE);
+				((JButton)c).setForeground(Color.BLACK);
 			}
 		}else
 			return;
