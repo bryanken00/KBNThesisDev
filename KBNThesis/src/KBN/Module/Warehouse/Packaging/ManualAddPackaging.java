@@ -103,7 +103,7 @@ public class ManualAddPackaging extends JDialog implements ActionListener{
 		dateNow.setBounds(37, 307, 339, 34);
 		Category.add(dateNow);
 		
-		JLabel lblReleaseVolume = new JLabel("Add Volume (grams)");
+		JLabel lblReleaseVolume = new JLabel("Add Quantity");
 		lblReleaseVolume.setFont(new Font("Tahoma", Font.BOLD, 14));
 		lblReleaseVolume.setBounds(10, 352, 169, 14);
 		Category.add(lblReleaseVolume);

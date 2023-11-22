@@ -20,9 +20,12 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
+
+import com.mysql.fabric.xmlrpc.base.Data;
 import com.toedter.calendar.JDateChooser;
 
 import KBN.commons.DbConnection;
+import KBN.commons.dataSetter;
 
 public class addNew extends JDialog implements ActionListener {
 	
@@ -145,6 +148,7 @@ public class addNew extends JDialog implements ActionListener {
 				try {
 					String sqlAddNew = "INSERT INTO tblcurrentmonth(todayCurrentVolume, RECEIVED_VOLUME, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, DATE_TODAY, MATERIAL_NAME, CODE_NAME, SUPPLIER, CATEGORIES)\r\n"
 							+ "VALUES(0, 0, '" + txtApperance.getText() + "', 0, 0, 0, 0, NOW(), '" + txtMaterialName.getText() + "', '" + txtCodename.getText() + "', '" + txtSupplier.getText() + "', '" + txtCategory.getText() + "');";
+					auditTrailInsert("Add new Raw Material: " + txtMaterialName.getText());
 					st.execute(sqlAddNew);
 				} catch (Exception e2) {
 					JOptionPane.showMessageDialog(null, "Error: " + e2.getMessage());
@@ -153,5 +157,17 @@ public class addNew extends JDialog implements ActionListener {
 				return;
 		}
 		
+	}
+	
+	private void auditTrailInsert(String Description) {
+		dataSetter data_ = new dataSetter();
+		String accountID = data_.getAccountID();
+		String sql = "INSERT INTO audittrailproduction(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','" + Description + "');";
+		
+		try {
+			st.execute(sql);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR auditTrailInsert: " + e.getMessage());
+		}
 	}
 }

@@ -239,6 +239,16 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		JOptionPane.showMessageDialog(null, errorMessage);
 	}
 	
+	private void auditTrailInsert(String Description) {
+		String sql = "INSERT INTO audittrailproduction(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','" + Description + "');";
+		
+		try {
+			st.execute(sql);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR auditTrailInsert: " + e.getMessage());
+		}
+	}
+	
 	private void setUsername() {
 		dataSet = new dataSetter();
 		accLevel = dataSet.getAccLevel();
@@ -464,7 +474,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				arrSQLResult.add(rs.getString(6)); // RELEASE Vol
 				arrSQLResult.add(rs.getString(7)); // REJECT Vol
 				arrSQLResult.add(rs.getString(8)); // HOLD Vol
-				arrSQLResult.add(rs.getString(9)); // RECEIVED Vol
+				arrSQLResult.add(rs.getString(9)); // PROD_RETURN Vol
 				packMats.main.addRow(arrSQLResult.toArray());
 				arrSQLResult.clear();
 			}
@@ -532,7 +542,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		wNav.btnPackMats.setForeground(Color.WHITE);
 		wNav.btnAddItem.setText("Add Item");
 		panelVisible();
-		String sql = "SELECT itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, RECEIVED_VOLUME, CATEGORIES \n"
+		String sql = "SELECT itemID, MATERIAL_NAME, VARIANT, DATE_TODAY, todayCurrentVolume, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, CATEGORIES \n"
 				+ "FROM tblcurrentmonthPackaging;";
 		PackagingMatsTable(sql);
 		wNav.btnAddItem.setVisible(true);
@@ -561,7 +571,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			String CT = packMats.table.getValueAt(packMats.table.getSelectedRow(), 2) + "";
 			String VR = packMats.table.getValueAt(packMats.table.getSelectedRow(), 3) + "";
 			QRCodeName = "Packaging Material_" + MN + ".png";
-			url = "https://kissedbynature.online/warehouse/?MN=" + MN + "&CN=" + CT + "&VR=" + VR + "";
+			url = "https://kissedbynature.online/warehouse/packaging.php?MN=" + MN + "&CN=" + CT + "&VR=" + VR + "";
 		}
 		
 		try {
@@ -577,6 +587,119 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	private void manualAddPackaging() {
 		try {
 			// to continue;
+			String packagingName = manualPackaging.txtMaterialName.getText();
+			String category = manualPackaging.txtCategory.getText();
+			String variant = manualPackaging.txtVariant.getText();
+			
+			Date selectedDate = manualPackaging.dateNow.getDate();
+			
+            LocalDateTime now = LocalDateTime.now();
+
+            // Extract the date and time components
+            Date datePart = selectedDate;
+            Date timePart = java.sql.Timestamp.valueOf(now);
+
+            // Format date and time components separately
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+            String formattedDate = dateFormat.format(datePart);
+            String formattedTime = timeFormat.format(timePart);
+
+            // Combine the formatted date and time
+            String dateSelected = formattedDate + " " + formattedTime;
+            
+            String vol = manualPackaging.txtReleasedVolume.getText();
+            
+            if(packagingName.equals("") || category.equals("") || variant.equals("") || dateSelected.equals("") || vol.equals("")) {
+				printingError("Please Complete the form");
+				return;
+            }
+            
+			// Checker
+			String sql = "SELECT * FROM tblcurrentmonthPackaging WHERE MATERIAL_NAME = '" + packagingName + "' AND VARIANT = '" + variant + "' AND CATEGORIES = '" + category + "' AND DATE(DATE_TODAY) = DATE(NOW());";
+			st.execute(sql);
+			rs = st.getResultSet();
+			int checker = 0;
+			
+			while(rs.next())
+				checker++;
+			
+			String dropDelimiter = "DROP PROCEDURE IF EXISTS addPackagingMaterialConsume;";
+			st.execute(dropDelimiter);
+
+			st.execute("DROP PROCEDURE IF EXISTS addItemPack;");
+			
+			if(checker == 0) {
+//				String sqlInsert = "INSERT INTO tblcurrentmonth(MATERIAL_NAME, CODE_NAME, SUPPLIER, todayCurrentVolume, RECEIVED_VOLUME, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, DATE_TODAY, CATEGORIES) "
+//						+ "SELECT MATERIAL_NAME, CODE_NAME, SUPPLIER, (todayCurrentVolume+" + Vol +"), RECEIVED_VOLUME, APPEARANCE, " + Vol + ", REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, '" + dateSelected + "', CATEGORIES "
+//						+ "FROM tblcurrentmonth WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' "
+//						+ "ORDER BY DATE_TODAY DESC LIMIT 1;";
+				
+				String sqlInsert = "INSERT INTO tblcurrentmonthPackaging \n"
+						+ "(todayCurrentVolume, RECEIVED_VOLUME, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, DATE_TODAY, MATERIAL_NAME, VARIANT, CATEGORIES) \n"
+						+ "SELECT (todayCurrentVolume + '" + vol + "'), '" + vol +"', RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN, '" + dateSelected + "', MATERIAL_NAME, VARIANT, CATEGORIES "
+						+ "FROM tblcurrentmonthPackaging \n"
+						+ "WHERE MATERIAL_NAME = '" + packagingName + "' AND VARIANT = '" + variant + "' AND CATEGORIES = '" + category + "'"
+						+ "ORDER BY DATE_TODAY DESC LIMIT 1;";
+
+				
+				String sqlUpdate = "UPDATE tblcurrentmonthPackaging "
+						+ "SET todayCurrentVolume = todayCurrentVolume + " + vol + " "
+						+ "WHERE MATERIAL_NAME = '" + packagingName + "' AND VARIANT = '" + variant + "' AND CATEGORIES = '" + category + "' AND DATE_TODAY >= '" + formattedDate + "';";
+				
+				String sqlAddItemProcedure =
+					    "CREATE PROCEDURE addItemPack()\n" +
+					    "BEGIN\n" +
+					    "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\n" +
+					    "    BEGIN\n" +
+					    "        ROLLBACK;\n" +
+					    "        RESIGNAL;\n" +
+					    "    END;\n" +
+					    "\n" +
+					    "    START TRANSACTION;\n" +
+					    sqlUpdate + "\n" +
+//					    sqlUpdate2 + "\n" +
+					    sqlInsert + "\n" +
+					    "    COMMIT;\n" +
+					    "END;";
+				
+				st.execute(sqlAddItemProcedure);
+				st.execute("CALL addItemPack();");
+
+				auditTrailInsert("Add Stock Packaging Materials - " + packagingName);
+				
+				printingError("Packaging Material Added!");
+				manualPackaging.dispose();
+			} else {
+				st.execute("DROP PROCEDURE IF EXISTS updateItemPackaging;");
+				
+				String sqlUpdate = "UPDATE tblcurrentmonthPackaging "
+						+ "SET todayCurrentVolume = todayCurrentVolume + " + vol + " "
+						+ "WHERE MATERIAL_NAME = '" + packagingName + "' AND VARIANT = '" + variant + "' AND CATEGORIES = '" + category + "' AND DATE_TODAY >= '" + formattedDate + "';";
+				
+				String sqlUpdateItemProcedure =
+					    "CREATE PROCEDURE updateItemPackaging()\n" +
+					    "BEGIN\n" +
+					    "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\n" +
+					    "    BEGIN\n" +
+					    "        ROLLBACK;\n" +
+					    "        RESIGNAL;\n" +
+					    "    END;\n" +
+					    "\n" +
+					    "    START TRANSACTION;\n" +
+					    sqlUpdate + "\n" +
+					    "    COMMIT;\n" +
+					    "END;";
+				
+				st.execute(sqlUpdateItemProcedure);
+				st.execute("CALL updateItemPackaging();");
+				
+				auditTrailInsert("Add Stock Packaging Materials - " + packagingName);
+				printingError("Packaging Material Added!");
+				manualPackaging.dispose();
+			}
+            
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error manualAddPackaging: " + e.getMessage());
 		}
@@ -597,8 +720,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					printingError("Please Complete the form");
 					return;
 				}
-				
-
 				
 				String MaterialName = manual.txtMaterialName.getText();
 				String CodeName = manual.txtCodeName.getText();
@@ -626,7 +747,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	            
 				// Checker
 				String sql = "SELECT * FROM tblcurrentmonth WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE(DATE_TODAY) = DATE(NOW())";
-				System.out.println(sql);
 				st.execute(sql);
 				rs = st.getResultSet();
 				int checker = 0;
@@ -649,11 +769,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					String sqlUpdate = "UPDATE tblcurrentmonth "
 							+ "SET todayCurrentVolume = todayCurrentVolume + " + Vol + " "
 							+ "WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY >= '" + formattedDate + "';";
-					// RELEASING
-//					String sqlUpdate2 =  "UPDATE tblcurrentmonth "
-//							+ "SET RELEASED_VOLUME = RELEASED_VOLUME + " + Vol + " "
-//							+ "WHERE MATERIAL_NAME = '" + MaterialName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY = '" + formattedDate + "';";
-					
 					String sqlAddItemProcedure =
 						    "CREATE PROCEDURE addItem()\n" +
 						    "BEGIN\n" +
@@ -672,8 +787,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					
 					st.execute(sqlAddItemProcedure);
 					st.execute("CALL addItem();");
+
+					auditTrailInsert("Add Stock Raw Materials - " + MaterialName);
 					
-					printingError("Raw Material Consume Added!");
+					printingError("Raw Material Added!");
 					manual.dispose();
 				}
 				else {
@@ -815,6 +932,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 						+ " WHERE MATERIAL_NAME = '" + MatsName + "' AND CODE_NAME = '" + CodeName + "' AND SUPPLIER = '" + Supplier + "' AND DATE_TODAY >= '" + dateToday1 + "';";
 
 				String sqlDelete = "DELETE FROM tblcurrentmonth WHERE itemID = '" + itemID + "';";
+				
+				auditTrailInsert("Archive Raw Materials - " + MatsName);
 				
 				String sqlArchive =
 					    "CREATE PROCEDURE ArchiveAndDeleteItem()\n" +
@@ -997,7 +1116,6 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	        	procOrderData.lblCustName[panelIndex].setText(rs.getString(3));
 	        	procOrderData.lblTotalItem[panelIndex].setText(rs.getString(5));
 	        	procOrderData.lblTotalAmount[panelIndex].setText(rs.getString(6));
-	        	procOrderData.lblApprovedName[panelIndex].setText("Wala pa");
 	        	procOrderData.refNumber[panelIndex] = rs.getString(1);
 	        	procOrderData.userID[panelIndex] = rs.getString(2);
 	        	procOrderData.orderStatus[panelIndex] = rs.getString(4);
@@ -1209,6 +1327,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				
 				onDeliver.setVisible(true);
 				riderName.clear();
+				
+				auditTrailInsert("Process Order - " + ref);
 			} catch (Exception e) {
 				printingError("Error setCourier: " + e.getMessage());
 			}
