@@ -16,7 +16,7 @@ public class RightClick extends JPanel {
 	 */
 	public RightClick() {
 		setBorder(new LineBorder(new Color(0, 0, 0)));
-		setBounds(100, 100, 200, 90);
+		setBounds(100, 100, 200, 120);
 		setLayout(null);
 		
 		btnAddItem = new JButton("Add New Product");

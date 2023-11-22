@@ -44,6 +44,7 @@ import KBN.Module.Marketing.Delivery.DeliveryDetails;
 import KBN.Module.Marketing.Delivery.DeliveryStatus;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable1;
 import KBN.Module.Marketing.Delivery.DeliveryStatusTable2;
+import KBN.Module.Marketing.KBNProducts.AccountSetting;
 import KBN.Module.Marketing.KBNProducts.KBNProducts;
 import KBN.Module.Marketing.KBNProducts.ProductDetails;
 import KBN.Module.Marketing.KBNProducts.RightClick;
@@ -154,6 +155,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	// Date Formatter
 	private SimpleDateFormat inputFormat;
 	private SimpleDateFormat outputFormat;
+	
+	// Righclick Change password
+	private AccountSetting accSetting;
+	private Changepassword changepassPanel;
 	
 	
 	//Client Profile
@@ -299,6 +304,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		rightClick = new RightClick();
 			getContentPane().add(rightClick);
 			rightClick.setVisible(false);
+		
+		accSetting = new AccountSetting();
+		changepassPanel = new Changepassword();
+			getContentPane().add(accSetting);
+			accSetting.setVisible(false);
 			
 		rRightClick = new RebrandingRightClick();
 			getContentPane().add(rRightClick);
@@ -594,6 +604,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		moduleSelection.addKeyListener(this);
 		moduleSelection.btnProductionModule.addActionListener(this);
 		moduleSelection.btnWarehouseModule.addActionListener(this);
+		moduleSelection.btnChange.addActionListener(this);
 		
 		
 		// Client Profile
@@ -724,6 +735,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			archiveKBNProducts();
 		if(e.getSource() == rightClick.btnAddItem || e.getSource() == kbnProd.btnAddNewProduct)
 			addItem();
+		
+		if(e.getSource() == moduleSelection.btnChange || e.getSource() == accSetting.btnEditPassword) {
+			changepassPanel.setAccID(accountID);
+			changepassPanel.setVisible(true);
+		}
 		
 		if(e.getSource() == rRightClick.btnArchive || e.getSource() == rebrandingNew.btnArchiveProduct)
 			rebrandingarchiveKBNProducts();
@@ -3453,8 +3469,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	public void mouseClicked(MouseEvent e) {
 
 		if(e.getSource() == lblUsername) {
-			moduleSelection.setBounds(lblUsername.getX() + 30, lblUsername.getY() - 50, 270, 67);
-			moduleSelection.setVisible(true);
+			
+			if(AccountLevel.equals("Admin--") || AccountLevel.equals("Manager-Marketing-All") || AccountLevel.equals("SuperAdmin--")) {
+				moduleSelection.setBounds(lblUsername.getX() + 30, lblUsername.getY() - 80, 270, 105);
+				moduleSelection.setVisible(true);
+			} else {
+				accSetting.setBounds(lblUsername.getX() + 30, lblUsername.getY() - 50, 200, 32);
+				accSetting.setVisible(true);
+			}
 		}
 		
         Component clickedComponent = e.getComponent();

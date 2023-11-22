@@ -9,6 +9,7 @@ import java.awt.Font;
 public class ModuleSelectionMarketing extends JPanel {
 	public JButton btnProductionModule;
 	public JButton btnWarehouseModule;
+	public JButton btnChange;
 	public ModuleSelectionMarketing() {
 		setLayout(null);
 		
@@ -27,6 +28,14 @@ public class ModuleSelectionMarketing extends JPanel {
 		btnWarehouseModule.setBackground(Color.WHITE);
 		btnWarehouseModule.setBounds(0, 34, 270, 33);
 		add(btnWarehouseModule);
+		
+		btnChange = new JButton("Change Password");
+		btnChange.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnChange.setFocusable(false);
+		btnChange.setBorder(new LineBorder(new Color(0, 0, 0)));
+		btnChange.setBackground(Color.WHITE);
+		btnChange.setBounds(0, 68, 270, 33);
+		add(btnChange);
 
 	}
 }

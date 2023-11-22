@@ -61,5 +61,6 @@
 	<classpathentry kind="lib" path="src/POI Library/xmlbeans-5.1.1.jar"/>
 	<classpathentry kind="lib" path="src/mailAPI/javax.mail.jar"/>
 	<classpathentry kind="lib" path="src/mailAPI/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="jgoodies-forms-1.8.0.jar" sourcepath="jgoodies-forms-1.8.0-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
