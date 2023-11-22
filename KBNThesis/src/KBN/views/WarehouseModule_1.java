@@ -278,7 +278,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	}
 	
 	private void warehouseButtons() {
-		if(accLevel.equals("Admin--") || accLevel.equals("Manager-Warehouse-All")) {
+		if(accLevel.equals("Admin--") || accLevel.equals("Manager-Warehouse-All") || accLevel.equals("SuperAdmin--")) {
 			
 			wNav.btnAddItem.setEnabled(true);
 			wNav.btnQRCode.setEnabled(true);
@@ -292,13 +292,16 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			
 			rawMats.table.addMouseListener(this);
 
-		} else if(accLevel.equals("Staff-Warehouse-GenerateQR-Inventory")) {
+		} else if(accLevel.equals("Staff-Warehouse-Materials Inventory")) {
+			wNav.btnAddItem.setEnabled(true);
+			
+			wNav.btnPackMats.setEnabled(true);
+			wNav.btnRawMats.setEnabled(true);
+			
 			wNav.btnQRCode.setEnabled(true);
 			
 			rawMats.table.addMouseListener(this);
-		} else if(accLevel.equals("Staff-Warehouse-First-inFirst-out")) {
-			
-		} else {
+		}else {
 			warehouseButtonsDefault();
 		}
 	}

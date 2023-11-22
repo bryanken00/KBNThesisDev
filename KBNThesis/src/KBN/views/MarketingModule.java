@@ -486,15 +486,10 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void marketingButtons() {
 		
-		if(AccountLevel.equals("Staff-Marketing-Inventory-Ordering")) {
-			btnKbn.setEnabled(true);
-			btnRebranding.setEnabled(true);
-			
-			btnConfirmation.setEnabled(true);
-			btnCanncelledOrder.setEnabled(true);
+		if(AccountLevel.equals("Staff-Marketing-Inventory and Ordering")) {
 			btnOrdering.setEnabled(true);
 			
-		}else if(AccountLevel.equals("Admin--") || AccountLevel.equals("Manager-Marketing-All")) {
+		}else if(AccountLevel.equals("Admin--") || AccountLevel.equals("Manager-Marketing-All") || AccountLevel.equals("SuperAdmin--")) {
 			btnKbn.setEnabled(true);
 			btnRebranding.setEnabled(true);
 			
@@ -814,17 +809,17 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		
 		if(e.getComponent() instanceof JButton) {
-			NavBTNDefault();
-			Component c = e.getComponent();
-			btnChecker = (JButton) e.getComponent();
-			if(btnChecker == c) {
-				((JButton)c).setBackground(new Color(75, 119, 71));
-				((JButton)c).setForeground(Color.WHITE);
+			if(e.getComponent().isEnabled()) {
+				NavBTNDefault();
+				Component c = e.getComponent();
+				btnChecker = (JButton) e.getComponent();
+				if(btnChecker == c) {
+					((JButton)c).setBackground(new Color(75, 119, 71));
+					((JButton)c).setForeground(Color.WHITE);
+				}
 			}
-			
 		}else
 			return;
-		
 	}
 	
 	private void NavBTNDefault() {
