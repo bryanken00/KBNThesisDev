@@ -533,7 +533,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		// Audit Trail
 		auditTrail.btnSearch.addActionListener(this);
 		
-		
 		//OrderPanel
 		orderPanel.btnApproved.addActionListener(this);
 		orderPanel.btnToShip.addActionListener(this);

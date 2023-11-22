@@ -54,9 +54,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.toedter.calendar.JDateChooser;
 
+import KBNAdminPanel.commons.dataSetter;
 import KBNAdminPanel.commons.DbConnection;
 import KBNAdminPanel.panels.GraphTest;
 import KBNAdminPanel.panels.Navs;
+import KBNAdminPanel.panels.AuditTrail.AuditTrail;
 import KBNAdminPanel.panels.Courier.CourierCreateAccount;
 import KBNAdminPanel.panels.Courier.CourierPanel;
 import KBNAdminPanel.panels.Courier.RightClick;
@@ -78,6 +80,8 @@ import javax.swing.JOptionPane;
 
 public class AdminPanel extends JFrame implements ActionListener , ItemListener, MouseListener, KeyListener{
 	
+	private dataSetter dataSet;
+	
 	//Class
 	private Navs navs;
 	private SalesReportPanel salesPanel;
@@ -87,6 +91,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	private ForecastGraphs forecastgraph;
 	private barGen bar1;
 	private barGen bar2;
+	
+	private AuditTrail auditTrail;
 	
 	
 	//Forecast
@@ -172,11 +178,15 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         		+ "WHERE b.Status = 'toPay'\r\n"
         		+ "ORDER BY OrderDate DESC LIMIT 1;";
         
+        setUsername();
+        
         // Forecast
         forecast = new ForecastingPanel();
         forecastgraph = new ForecastGraphs();
         bar1 = new barGen();
         bar2 = new barGen();
+        
+        auditTrail = new AuditTrail();
         
         // Forecast New
         forecastPanel = new ForecastPanel();
@@ -227,6 +237,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		container.add(courierPanel);
 		container.add(dashboard1);
 			dashboard1.orderList.setViewportView(opdDashboard);
+		container.add(auditTrail);
 		
 		empPanel.container.add(empList);
 		
@@ -235,7 +246,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		forecastgraph.graph2.add(bar2);
 		
 
-//		dashboard1();
+		dashboard1();
 		dashboard1.setVisible(true);
 		
 		btnChecker = navs.btnDashboard;
@@ -249,6 +260,12 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		empCreate.setVisible(false);
 		courierPanel.setVisible(false);
 		forecastPanel.setVisible(false);
+		auditTrail.setVisible(false);
+	}
+	
+	private void setUsername() {
+		dataSet = new dataSetter();
+		navs.lblUsername.setText(dataSet.getUsername());
 	}
 	
 	private void actList() {
@@ -294,6 +311,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		empCreate.cbAccType.addItemListener(this);
 		empCreate.cbDepartment.addItemListener(this);
 		empCreate.cbPosition.addItemListener(this);
+		
+		// Audit Trail
+		auditTrail.btnSearch.addActionListener(this);
+		auditTrail.cbCategory.addItemListener(this);
 		
 	}
 	
@@ -1174,6 +1195,74 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			JOptionPane.showMessageDialog(null, "ERROR empCreate.btnVerify: " + e2.getMessage());
 		}
 	}
+	
+	private void AuditPanelFunc() {
+		panelVisible();
+		auditTrail.setVisible(true);
+		
+		try {
+			auditTrail.main.setRowCount(0);
+			String SQL = "SELECT DATE_FORMAT(a.DateAction, '%Y-%m-%d') AS formatted_date, \n"
+					+ "       DATE_FORMAT(a.DateAction, '%h:%i %p') AS formatted_time, \n"
+					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
+					+ "       a.Description \n"
+					+ "FROM audittrailmarketing As a \n"
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+			st.execute(SQL);
+			ArrayList temp = new ArrayList<>();
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				String formattedText = "<html><center>" + rs.getString(1) + "<br>" + rs.getString(2) + "</center></html>";
+//				temp.add(rs.getString(1) + ", " + rs.getString(2));
+				temp.add(formattedText);
+				temp.add(rs.getString(3));
+				
+				String[] splitted = rs.getString(4).split(" - ");
+				temp.add("<html><b>" + splitted[0] + "</b> - " + splitted[1] + "</html>");
+				auditTrail.main.addRow(temp.toArray());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
+		}
+	}
+	
+	private void AuditPanelFuncCategory(String Cat) {
+		panelVisible();
+		auditTrail.setVisible(true);
+		
+		try {
+			auditTrail.main.setRowCount(0);
+			String SQL = "SELECT DATE_FORMAT(a.DateAction, '%Y-%m-%d') AS formatted_date, \n"
+					+ "       DATE_FORMAT(a.DateAction, '%h:%i %p') AS formatted_time, \n"
+					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
+					+ "       a.Description \n"
+					+ "FROM " + Cat + " As a \n"
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+			
+			System.out.println(SQL);
+			st.execute(SQL);
+			ArrayList temp = new ArrayList<>();
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				String formattedText = "<html><center>" + rs.getString(1) + "<br>" + rs.getString(2) + "</center></html>";
+//				temp.add(rs.getString(1) + ", " + rs.getString(2));
+				temp.add(formattedText);
+				temp.add(rs.getString(3));
+				
+				String[] splitted = rs.getString(4).split(" - ");
+				temp.add("<html><b>" + splitted[0] + "</b> - " + splitted[1] + "</html>");
+				auditTrail.main.addRow(temp.toArray());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
+		}
+	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -1191,6 +1280,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        
 			SalesReportPanel(currentYear,currentMonth);
 			
+		}
+		
+		if(e.getSource() == navs.btnAudit) {
+			AuditPanelFunc();
 		}
 		
 		// Sales Print
@@ -1569,6 +1662,17 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	}
 	        }
 	        
+	        if(e.getSource() == auditTrail.cbCategory) {
+	        	String cat = "";
+	        	if(auditTrail.cbCategory.getSelectedIndex() == 0)
+	        		cat = "audittrailmarketing";
+	        	if(auditTrail.cbCategory.getSelectedIndex() == 1)
+	        		cat = "audittrailproduction";
+	        	if(auditTrail.cbCategory.getSelectedIndex() == 2)
+	        		cat = "audittrailwarehouse";
+	        	AuditPanelFuncCategory(cat);
+	        }
+	        
 	    }
 	}
 
@@ -1582,7 +1686,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 				courierRightClick.setBounds(x, y, 150, 61);
 			}
 		}
-		
 	}
 
 	@Override

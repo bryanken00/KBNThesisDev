@@ -1,4 +1,4 @@
-package KBN.Module.Warehouse.AuditTrail;
+package KBNAdminPanel.panels.AuditTrail;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -27,8 +27,10 @@ import com.toedter.calendar.JDateChooser;
 
 public class AuditTrail extends JPanel implements MouseListener {
 	public DefaultTableModel main;
-	private JTextField txtSearchBar;
+	public JTextField txtSearchBar;
 	public JTable table;
+	public JButton btnSearch;
+	public JComboBox cbCategory;
 	
 	public AuditTrail() {
 		setBackground(new Color(255, 255, 255));
@@ -56,7 +58,7 @@ public class AuditTrail extends JPanel implements MouseListener {
         txtSearchBar.addMouseListener(this);
         panel_1.add(txtSearchBar);
         
-        JButton btnSearch = new JButton("");
+        btnSearch = new JButton("");
         btnSearch.setIcon(new ImageIcon(AuditTrail.class.getResource("/KBN/resources/SearchBarUniversal.png")));
         btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
         btnSearch.setFocusable(false);
@@ -64,6 +66,17 @@ public class AuditTrail extends JPanel implements MouseListener {
         btnSearch.setBackground(Color.WHITE);
         btnSearch.setBounds(911, 20, 32, 28);
         panel_1.add(btnSearch);
+        
+        JLabel lblNewLabel = new JLabel("Audit Trail");
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 28));
+        lblNewLabel.setBounds(10, 11, 471, 48);
+        panel_1.add(lblNewLabel);
+        
+        String cb[] = {"Marketing", "Production", "Warehouse"};
+        
+        cbCategory = new JComboBox(cb);
+        cbCategory.setBounds(519, 20, 151, 29);
+        panel_1.add(cbCategory);
         
         String Department[] = {"Marketing", "Production", "Warehouse"};
         

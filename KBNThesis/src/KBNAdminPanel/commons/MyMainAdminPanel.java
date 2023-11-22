@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 import KBNAdminPanel.views.AdminPanel;
+import KBNAdminPanel.views.KBNMainFrame;
 
 public class MyMainAdminPanel {
 	
@@ -12,7 +13,7 @@ public class MyMainAdminPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AdminPanel admin = new AdminPanel();
+					KBNMainFrame admin = new KBNMainFrame();
 					admin.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
