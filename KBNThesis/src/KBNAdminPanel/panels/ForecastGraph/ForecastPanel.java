@@ -34,16 +34,29 @@ public class ForecastPanel extends JPanel {
 		
 		JPanel header = new JPanel();
 		header.setBounds(10, 11, 969, 58);
-		header.setLayout(null);
 		header.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		header.setBackground(Color.WHITE);
 		panel.add(header);
+		header.setLayout(null);
 		
 		JLabel lblEmployeeList = new JLabel("Time Series: Simple Moving Average (SMA)");
+		lblEmployeeList.setBounds(10, 5, 949, 47);
 		lblEmployeeList.setHorizontalAlignment(SwingConstants.LEFT);
 		lblEmployeeList.setFont(new Font("Tahoma", Font.PLAIN, 28));
-		lblEmployeeList.setBounds(10, 5, 949, 47);
 		header.add(lblEmployeeList);
+		
+		JPanel past = new JPanel();
+		past.setBorder(new LineBorder(new Color(0, 0, 0)));
+		past.setBounds(692, 11, 61, 26);
+		header.add(past);
+		past.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("Past");
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		lblNewLabel.setForeground(Color.BLACK);
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setBounds(0, 0, 61, 26);
+		past.add(lblNewLabel);
 		
 		Graph = new JPanel();
 		Graph.setLayout(null);
@@ -80,5 +93,34 @@ public class ForecastPanel extends JPanel {
 		comboBox.setBounds(10, 7, 587, 43);
 		panel_.add(comboBox);
 		
+		
+		past.setBackground(Color.red);
+		
+		JPanel present = new JPanel();
+		present.setLayout(null);
+		present.setBorder(new LineBorder(new Color(0, 0, 0)));
+		present.setBackground(Color.BLUE);
+		present.setBounds(763, 11, 61, 26);
+		header.add(present);
+		
+		JLabel lblPresent = new JLabel("Present");
+		lblPresent.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPresent.setForeground(Color.WHITE);
+		lblPresent.setBounds(0, 0, 61, 26);
+		present.add(lblPresent);
+		
+		JPanel future = new JPanel();
+		future.setLayout(null);
+		future.setBorder(new LineBorder(new Color(0, 0, 0)));
+		future.setBackground(Color.GREEN);
+		future.setBounds(834, 11, 61, 26);
+		header.add(future);
+		
+		JLabel lblFuture = new JLabel("Future");
+		lblFuture.setHorizontalAlignment(SwingConstants.CENTER);
+		lblFuture.setForeground(Color.WHITE);
+		lblFuture.setForeground(Color.BLACK);
+		lblFuture.setBounds(0, 0, 61, 26);
+		future.add(lblFuture);
 	}
 }

@@ -701,12 +701,13 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
             int max = 0;
             
 			int year = forecastPanel.yearChooser.getYear();
-			int month = forecastPanel.monthChooser.getMonth();
+			int month = forecastPanel.monthChooser.getMonth() + 1;
 			
 			String getScoreDate = "";
 	        
             List<String> dates = date;
             List<Integer> firstDataset = new ArrayList<>();
+            System.out.println(month);
             
 	        LocalDate firstDayOfMonthFirst = LocalDate.of(year, month, 1); // October 2023
 	        LocalDate currentMondayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
@@ -756,11 +757,15 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		   		
 	            currentMondayFirst = currentMondayFirst.plusWeeks(1);
 	            currentSundayFirst = currentSundayFirst.plusWeeks(1);
+	            
+	            System.out.println("1." + finalAverage);
 	        }
 
             List<Integer> secondDataset = new ArrayList<>();
+            
+            System.out.println(month-1);
 	        
-	        LocalDate firstDayOfMonthSecond = LocalDate.of(year, 10, 1); // October 2023
+	        LocalDate firstDayOfMonthSecond = LocalDate.of(year, month-1, 1);
 	        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
 	        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
@@ -810,7 +815,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
 
 	        	secondindex++;
-	        	
+
+	            System.out.println("2." + finalAverage);
 	        }
 	        
             List<Integer> AverageFuture = new ArrayList<>();
