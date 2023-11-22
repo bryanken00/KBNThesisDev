@@ -66,7 +66,7 @@ public class DashboardSalesChartData extends JPanel {
 	    }
 
 	    // Create hatch marks for x-axis
-	    for (int i = 0; i < scores.size() - 1; i++) {
+	    for (int i = 0; i <= scores.size() - 1; i++) {
 	        int x0 = (int) ((i * xScale) + BORDER_GAP);
 	        int x1 = x0;
 	        int y0 = getHeight() - BORDER_GAP;

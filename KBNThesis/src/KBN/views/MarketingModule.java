@@ -1967,33 +1967,30 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
             List<Integer> scores = new ArrayList<Integer>();
             List<String> date = new ArrayList<String>();
             int max = 0;
+            
+            LocalDate currentDate = LocalDate.now();
 
-    		String sqlMaxCounterYaxis = "SELECT SUM(a.Quantity), b.OrderDate \n"
-    				+ "FROM tblordercheckoutdata AS a \n"
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
-    				+ "JOIN tblorderstatus AS c ON a.OrderRefNumber = c.OrderRefNumber \n"
-    				+ "WHERE c.Status = 'Completed' \n"
-    				+ "GROUP BY DATE(b.OrderDate) ORDER BY SUM(a.Quantity) DESC LIMIT 1;";
-    		
-    		st.execute(sqlMaxCounterYaxis);
-    		rs = st.getResultSet();
-    		
-    		if(rs.next())
-    			max = rs.getInt(1);
+            LocalDate mondayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate sundayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
             	
-    		String X_axis = "SELECT SUM(a.Quantity) AS Score, b.OrderDate AS Order_Date \n"
-    				+ "FROM tblordercheckoutdata AS a \n"
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
-    				+ "JOIN tblorderstatus AS c ON c.OrderRefNumber = a.OrderRefNumber \n"
-    				+ "WHERE c.Status = 'Completed' \n"
-    				+ "GROUP BY DATE(Order_Date);";
+    		String X_axis = "SELECT SUM(a.Quantity) AS Score, b.OrderDate AS Order_Date \r\n"
+    				+ "FROM tblordercheckoutdata AS a \r\n"
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber \r\n"
+    				+ "JOIN tblorderstatus AS c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
+    				+ "WHERE c.Status = 'Completed' AND (OrderDate >= '" + mondayOfWeek + "' AND OrderDate <= '" +  sundayOfWeek + "')\r\n"
+    				+ "GROUP BY DATE(Order_Date) \n"
+    				+ "ORDER BY Score DESC;";
     		
     		st.execute(X_axis);
     		rs = st.getResultSet();
     		
-    	    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
+    	    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd");
     		
+    	    int index_ = 0;
     		while(rs.next()) {
+    			if(index_ == 0)
+    				max = rs.getInt(1);
+    			index_++;
                 scores.add(rs.getInt(1));
         	    Date orderDate = rs.getDate(2);
         	    String formattedDate = dateFormat.format(orderDate);
