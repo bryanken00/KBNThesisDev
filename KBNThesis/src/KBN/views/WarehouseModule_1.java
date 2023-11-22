@@ -1216,11 +1216,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		
 		private void setDeliveryStatus() {
 			try {
-				
 			
 			String courier = onDeliver.cbRiderList.getSelectedItem() + "";
 			String courierID = onDeliver.courierID[onDeliver.cbRiderList.getSelectedIndex()] + "";
 			String ref = onDeliver.lblRefNumber.getText();
+			String ShippingFee = onDeliver.txtSF.getText();
 			
 			
 			ArrayList<Integer> valueChecker = new ArrayList<>();
@@ -1231,6 +1231,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					+ "JOIN tblcustomerinformation AS c ON a.UserID = c.UserID \r\n"
 					+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume \r\n"
 					+ "WHERE a.OrderRefNumber = '" + ref + "';";
+			
 			st.execute(sql);
 			rs = st.getResultSet();
 			while(rs.next())
@@ -1273,14 +1274,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		        String formattedDate = dateFormat.format(currentDate);
 				
 				String SQLDeliveryDate = "INSERT INTO tblcourierdeliverydate(OrderRefNumber, DeliveryDate) VALUES('" + ref + "','" + formattedDate + "');";
-				
-				
-
-				
-//				st.execute(SQLDeliveryDate);
+				String UPDATE = "UPDATE tblordercheckout SET shippingFee = '" + ShippingFee + "' WHERE OrderRefNumber = '" + ref + "';";
+				procedureStorage.add(UPDATE);
 				procedureStorage.add(SQLDeliveryDate);
 				String SQLUpdate = "UPDATE tblorderstatus SET Status = 'Delivery' WHERE OrderRefNumber = '" + ref + "';";
-//				st.executeUpdate(SQLUpdate);
 				procedureStorage.add(SQLUpdate);
 				
 		        String deleteProcedureSQL = "DROP PROCEDURE IF EXISTS DeliveryProcess;";

@@ -11,6 +11,7 @@ import java.awt.Font;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -51,8 +52,11 @@ public class OrderingPanel extends JPanel {
 	public JLabel lblTotalAmount;
 	public JButton btnApproved;
 	public JButton btnToShip;
+	
+	public JComboBox cbCategory;
 
     public OrderingPanel() {
+    	setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBackground(new Color(255, 255, 255));
         setBounds(0, 0, 989, 699);
         setLayout(null);
@@ -215,7 +219,7 @@ public class OrderingPanel extends JPanel {
         // Setter
         orderLPanel = new OrderListPanel();
         PanelOrderList.add(orderLPanel);
-
+        orderLPanel.lblTimeDiff.setVisible(false);
         orderLPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Set border here
         
         tableSetup();
@@ -223,6 +227,12 @@ public class OrderingPanel extends JPanel {
         JTableHeader header = table.getTableHeader();
         header.setBackground(Color.WHITE); // Background
         header.setForeground(Color.BLACK); // Text
+        
+        String[] cat = {"All", "toPay", "toShip", "toReceived","Completed"};
+        
+        cbCategory = new JComboBox(cat);
+        cbCategory.setBounds(10, 49, 260, 28);
+        orderLPanel.add(cbCategory);
     }
     
     

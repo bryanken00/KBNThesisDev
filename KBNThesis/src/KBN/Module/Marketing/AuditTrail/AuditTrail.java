@@ -27,8 +27,9 @@ import com.toedter.calendar.JDateChooser;
 
 public class AuditTrail extends JPanel implements MouseListener {
 	public DefaultTableModel main;
-	private JTextField txtSearchBar;
+	public JTextField txtSearchBar;
 	public JTable table;
+	public JButton btnSearch;
 	
 	public AuditTrail() {
 		setBackground(new Color(255, 255, 255));
@@ -56,7 +57,7 @@ public class AuditTrail extends JPanel implements MouseListener {
         txtSearchBar.addMouseListener(this);
         panel_1.add(txtSearchBar);
         
-        JButton btnSearch = new JButton("");
+        btnSearch = new JButton("");
         btnSearch.setIcon(new ImageIcon(AuditTrail.class.getResource("/KBN/resources/SearchBarUniversal.png")));
         btnSearch.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
         btnSearch.setFocusable(false);
@@ -65,15 +66,12 @@ public class AuditTrail extends JPanel implements MouseListener {
         btnSearch.setBounds(911, 20, 32, 28);
         panel_1.add(btnSearch);
         
+        JLabel lblNewLabel = new JLabel("Audit Trail");
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 28));
+        lblNewLabel.setBounds(10, 11, 471, 48);
+        panel_1.add(lblNewLabel);
+        
         String Department[] = {"Marketing", "Production", "Warehouse"};
-        
-        JComboBox comboBox = new JComboBox(Department);
-        comboBox.setBounds(10, 20, 177, 29);
-        panel_1.add(comboBox);
-        
-        JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setBounds(225, 20, 161, 28);
-        panel_1.add(dateChooser);
         
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(10, 92, 969, 596);

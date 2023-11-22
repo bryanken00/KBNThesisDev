@@ -27,6 +27,7 @@ public class ConfirmationPanel extends JPanel {
 	public JLabel lblTotalItem;
 	
 	public ConfirmationPanel() {
+		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBackground(new Color(255, 255, 255));
 		setBounds(0, 0, 989, 699);
         setLayout(null);

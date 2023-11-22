@@ -11,6 +11,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.text.PlainDocument;
+
+import KBN.commons.NumberOnlyDocumentFilter;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -26,6 +29,7 @@ public class onDelivery extends JDialog {
 	public JLabel lblRefNumber;
 	public JComboBox cbRiderList;
 	public JButton btnConfirm;
+	public JTextField txtSF;
 	private JPanel containerDetails;
 	private JPanel panel;
 	private JLabel lblSelectRider;
@@ -61,21 +65,21 @@ public class onDelivery extends JDialog {
 		
 		JLabel lblRef = new JLabel("Order Reference Number:");
 		lblRef.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblRef.setBounds(10, 11, 295, 28);
+		lblRef.setBounds(10, 11, 178, 28);
 		containerDetails.add(lblRef);
 		
 		JLabel lblRider = new JLabel("Rider:");
 		lblRider.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblRider.setBounds(10, 92, 295, 28);
+		lblRider.setBounds(10, 50, 71, 28);
 		containerDetails.add(lblRider);
 		
 		lblRefNumber = new JLabel("ref1");
 		lblRefNumber.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblRefNumber.setBounds(10, 53, 295, 28);
+		lblRefNumber.setBounds(198, 10, 107, 28);
 		containerDetails.add(lblRefNumber);
 		
 		cbRiderList = new JComboBox();
-		cbRiderList.setBounds(10, 131, 295, 28);
+		cbRiderList.setBounds(101, 51, 204, 28);
 		containerDetails.add(cbRiderList);
 		
 		btnConfirm = new JButton("Confirm");
@@ -86,6 +90,16 @@ public class onDelivery extends JDialog {
 		btnConfirm.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnConfirm.setBounds(32, 170, 251, 45);
 		containerDetails.add(btnConfirm);
+		
+		JLabel lblShipeeFee = new JLabel("Shipee Fee: ");
+		lblShipeeFee.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblShipeeFee.setBounds(10, 89, 95, 28);
+		containerDetails.add(lblShipeeFee);
+		
+		txtSF = new JTextField();
+		txtSF.setBounds(101, 90, 204, 28);
+		containerDetails.add(txtSF);
+		txtSF.setColumns(10);
 		
 		panel = new JPanel();
 		panel.setBounds(10, 11, 315, 68);
@@ -100,6 +114,10 @@ public class onDelivery extends JDialog {
 		lblSelectRider.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblSelectRider.setBounds(0, 0, 315, 68);
 		panel.add(lblSelectRider);
+		
+		PlainDocument sfee = (PlainDocument) txtSF.getDocument();
+		NumberOnlyDocumentFilter numberFiler = new NumberOnlyDocumentFilter(11);
+		sfee.setDocumentFilter(numberFiler);
         
 	}
 }

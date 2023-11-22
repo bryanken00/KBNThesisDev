@@ -22,6 +22,7 @@ public class ConfirmationListPanel extends JPanel{
 	public JComboBox comboBox;
 	
 	public ConfirmationListPanel() {
+		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBackground(new Color(255, 255, 255));
 		setBounds(0, 0, 320, 677);
 		setLayout(null);

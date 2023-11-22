@@ -530,6 +530,9 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		btnReturnProducts.addMouseListener(this);
 		btnAuditTrail.addMouseListener(this);
 		
+		// Audit Trail
+		auditTrail.btnSearch.addActionListener(this);
+		
 		
 		//OrderPanel
 		orderPanel.btnApproved.addActionListener(this);
@@ -540,6 +543,8 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		orderPanel.orderLPanel.lblInstruction.addMouseListener(this);
 		onDeliver.btnConfirm.addActionListener(this);
 		orderPanel.orderLPanel.btnSearch.addActionListener(this);
+		orderPanel.cbCategory.addItemListener(this);
+		
 		//Cancel
 		cancelOrderPanel.orderLPanel.btnSearch.addActionListener(this);
 		cancelOrderPanel.cbCategory.addItemListener(this);
@@ -642,8 +647,12 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		if(e.getSource() == btnCustomerAccount)
 			custAccPanelFunc();
+		
+		// Audit Trail
 		if(e.getSource() == btnAuditTrail)
 			AuditPanelFunc();
+		if(e.getSource() == auditTrail.btnSearch)
+			auditButton(auditTrail.txtSearchBar.getText());
 		
 		//Delivery
 		if(e.getSource() == btnDeliveryStatus)
@@ -1834,6 +1843,105 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	private void orderCounterCB() {
+		try {
+			orderBTNClickCount++;
+			String sql = "";
+			
+			if(orderPanel.cbCategory.getSelectedIndex() == 0) {
+				sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \n"
+						+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled';";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 1) {
+				sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \n"
+						+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled' AND b.status = 'toPay';";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 2) {
+				sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \n"
+						+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled' AND b.status = 'toShip';";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 3) {
+				sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \n"
+						+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled' AND b.status = 'toReceived';";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 4) {
+				sql = "SELECT COUNT(a.OrderRefNumber) FROM tblordercheckout AS a \n"
+						+ "JOIN tblorderstatus AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+						+ "WHERE b.status != 'Return' AND b.status != 'Expired' AND b.status != 'Cancelled' AND b.status = 'Completed';";
+			} else {
+				System.out.println("Error");
+			}
+			st.execute(sql);
+			rs = st.getResultSet();
+			
+			if(rs.next())
+				OrderCount = rs.getInt(1);
+			orderPanel.orderLPanel.opd = new OrderListPanelData();
+			orderPanel.orderLPanel.scrollPane.setViewportView(orderPanel.orderLPanel.opd);
+			orderPanel.orderLPanel.opd.iOrderCount(OrderCount);
+			setOrderListDataCB();
+			orderPanelMouseList();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error orderCounterCB: " + e.getMessage());
+		}
+	}
+	
+	private void setOrderListDataCB() {
+		try {
+			String sql = " ";
+			if(orderPanel.cbCategory.getSelectedIndex() == 0) {
+				sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
+						+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+						+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+						+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled' \n"
+						+ "ORDER BY a.OrderDate DESC;";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 1) {
+				sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
+						+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+						+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+						+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled' AND c.status = 'toPay' \n"
+						+ "ORDER BY a.OrderDate DESC;";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 2) {
+				sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
+						+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+						+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+						+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled' AND c.status = 'toShip' \n"
+						+ "ORDER BY a.OrderDate DESC;";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 3) {
+				sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
+						+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+						+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+						+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled' AND c.status = 'toReceived' \n"
+						+ "ORDER BY a.OrderDate DESC;";
+			} else if(orderPanel.cbCategory.getSelectedIndex() == 4) {
+				sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
+						+ "JOIN tblcustomerinformation AS b ON a.UserID = b.UserID \n"
+						+ "JOIN tblorderstatus As c ON c.OrderRefNumber = a.OrderRefNumber \n"
+						+ "WHERE c.status != 'Return' AND c.status != 'Expired' AND c.status != 'Cancelled' AND c.status = 'Completed' \n"
+						+ "ORDER BY a.OrderDate DESC;";
+			} else {
+				System.out.println("Error");
+			}
+			st.execute(sql);
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				orderPanel.orderLPanel.opd.lblRefNumber[i].setText(rs.getString(1));
+				orderPanel.orderLPanel.opd.lblName[i].setText(rs.getString(3) + " " + rs.getString(4));
+				orderPanel.orderLPanel.opd.lblStatus[i].setText(rs.getString(5));
+				//status indicator
+				String path = "/KBN/resources/Marketing/OrderList/" + rs.getString(5) + ".png";
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].setIcon(new ImageIcon(OrderListPanelData.class.getResource(path)));
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].revalidate();
+				orderPanel.orderLPanel.opd.lblOrderStatusColor[i].repaint();
+				i++;
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR setOrderListDataCB: " + e.getMessage());
+		}
+	}
+	
 	private void setOrderListData() {
 		try {
 			String sql = "SELECT a.OrderRefNumber, a.UserID, b.FirstName, b.LastName, c.Status FROM tblordercheckout AS a \n"
@@ -2288,6 +2396,39 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
+		}
+	}
+	
+	private void auditButton(String search) {
+		setVisiblePanel();
+		auditTrail.setVisible(true);
+		
+		try {
+			auditTrail.main.setRowCount(0);
+			String SQL = "SELECT DATE_FORMAT(a.DateAction, '%Y-%m-%d') AS formatted_date, \n"
+					+ "       DATE_FORMAT(a.DateAction, '%h:%i %p') AS formatted_time, \n"
+					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
+					+ "       a.Description \n"
+					+ "FROM audittrailmarketing As a \n"
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID \n"
+					+ "WHERE a.Description LIKE '%" + search + "%' OR CONCAT(b.FirstName, ' ', b.LastName) LIKE '%" + search + "%';";
+			st.execute(SQL);
+			ArrayList temp = new ArrayList<>();
+			rs = st.getResultSet();
+			int i = 0;
+			while(rs.next()) {
+				String formattedText = "<html><center>" + rs.getString(1) + "<br>" + rs.getString(2) + "</center></html>";
+//				temp.add(rs.getString(1) + ", " + rs.getString(2));
+				temp.add(formattedText);
+				temp.add(rs.getString(3));
+				
+				String[] splitted = rs.getString(4).split(" - ");
+				temp.add("<html><b>" + splitted[0] + "</b> - " + splitted[1] + "</html>");
+				auditTrail.main.addRow(temp.toArray());
+				temp.clear();
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error auditButton: " + e.getMessage());
 		}
 	}
 	
@@ -3056,15 +3197,38 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	
 	private void clientProfileOrderHistoryRefresher(String userID, String custBrand, String custName) {
 		try {
-			String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
-					+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
-					+ "WHERE b.UserID = '" + userID + "' AND a.Status = 'Completed';";
+			String RowCount = "SELECT COUNT(b.OrderRefNumber) "
+					+ "FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+					+ "WHERE c.UserID = '" + userID + "' AND a.Status = 'Completed'"
+					+ "GROUP BY b.OrderRefNumber;";
+			
+//			String RowCount = "SELECT COUNT(*) FROM tblorderstatus AS a "
+//					+ "JOIN tblordercheckout AS b ON a.OrderRefNumber = b.OrderRefNumber "
+//					+ "WHERE b.UserID = '" + userID + "' AND a.Status = 'Completed';";
+			
+			String SQLRebrandingCount = "SELECT b.OrderRefNumber, b.ProductName, SUM(b.Quantity) AS Quantity , a.Status "
+					+ "FROM tblorderstatus AS a "
+					+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = b.OrderRefNumber "
+					+ "JOIN tblrebrandingproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
+					+ "WHERE c.UserID = '" + userID + "' AND a.Status = 'Completed' "
+					+ "GROUP BY b.OrderRefNumber";
+			
+			System.out.println();
 			
 			st.execute(RowCount);
 			rs = st.getResultSet();
 			
-			if(rs.next())
-				ClientProfileCounterHistory = rs.getInt(1);
+			while(rs.next())
+				ClientProfileCounterHistory++;
+			
+			st.execute(SQLRebrandingCount);
+			rs = st.getResultSet();
+			while(rs.next())
+				ClientProfileCounterHistory++;
 			
 			orderHistory.orderCountSetter(ClientProfileCounterHistory);
 			String arr[][] = new String[ClientProfileCounterHistory][4];
@@ -3085,6 +3249,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "JOIN tblrebrandingproducts AS d ON b.ProductName = d.prodName AND b.volume = d.prodVolume "
 					+ "WHERE c.UserID = '" + userID + "' AND a.Status = 'Completed' "
 					+ "GROUP BY b.OrderRefNumber";
+			
 			
 			st.execute(SQLKBN);
 			rs = st.getResultSet();
@@ -3806,6 +3971,15 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				JOptionPane.showMessageDialog(null, "Error cancelOrderPanel.cbCategory: " + e2.getMessage());
 			}
 		}
+		if(e.getSource() == orderPanel.cbCategory)
+			try {
+				setVisiblePanel();
+				orderPanel.setVisible(true);
+				clearOrderPanelMouseListeners();
+				orderCounterCB();
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "Error orderPanel.cbCategory: " + e2.getMessage());
+			}
 		if(e.getSource() == confirmListPanel.comboBox){
 			setVisiblePanel();
 			confirmationPanel.setVisible(true);

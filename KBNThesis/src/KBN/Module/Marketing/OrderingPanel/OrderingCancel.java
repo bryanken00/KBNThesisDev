@@ -163,7 +163,6 @@ public class OrderingCancel extends JPanel {
         // Setter
         orderLPanel = new OrderListPanel();
         PanelOrderList.add(orderLPanel);
-
         orderLPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Set border here
         
         tableSetup();
