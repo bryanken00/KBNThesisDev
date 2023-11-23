@@ -26,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import KBN.Module.Marketing.ModuleSelectionMarketing;
+import KBN.Module.Marketing.KBNProducts.AccountSetting;
 import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Production.ArchiveList.ArchiveData;
 import KBN.Module.Production.ArchiveList.ArchivePanelMain;
@@ -114,6 +115,9 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			
 		// Checker
 			private JButton btnChecker;
+
+	private AccountSetting accSetting;
+	private Changepassword changepassPanel;
 			
 	private AuditTrail audittrail;
 
@@ -199,6 +203,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
         addItemRebrand = new AddItemProductionRebranding();
         
         audittrail = new AuditTrail();
+        
+		accSetting = new AccountSetting();
+		changepassPanel = new Changepassword();
+			getContentPane().add(accSetting);
+			accSetting.setVisible(false);
 
         
         panelNav.add(nav);
@@ -250,6 +259,8 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 		moduleSelection.addKeyListener(this);
 		moduleSelection.btnMarketingModule.addActionListener(this);
 		moduleSelection.btnWarehouseModule.addActionListener(this);
+		moduleSelection.btnChange.addActionListener(this);
+		accSetting.btnEditPassword.addActionListener(this);
 		
 		
 		// Add Item Rebranding
@@ -1231,6 +1242,11 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 			this.dispose();
 		}
 		
+		if(e.getSource() == moduleSelection.btnChange || e.getSource() == accSetting.btnEditPassword) {
+			changepassPanel.setAccID(accountID);
+			changepassPanel.setVisible(true);
+		}
+		
 
 			
 
@@ -1265,8 +1281,15 @@ public class ProductionModule extends JFrame implements ActionListener, MouseLis
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource() == nav.lblUsername) {
-			moduleSelection.setBounds(nav.lblUsername.getX() + 30, nav.lblUsername.getY() - 50, 270, 67);
-			moduleSelection.setVisible(true);
+//			moduleSelection.setBounds(nav.lblUsername.getX() + 30, nav.lblUsername.getY() - 50, 270, 67);
+//			moduleSelection.setVisible(true);
+			if(AccountLevel.equals("Admin--") || AccountLevel.equals("Manager-Marketing-All") || AccountLevel.equals("SuperAdmin--")) {
+				moduleSelection.setBounds(nav.lblUsername.getX() + 30, nav.lblUsername.getY() - 80, 270, 105);
+				moduleSelection.setVisible(true);
+			} else {
+				accSetting.setBounds(nav.lblUsername.getX() + 30, nav.lblUsername.getY() - 50, 200, 32);
+				accSetting.setVisible(true);
+			}
 		}
 		
 	}

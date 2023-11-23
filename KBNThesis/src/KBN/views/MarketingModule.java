@@ -605,6 +605,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		moduleSelection.btnProductionModule.addActionListener(this);
 		moduleSelection.btnWarehouseModule.addActionListener(this);
 		moduleSelection.btnChange.addActionListener(this);
+		accSetting.btnEditPassword.addActionListener(this);
 		
 		
 		// Client Profile

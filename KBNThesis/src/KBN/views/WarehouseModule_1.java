@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import KBN.Module.Marketing.KBNProducts.AccountSetting;
 import KBN.Module.Production.ModuleSelectionProduction;
 import KBN.Module.Warehouse.Archive.ArchiveList;
 import KBN.Module.Warehouse.FinishProduct.Finishproduct;
@@ -113,6 +114,9 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 	
 	// Finish Product
 	private Finishproduct FinishProduct;
+	
+	private AccountSetting accSetting;
+	private Changepassword changepassPanel;
 	
 	
 	// Add Item Detector
@@ -218,6 +222,11 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         // Navs
 		wNav.btnRawMats.setBackground(new Color(75, 119, 71));
 		wNav.btnRawMats.setForeground(Color.WHITE);
+		
+		accSetting = new AccountSetting();
+		changepassPanel = new Changepassword();
+			getContentPane().add(accSetting);
+			accSetting.setVisible(false);
         
         // Defaults
         setUsername();
@@ -329,6 +338,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		wNav.lblUsername.addKeyListener(this);
 		moduleSelection.btnMarketingModule.addActionListener(this);
 		moduleSelection.btnProductionModule.addActionListener(this);
+		moduleSelection.btnChange.addActionListener(this);
+		accSetting.btnEditPassword.addActionListener(this);
 		
 		wNav.btnRawMats.addActionListener(this);
 		wNav.btnPackMats.addActionListener(this);
@@ -1495,6 +1506,10 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				productionModule.setVisible(true);
 				this.dispose();
 			}
+			if(e.getSource() == moduleSelection.btnChange || e.getSource() == accSetting.btnEditPassword) {
+				changepassPanel.setAccID(accountID);
+				changepassPanel.setVisible(true);
+			}
 			
 		// Finish Product
 			if(e.getSource() == wNav.btnFinishProduct) {
@@ -1576,8 +1591,15 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 		}
 		
 		if(e.getSource() == wNav.lblUsername) {
-			moduleSelection.setBounds(wNav.lblUsername.getX() + 30, wNav.lblUsername.getY() - 50, 270, 67);
-			moduleSelection.setVisible(true);
+//			moduleSelection.setBounds(wNav.lblUsername.getX() + 30, wNav.lblUsername.getY() - 50, 270, 67);
+//			moduleSelection.setVisible(true);
+			if(accLevel.equals("Admin--") || accLevel.equals("Manager-Marketing-All") || accLevel.equals("SuperAdmin--")) {
+				moduleSelection.setBounds(wNav.lblUsername.getX() + 30, wNav.lblUsername.getY() - 80, 270, 105);
+				moduleSelection.setVisible(true);
+			} else {
+				accSetting.setBounds(wNav.lblUsername.getX() + 30, wNav.lblUsername.getY() - 50, 200, 32);
+				accSetting.setVisible(true);
+			}
 		}
 	}
 

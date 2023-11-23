@@ -44,7 +44,7 @@ public class Changepassword extends JDialog implements ActionListener {
 	public Changepassword() {
 		setResizable(false);
 		getContentPane().setBackground(new Color(255, 255, 255));
-		setBounds(0, 0, 424, 431);
+		setBounds(0, 0, 404, 405);
 		this.setModal(true);
 		
 		//set UI to center of screen
