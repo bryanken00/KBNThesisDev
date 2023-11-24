@@ -12,14 +12,17 @@ public class SendEmail {
 	
 	public void setDetails(String EmailAddress,String Username, String Password) {
 		EmailAdd = EmailAddress;
-		user = Username;
+		user = EmailAddress;
 		pass_ = Password;
 	}
 	
     public void sendAccountEmail() {
-        // Namecheap email configuration
-        final String username = "no-reply@kissbynature.shop";
+        // Sender's email configuration
+        final String username = "accountinfo@kissedbynature.online";
         final String password = "KENKENken0011@";
+
+        // Recipient's email address
+        String recipientEmail = EmailAdd;
 
         // Set up properties
         Properties props = new Properties();
@@ -39,9 +42,9 @@ public class SendEmail {
             // Create a MimeMessage
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(EmailAdd));
-            message.setSubject("KBN Account");
-            message.setText("KBN account \nUsername:" + user + "\nPassword:" + pass_ + "\nLogin Here: https://kissedbynature.online/homepage/");
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject("Kissed By Nature Account.");
+            message.setText("KBN account \nUsername:" + user + "\nPassword:" + pass_ + "\nbit.ly/40Th5Qj");
 
             // Send the email
             Transport.send(message);
