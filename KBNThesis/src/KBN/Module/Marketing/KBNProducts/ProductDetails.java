@@ -441,7 +441,7 @@ public class ProductDetails extends JDialog implements ActionListener{
 	        return; // Handle the exception as needed
 	    }
 	    
-        String targetURL = "https://www.kbnskinessentials.shop/Products/upload.php";
+        String targetURL = "https://kissedbynature.online/Products/upload.php";
 
         try {
             URL url = new URL(targetURL);

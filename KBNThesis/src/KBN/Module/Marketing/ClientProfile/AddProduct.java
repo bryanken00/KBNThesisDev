@@ -250,7 +250,6 @@ public class AddProduct extends JDialog implements ActionListener {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             uploadFile(selectedFile);
-            uploadFileLocalHost(selectedFile);
         }
 	}
 	
@@ -295,14 +294,12 @@ public class AddProduct extends JDialog implements ActionListener {
             }
 
             int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Read and display the response from the PHP script
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        System.out.println("Response: " + line);
                         lblImg.setIcon(new ImageIcon(imgLoader(line)));
                         imgPath = line;
                     }
@@ -321,7 +318,6 @@ public class AddProduct extends JDialog implements ActionListener {
 		try {
 			String encodedPath = URLEncoder.encode(path, "UTF-8");
 			URL imageUrl = new URL("https://kissedbynature.online/Products/resources/" + encodedPath);
-			System.out.println(imageUrl);
 			ImageIcon imageIcon = new ImageIcon(imageUrl);
 			Image image = imageIcon.getImage();
 
@@ -335,87 +331,6 @@ public class AddProduct extends JDialog implements ActionListener {
 		return scaledImage;
 	}
 	
-	private void uploadFileLocalHost(File file) {
-		
-		try {
-		    BufferedImage originalImage = ImageIO.read(file);
-
-		    int originalWidth = originalImage.getWidth();
-		    int originalHeight = originalImage.getHeight();
-
-		    BufferedImage resizedImage = new BufferedImage(originalWidth, originalHeight, BufferedImage.TYPE_INT_RGB);
-
-		    resizedImage.getGraphics().drawImage(originalImage, 0, 0, originalWidth, originalHeight, null);
-
-		    ImageIO.write(resizedImage, "png", file);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		    return;
-		}
-
-	    
-        String targetURL = "https://kissedbynature.online/Products/upload.php";
-
-        try {
-            URL url = new URL(targetURL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-
-            String boundary = Long.toHexString(System.currentTimeMillis());
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-            try (OutputStream os = connection.getOutputStream()) {
-                os.write(("--" + boundary + "\r\n").getBytes());
-                os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n").getBytes());
-                os.write(("Content-Type: application/octet-stream\r\n\r\n").getBytes());
-
-                byte[] fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
-                os.write(fileBytes);
-                os.write(("\r\n--" + boundary + "--\r\n").getBytes());
-            }
-
-            int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Read and display the response from the PHP script
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        System.out.println("Response: " + line);
-                        lblImg.setIcon(new ImageIcon(imgLoaderLocalhost(line)));
-                        imgPath = line;
-                    }
-                }
-            } else {
-                System.out.println("Upload failed.");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-	
-	private Image imgLoaderLocalhost(String path) {
-		Image scaledImage = null;
-		try {
-			String encodedPath = URLEncoder.encode(path, "UTF-8");
-			URL imageUrl = new URL("https://kissedbynature.online/Products/resources/" + encodedPath);
-			System.out.println(imageUrl);
-			ImageIcon imageIcon = new ImageIcon(imageUrl);
-			Image image = imageIcon.getImage();
-
-			// Calculate the scaled dimensions to fit the label
-			int labelWidth = lblImg.getWidth();
-			int labelHeight = lblImg.getHeight();
-			scaledImage = image.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
-		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "ERROR IMGLoader: " + e.getMessage());
-		}
-		return scaledImage;
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnAddImg)
