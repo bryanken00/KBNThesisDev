@@ -2394,7 +2394,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
 					+ "       a.Description \n"
 					+ "FROM audittrailmarketing As a \n"
-					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID \n"
+					+ "WHERE a.DateAction > DATE_SUB(NOW(), INTERVAL 2 MONTH) \n"
+					+ "ORDER BY a.DateAction DESC;";
+			
+			System.out.println(SQL);
 			st.execute(SQL);
 			ArrayList temp = new ArrayList<>();
 			rs = st.getResultSet();

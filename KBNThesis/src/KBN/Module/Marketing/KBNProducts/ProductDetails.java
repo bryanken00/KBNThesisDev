@@ -43,6 +43,8 @@ import javax.swing.text.PlainDocument;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,12 +53,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.awt.event.ActionEvent;
 
-public class ProductDetails extends JDialog implements ActionListener{
+public class ProductDetails extends JDialog implements ActionListener {
 	
 	public JTextField txtProdName;
 	public JTextField txtPrice;
 	public JTextField txtVariant;
 	public JLabel lblImg;
+	
+	private boolean btnCategoryChecker;
 	
 	private DbConnection dbConn;
 	private Statement st;
@@ -76,6 +80,8 @@ public class ProductDetails extends JDialog implements ActionListener{
 	private JButton btnAddImg;
 	
 	private String userID = "";
+	private JTextField txtCategory;
+	private JButton btnAddNew;
 
 	public ProductDetails() {
 		setResizable(false);
@@ -222,6 +228,22 @@ public class ProductDetails extends JDialog implements ActionListener{
 		txtManual.setBounds(10, 399, 286, 51);
 		dataPanel.add(txtManual);
 		
+		txtCategory = new JTextField();
+		txtCategory.setBounds(327, 114, 286, 28);
+		txtCategory.setVisible(false);
+		txtCategory.setColumns(10);
+		dataPanel.add(txtCategory);
+		
+		btnAddNew = new JButton("Add New?");
+		btnAddNew.setForeground(Color.BLACK);
+		btnAddNew.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnAddNew.setFocusable(false);
+		btnAddNew.setBorderPainted(false);
+		btnAddNew.setBackground(Color.WHITE);
+		btnAddNew.setBounds(511, 90, 100, 19);
+		btnAddNew.addActionListener(this);
+		dataPanel.add(btnAddNew);
+		
 		btnAddImg.addActionListener(this);
 		btnSave.addActionListener(this);
 		
@@ -332,6 +354,21 @@ public class ProductDetails extends JDialog implements ActionListener{
 		if(e.getSource() == btnAddImg) {
 			uploadIMG();
 		}
+		
+
+		if(e.getSource() == btnAddNew) {
+			if(btnAddNew.getText().equals("Add New?")) {
+				btnCategoryChecker = true;
+				txtCategory.setVisible(true);
+				cbCategory.setVisible(false);
+				btnAddNew.setText("Back");
+			} else if(btnAddNew.getText().equals("Back")) {
+				btnCategoryChecker = false; // manual input 
+				txtCategory.setVisible(false);
+				cbCategory.setVisible(true);
+				btnAddNew.setText("Add New?");
+			}
+		}
 	}
 	
 	//Save
@@ -343,7 +380,12 @@ public class ProductDetails extends JDialog implements ActionListener{
 			String prodVol = txtVariant.getText();
 			String prodQuantity = "0";
 			String prodSold = "0";
-			String prodCat = cbCategory.getSelectedItem().toString();
+//			btnCategoryChecker = false; // manual input 
+			String prodCat = "";
+			if(!btnCategoryChecker)
+				prodCat = cbCategory.getSelectedItem().toString();
+			else
+				prodCat = txtCategory.getText();
 			String Description = txtDescription.getText();
 			String Ingredients = txtIngredients.getText();
 			String howtouse = txtManual.getText();
@@ -497,4 +539,5 @@ public class ProductDetails extends JDialog implements ActionListener{
 		txtManual.setText("");
 		lblImg.setIcon(null);
 	}
+
 }
