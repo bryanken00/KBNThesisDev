@@ -390,6 +390,11 @@ public class ProductDetails extends JDialog implements ActionListener {
 			String Ingredients = txtIngredients.getText();
 			String howtouse = txtManual.getText();
 			
+			if(btnCategoryChecker) {
+				String AddProdCat = "INSERT INTO tblproductcategories VALUES('" + prodCat + "','" + prodCat + "')";
+				st.execute(AddProdCat);
+			}
+			
 			String SQLInsert = "INSERT INTO tblproducts (prodImg,prodName,prodPrice,prodVolume,Quantity,Sold,prodCategory,Description,Ingredients,Howtouse) VALUES('"
 					+ img + "','"
 					+ prodName + "','"
