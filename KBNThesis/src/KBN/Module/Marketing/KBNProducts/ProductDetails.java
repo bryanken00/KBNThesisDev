@@ -74,8 +74,6 @@ public class ProductDetails extends JDialog implements ActionListener {
 	private ArrayList<String> arrCb;
 	private ArrayList<String> arrCBIdentifier;
 	private JTextPane txtDescription;
-	private JTextPane txtIngredients;
-	private JTextPane txtManual;
 	public JButton btnSave;
 	private JButton btnAddImg;
 	
@@ -147,12 +145,12 @@ public class ProductDetails extends JDialog implements ActionListener {
 		txtProdName.setColumns(10);
 		
 		JLabel lblNewLabel_1_1 = new JLabel("Price:");
-		lblNewLabel_1_1.setBounds(250, 167, 140, 28);
+		lblNewLabel_1_1.setBounds(327, 167, 140, 28);
 		dataPanel.add(lblNewLabel_1_1);
 		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		txtPrice = new JTextField();
-		txtPrice.setBounds(250, 197, 286, 28);
+		txtPrice.setBounds(327, 197, 286, 28);
 		dataPanel.add(txtPrice);
 		txtPrice.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtPrice.setColumns(10);
@@ -163,7 +161,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		txtVariant = new JTextField();
-		txtVariant.setBounds(10, 197, 220, 28);
+		txtVariant.setBounds(10, 197, 286, 28);
 		dataPanel.add(txtVariant);
 		txtVariant.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtVariant.setColumns(10);
@@ -177,16 +175,6 @@ public class ProductDetails extends JDialog implements ActionListener {
 		lblNewLabel_1_1_1_1_1.setBounds(10, 250, 140, 28);
 		dataPanel.add(lblNewLabel_1_1_1_1_1);
 		lblNewLabel_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		
-		JLabel lblNewLabel_1_1_1_1_1_1 = new JLabel("Ingredients:");
-		lblNewLabel_1_1_1_1_1_1.setBounds(327, 250, 140, 28);
-		dataPanel.add(lblNewLabel_1_1_1_1_1_1);
-		lblNewLabel_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		
-		JLabel lblNewLabel_1_1_1_1_1_1_1 = new JLabel("Manual:");
-		lblNewLabel_1_1_1_1_1_1_1.setBounds(10, 369, 140, 28);
-		dataPanel.add(lblNewLabel_1_1_1_1_1_1_1);
-		lblNewLabel_1_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		cbCategory = new JComboBox();
 		cbCategory.setBounds(327, 114, 286, 28);
@@ -216,17 +204,6 @@ public class ProductDetails extends JDialog implements ActionListener {
 		JScrollPane descriptionScrollPane = new JScrollPane(txtDescription);
 		descriptionScrollPane.setBounds(10, 280, 286, 78);
 		dataPanel.add(descriptionScrollPane);
-
-		txtIngredients = new JTextPane();
-		txtIngredients.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		JScrollPane ingredientsScrollPane = new JScrollPane(txtIngredients);
-		ingredientsScrollPane.setBounds(327, 280, 286, 78);
-		dataPanel.add(ingredientsScrollPane);
-		
-		txtManual = new JTextPane();
-		txtManual.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		txtManual.setBounds(10, 399, 286, 51);
-		dataPanel.add(txtManual);
 		
 		txtCategory = new JTextField();
 		txtCategory.setBounds(327, 114, 286, 28);
@@ -296,7 +273,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 	private void DataSetters() {
 		try {
 			cbSetter();
-			String SQL = "SELECT prodImg, prodName, prodVolume, prodPrice, prodCategory, Description, Ingredients, Howtouse FROM tblproducts WHERE prodID = '" + prodID + "'";
+			String SQL = "SELECT prodImg, prodName, prodVolume, prodPrice, prodCategory, Description FROM tblproducts WHERE prodID = '" + prodID + "'";
 			st.execute(SQL);
 			
 			rs = st.getResultSet();
@@ -313,8 +290,6 @@ public class ProductDetails extends JDialog implements ActionListener {
 						cbCategory.setSelectedIndex(i);
 				}
 				txtDescription.setText(rs.getString(6));
-				txtIngredients.setText(rs.getString(7));
-				txtManual.setText(rs.getString(8));
 				
 			}
 			
@@ -387,15 +362,13 @@ public class ProductDetails extends JDialog implements ActionListener {
 			else
 				prodCat = txtCategory.getText();
 			String Description = txtDescription.getText();
-			String Ingredients = txtIngredients.getText();
-			String howtouse = txtManual.getText();
 			
 			if(btnCategoryChecker) {
 				String AddProdCat = "INSERT INTO tblproductcategories VALUES('" + prodCat + "','" + prodCat + "')";
 				st.execute(AddProdCat);
 			}
 			
-			String SQLInsert = "INSERT INTO tblproducts (prodImg,prodName,prodPrice,prodVolume,Quantity,Sold,prodCategory,Description,Ingredients,Howtouse) VALUES('"
+			String SQLInsert = "INSERT INTO tblproducts (prodImg,prodName,prodPrice,prodVolume,Quantity,Sold,prodCategory,Description) VALUES('"
 					+ img + "','"
 					+ prodName + "','"
 					+ prodPrice + "','"
@@ -403,9 +376,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 					+ prodQuantity + "','"
 					+ prodSold + "','"
 					+ prodCat + "','"
-					+ Description + "','"
-					+ Ingredients + "','"
-					+ howtouse + "');";
+					+ Description + "');";
 			
 			st.execute(SQLInsert);
 			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product Added - " + prodName + "(" + prodVol + ")');";
@@ -426,23 +397,31 @@ public class ProductDetails extends JDialog implements ActionListener {
 			String prodName = txtProdName.getText();
 			String prodPrice = txtPrice.getText();
 			String prodVol = txtVariant.getText();
-			String prodCat = cbCategory.getSelectedItem().toString();
 			String Description = txtDescription.getText();
-			String Ingredients = txtIngredients.getText();
-			String howtouse = txtManual.getText();
 			
-			String SQLUpdate = "UPDATE tblproducts\r\n"
-					+ "SET prodImg = '" + img + "',\r\n"
-					+ "prodName = '" + prodName + "',\r\n"
-					+ "prodPrice = '" + prodPrice +"',\r\n"
-					+ "prodVolume = '" + prodVol + "',\r\n"
-					+ "Quantity = 0,\r\n"
-					+ "Sold = 0,\r\n"
-					+ "prodCategory = '" + prodCat + "',\r\n"
-					+ "Description = '" + Description + "',\r\n"
-					+ "Ingredients = '" + Ingredients + "',\r\n"
-					+ "Howtouse = '" + Ingredients + "'\r\n"
-					+ "WHERE prodID = '" + prodID + "';";
+			String prodCat = "";
+			if(!btnCategoryChecker)
+				prodCat = cbCategory.getSelectedItem().toString();
+			else
+				prodCat = txtCategory.getText();
+			
+			if(btnCategoryChecker) {
+				String AddProdCat = "INSERT INTO tblproductcategories VALUES('" + prodCat + "','" + prodCat + "')";
+				st.execute(AddProdCat);
+			}
+			
+			String SQLUpdate = "UPDATE tblproducts \n"
+					+ "SET prodImg = '" + img + "', \n"
+					+ "prodName = '" + prodName + "', \n"
+					+ "prodPrice = '" + prodPrice +"', \n"
+					+ "prodVolume = '" + prodVol + "', \n"
+					+ "Quantity = 0, \n"
+					+ "Sold = 0, \n"
+					+ "prodCategory = '" + prodCat + "', \n"
+					+ "Description = '" + Description + "' \n"
+					+ "WHERE prodID = '" + productID + "';";
+			
+			System.out.println(SQLUpdate);
 			
 			st.execute(SQLUpdate);
 			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + userID + "','KBN Product - Update " + prodName + "(" + prodVol + ")');";
@@ -540,8 +519,6 @@ public class ProductDetails extends JDialog implements ActionListener {
 		if(cbCategory != null)
 			cbCategory.setSelectedIndex(0);
 		txtDescription.setText("");
-		txtIngredients.setText("");
-		txtManual.setText("");
 		lblImg.setIcon(null);
 	}
 
