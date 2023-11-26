@@ -143,6 +143,8 @@ public class preRegister extends JDialog implements ActionListener {
 		if(e.getSource() == reg.btnGeneratePass) {
 			String password = passwordGenerator(8);
 			reg.txtPassword.setText(password);
+			
+			System.out.println("Brand: " + reg.txtBrand.getText());
 		}
 		
 		if(e.getSource() == reg.btnRegister) {
@@ -193,7 +195,9 @@ public class preRegister extends JDialog implements ActionListener {
 				if(!reg.txtFN.getText().isEmpty() && !reg.txtLN.getText().isEmpty() && !reg.txtAddress.getText().isEmpty() && !reg.txtContact.getText().isEmpty() && !reg.txtUsername.getText().isEmpty() && !reg.txtPassword.getText().isEmpty() && !reg.txtEmail.getText().isEmpty()) {
 					// tblCustAccount
 //					int ID = getRowID();
-					String userID = reg.txtUsername.getText() + "#" + random;
+					String userIDDefault = reg.txtUsername.getText();
+					String[] parts = userIDDefault.split("@");
+					String userID = parts[0] + "#" + random;
 					String Username = reg.txtUsername.getText();
 					String Password = reg.txtPassword.getText();
 					// tblCustAccountInfo
@@ -212,35 +216,41 @@ public class preRegister extends JDialog implements ActionListener {
 					else
 						accType = "Rebranding";
 					
-					String createAccount = "CREATE PROCEDURE CreateAccountWithRollback()\r\n"
-							+ "BEGIN\r\n"
-							+ "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
-							+ "  BEGIN\r\n"
-							+ "    ROLLBACK;\r\n"
-							+ "    RESIGNAL;\r\n"
-							+ "  END;\r\n"
-							+ "\r\n"
-							+ "  START TRANSACTION;\r\n"
-							+ "  \r\n"
-							+ "  INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "');\r\n"
-							+ "  \r\n"
-							+ "  INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"');\r\n"
-							+ "  \r\n"
-							+ "  UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';\r\n"
-							+ "  \r\n"
-							+ "  COMMIT;\r\n"
-							+ "END;";
 					
-					st.execute(createAccount);
-					st.execute("CALL CreateAccountWithRollback();");
-					String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';";
-					st.execute(sqlUpdatePreReg);
-					String FullName = FN + " " + MI + " " + LN;
-					String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
-					st.execute(AuditTrail);
-					JOptionPane.showMessageDialog(null, "Pre-Registration Complete");
 					sendMail.setDetails(Email, Username, Password);
-					sendMail.sendAccountEmail();
+					
+					if(sendMail.sendAccountEmail()) {
+						String createAccount = "CREATE PROCEDURE CreateAccountWithRollback()\r\n"
+								+ "BEGIN\r\n"
+								+ "  DECLARE EXIT HANDLER FOR SQLEXCEPTION\r\n"
+								+ "  BEGIN\r\n"
+								+ "    ROLLBACK;\r\n"
+								+ "    RESIGNAL;\r\n"
+								+ "  END;\r\n"
+								+ "\r\n"
+								+ "  START TRANSACTION;\r\n"
+								+ "  \r\n"
+								+ "  INSERT INTO tblcustomeraccount VALUES('" + userID + "','" + Username + "','" + Password + "');\r\n"
+								+ "  \r\n"
+								+ "  INSERT INTO tblcustomerinformation VALUES('" + userID + "','" + LN + "','" + FN + "','" + MI + "','" + Address + "','" + Number + "','" + Description + "','0','" + Email + "','" + accType +"');\r\n"
+								+ "  \r\n"
+								+ "  UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';\r\n"
+								+ "  \r\n"
+								+ "  COMMIT;\r\n"
+								+ "END;";
+						
+						st.execute(createAccount);
+						st.execute("CALL CreateAccountWithRollback();");
+						String sqlUpdatePreReg = "UPDATE tblpreregistration SET Status = 'Completed' WHERE ID = '" + ID + "';";
+						st.execute(sqlUpdatePreReg);
+						String FullName = FN + " " + MI + " " + LN;
+						String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + accountID + "','KBN Manual Create Account - " + FullName + "');";
+						st.execute(AuditTrail);
+						JOptionPane.showMessageDialog(null, "Pre-Registration Complete");	
+					} else {
+						JOptionPane.showMessageDialog(null, "An error occurred while attempting to send the email. Please try again.");
+						return;
+					}
 				}else {
 					JOptionPane.showMessageDialog(null, "Please Complete the form");
 				}

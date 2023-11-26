@@ -3575,8 +3575,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		regID = preReg.preReg.rowID.get(index).toString();
 //		System.out.println(regID); // debugging
 		try {
-			String sql = "SELECT Firstname, Middlename, Lastname, Contactnum, Emailadd, Street, Barangay, City, Province, Brand FROM tblpreregistration WHERE ID = '" + regID + "'";
-			
+			String sql = "SELECT Firstname, Middlename, Lastname, Contactnum, Emailadd, Street, Barangay, City, Province, Brand FROM tblpreregistration WHERE ID = '" + regID + "'";			
 			String FName = "";
 			String MName = "";
 			String LName = "";
@@ -3604,6 +3603,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			preReg.reg.txtEmail.setText(Email);
 			preReg.reg.txtAddress.setText(Address);
 			preReg.reg.txtBrand.setText(Brand);
+			preReg.reg.txtUsername.setText(Email);
 
 		}catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "preRegDataSetter ERROR: " + e.getMessage());

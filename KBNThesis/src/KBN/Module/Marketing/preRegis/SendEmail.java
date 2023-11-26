@@ -16,7 +16,7 @@ public class SendEmail {
 		pass_ = Password;
 	}
 	
-    public void sendAccountEmail() {
+    public boolean sendAccountEmail() {
         // Sender's email configuration
         final String username = "accountinfo@kissedbynature.online";
         final String password = "KENKENken0011@";
@@ -50,8 +50,10 @@ public class SendEmail {
             Transport.send(message);
 
             System.out.println("Email sent successfully.");
+            return true;
         } catch (MessagingException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

@@ -187,7 +187,6 @@ public class Registration extends JPanel implements KeyListener, ActionListener{
         PlainDocument FN = (PlainDocument) txtFN.getDocument();
         PlainDocument MI = (PlainDocument) txtMI.getDocument();
         PlainDocument emailInput = (PlainDocument) txtEmail.getDocument();
-        PlainDocument brand = (PlainDocument) txtBrand.getDocument();
         PlainDocument contactNum = (PlainDocument) txtContact.getDocument();
         
 
@@ -203,7 +202,6 @@ public class Registration extends JPanel implements KeyListener, ActionListener{
         FN.setDocumentFilter(FNFilter);
         MI.setDocumentFilter(MIFilter);
         emailInput.setDocumentFilter(emailFilter);
-        brand.setDocumentFilter(emailFilter);
         contactNum.setDocumentFilter(numberFiler);
         
         txtEmail.addKeyListener(this);
