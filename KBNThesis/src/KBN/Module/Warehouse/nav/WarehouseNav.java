@@ -160,6 +160,11 @@ public class WarehouseNav extends JPanel {
 		endDate.setVisible(false);
 		btnCompute.setVisible(false);
 		btnExport.setVisible(false);
+		
+		
+		btnRawMats.setVisible(false);
+		btnPackMats.setVisible(false);
+		btnSummary.setVisible(false);
 
 	}
 }
