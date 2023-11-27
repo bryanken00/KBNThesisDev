@@ -30,6 +30,7 @@ public class AuditTrail extends JPanel implements MouseListener {
 	public JTextField txtSearchBar;
 	public JTable table;
 	public JButton btnSearch;
+	public JDateChooser dateChooser;
 	
 	public AuditTrail() {
 		setBackground(new Color(255, 255, 255));
@@ -70,6 +71,10 @@ public class AuditTrail extends JPanel implements MouseListener {
         lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 28));
         lblNewLabel.setBounds(10, 11, 471, 48);
         panel_1.add(lblNewLabel);
+        
+        dateChooser = new JDateChooser();
+        dateChooser.setBounds(510, 20, 161, 28);
+        panel_1.add(dateChooser);
         
         String Department[] = {"Marketing", "Production", "Warehouse"};
         

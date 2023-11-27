@@ -12,6 +12,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -88,7 +90,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 
-public class MarketingModule extends JFrame implements ActionListener, MouseListener, KeyListener, ItemListener{
+public class MarketingModule extends JFrame implements ActionListener, MouseListener, KeyListener, ItemListener, PropertyChangeListener{
 
 	//Class Import
 	private DbConnection dbConn;
@@ -542,6 +544,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		
 		// Audit Trail
 		auditTrail.btnSearch.addActionListener(this);
+		auditTrail.dateChooser.getDateEditor().addPropertyChangeListener(this);
 		
 		//OrderPanel
 		orderPanel.btnApproved.addActionListener(this);
@@ -2398,7 +2401,6 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "WHERE a.DateAction > DATE_SUB(NOW(), INTERVAL 2 MONTH) \n"
 					+ "ORDER BY a.DateAction DESC;";
 			
-			System.out.println(SQL);
 			st.execute(SQL);
 			ArrayList temp = new ArrayList<>();
 			rs = st.getResultSet();
@@ -4012,6 +4014,50 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			ConfirmProductPanelMouseListeners();
 			confirmationCounterCategory();
 		}
+		
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+        if ("date".equals(evt.getPropertyName())) {
+            Date selectedDate = auditTrail.dateChooser.getDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = sdf.format(selectedDate);
+            
+    		setVisiblePanel();
+    		auditTrail.setVisible(true);
+    		
+    		try {
+    			auditTrail.main.setRowCount(0);
+    			String SQL = "SELECT DATE_FORMAT(a.DateAction, '%Y-%m-%d') AS formatted_date, \n"
+    					+ "       DATE_FORMAT(a.DateAction, '%h:%i %p') AS formatted_time, \n"
+    					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
+    					+ "       a.Description \n"
+    					+ "FROM audittrailmarketing As a \n"
+    					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID \n"
+    					+ "WHERE DATE(a.DateAction) = '" + formattedDate + "' \n"
+    					+ "ORDER BY a.DateAction DESC;";
+    			
+    			st.execute(SQL);
+    			ArrayList temp = new ArrayList<>();
+    			rs = st.getResultSet();
+    			int i = 0;
+    			while(rs.next()) {
+    				String formattedText = "<html><center>" + rs.getString(1) + "<br>" + rs.getString(2) + "</center></html>";
+//    				temp.add(rs.getString(1) + ", " + rs.getString(2));
+    				temp.add(formattedText);
+    				temp.add(rs.getString(3));
+    				
+    				String[] splitted = rs.getString(4).split(" - ");
+    				temp.add("<html><b>" + splitted[0] + "</b> - " + splitted[1] + "</html>");
+    				auditTrail.main.addRow(temp.toArray());
+    				temp.clear();
+    			}
+    		} catch (Exception e) {
+    			JOptionPane.showMessageDialog(null, "Error AuditPanelFunc: " + e.getMessage());
+    		}
+            
+        }
 		
 	}
 }
