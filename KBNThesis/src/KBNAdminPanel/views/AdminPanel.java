@@ -70,6 +70,7 @@ import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
 import KBNAdminPanel.panels.ForecastGraph.ForecastPanel;
+import KBNAdminPanel.panels.Price.ProductPrice;
 import KBNAdminPanel.panels.SalesReport.SalesReportPanel;
 import KBNAdminPanel.panels.dashboard.Dashboard;
 import KBNAdminPanel.panels.dashboard.DashboardSalesChartData;
@@ -94,6 +95,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	
 	private AuditTrail auditTrail;
 	
+	//Price
+	private ProductPrice prodPrice;
 	
 	//Forecast
 	private ForecastPanel forecastPanel;
@@ -275,6 +278,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		navs.btnForecasting.addActionListener(this);
 		navs.btnEmployeeList.addActionListener(this);
 		navs.btnListOfCourier.addActionListener(this);
+		navs.btnProductPrice.addActionListener(this);
 		
 		// Mouse Right Click
 		courierPanel.table.addMouseListener(this);
@@ -1541,6 +1545,11 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	    	if(e.getSource() == courierPanel.btnCreate) {
 	    		courierCreate.setVisible(true);
 	    	}
+	    	
+	    if(e.getSource() == navs.btnProductPrice) {
+	    	prodPrice = new ProductPrice();
+	    	prodPrice.setVisible(true);
+	    }
 		
 	}
 

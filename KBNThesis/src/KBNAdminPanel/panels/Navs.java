@@ -28,6 +28,7 @@ public class Navs extends JPanel implements MouseListener{
 	
 	private JButton btnChecker;
 	public JButton btnDashboard;
+	public JButton btnProductPrice;
 
 	public Navs() {
 		setBackground(new Color(255, 255, 255));
@@ -46,7 +47,7 @@ public class Navs extends JPanel implements MouseListener{
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(0, 172, 255, 388);
+		panel.setBounds(0, 172, 255, 431);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -114,6 +115,16 @@ public class Navs extends JPanel implements MouseListener{
 		btnListOfCourier.setBackground(Color.WHITE);
 		btnListOfCourier.setBounds(10, 325, 241, 35);
 		panel.add(btnListOfCourier);
+		
+		btnProductPrice = new JButton("Product Price");
+		btnProductPrice.setVerticalTextPosition(SwingConstants.CENTER);
+		btnProductPrice.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnProductPrice.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 14));
+		btnProductPrice.setFocusable(false);
+		btnProductPrice.setBorderPainted(false);
+		btnProductPrice.setBackground(Color.WHITE);
+		btnProductPrice.setBounds(10, 371, 241, 35);
+		panel.add(btnProductPrice);
 
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setBounds(10, 663, 241, 13);
@@ -131,6 +142,7 @@ public class Navs extends JPanel implements MouseListener{
 		btnForecasting.addMouseListener(this);
 		btnEmployeeList.addMouseListener(this);
 		btnListOfCourier.addMouseListener(this);
+		btnProductPrice.addMouseListener(this);
 	}
 	
 	@Override
