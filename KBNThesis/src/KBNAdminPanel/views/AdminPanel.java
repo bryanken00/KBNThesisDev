@@ -709,167 +709,207 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			
 			String getScoreDate = "";
 	        
-            List<String> dates = date;
+            List<String> dates = new ArrayList<>();
             List<Integer> firstDataset = new ArrayList<>();
-            System.out.println(month);
             
-	        LocalDate firstDayOfMonthFirst = LocalDate.of(year, month, 1); // October 2023
+	        LocalDate firstDayOfMonthFirst = LocalDate.of(year-1, month, 1); // October 2023
 	        LocalDate currentMondayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
 	        LocalDate currentSundayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 	        int FirstIndex = 0;
 	        
+	        List<Integer> week1 = new ArrayList<>();
+	        List<Integer> week2 = new ArrayList<>();
+	        List<Integer> week3 = new ArrayList<>();
+	        List<Integer> week4 = new ArrayList<>();
+	        List<Integer> week5 = new ArrayList<>();
+	        int dateCounter = 1;
+	        
 	        while (currentMondayFirst.getMonth() == firstDayOfMonthFirst.getMonth()) {
-		        ArrayList<Integer> arrTemp = new ArrayList<>();
-	            if (currentSundayFirst.isBefore(currentMondayFirst)) {
-	                currentSundayFirst = currentSundayFirst.plusWeeks(1);
-	            }
-	            
-				getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
-						+ "FROM tblordercheckout AS a \n"
-						+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-						+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
-						+ "AND (a.OrderDate > '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
-						+ "GROUP BY a.OrderRefNumber \n"
-						+ "order by a.OrderDate DESC;";
-				
-				st.execute(getScoreDate);
-				
-				rs = st.getResultSet();
-				
-				while(rs.next()) {
-					arrTemp.add(rs.getInt(3));
-				}
-				
-				int divider = arrTemp.size();
-				
-				if(divider == 0)
-					divider = 1;
-				
-				int tempAdd = 0;
-				
-				for(int i = 0; i < arrTemp.size(); i++) {
-					if(arrTemp.get(i) == 0)
-						tempAdd += 1;
-					else
-						tempAdd += arrTemp.get(i);
-				}
-				
-				int finalAverage = Math.round(tempAdd / divider);
-				
-				FirstIndex++;
-	            firstDataset.add(finalAverage);
-		   		
+	        	
+		        for(int j =  5; j > 0; j--) {
+		        	
+			        ArrayList<Integer> arrTemp = new ArrayList<>();
+		            if (currentSundayFirst.isBefore(currentMondayFirst)) {
+		                currentSundayFirst = currentSundayFirst.plusWeeks(1);
+		            }
+		            
+					getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+							+ "FROM tblordercheckout AS a \n"
+							+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+							+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
+							+ "AND (a.OrderDate >= '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
+							+ "GROUP BY a.OrderRefNumber \n"
+							+ "order by a.OrderDate DESC;";
+					
+					System.out.println(getScoreDate);
+					
+					st.execute(getScoreDate);
+					
+					rs = st.getResultSet();
+					
+					while(rs.next()) {
+						arrTemp.add(rs.getInt(3));
+					}
+					
+					int divider = arrTemp.size();
+					
+					if(divider == 0)
+						divider = 1;
+					
+					int tempAdd = 0;
+					
+					for(int i = 0; i < arrTemp.size(); i++) {
+						if(arrTemp.get(i) == 0)
+							tempAdd += 1;
+						else
+							tempAdd += arrTemp.get(i);
+					}
+					
+					int finalAverage = Math.round(tempAdd / divider);
+					
+					FirstIndex++;
+		            firstDataset.add(finalAverage);
+		            
+		            if(j == 5)
+		            	week1.add(finalAverage);
+		            else if(j == 4)
+		            	week2.add(finalAverage);
+		            else if(j == 3)
+		            	week3.add(finalAverage);
+		            else if(j == 2)
+		            	week4.add(finalAverage);
+		            else if(j == 1)
+		            	week5.add(finalAverage);
+		            
+		            System.out.println(j + ". " + finalAverage);
+		            	
+		        	
+		        	currentMondayFirst = currentMondayFirst.minusYears(1);
+		        	currentSundayFirst = currentSundayFirst.minusYears(1);
+		        }
+
+				System.out.println("----------------------------------------------");
+
+	        	currentMondayFirst = currentMondayFirst.plusYears(5);
+	        	currentSundayFirst = currentSundayFirst.plusYears(5);
+		        
 	            currentMondayFirst = currentMondayFirst.plusWeeks(1);
 	            currentSundayFirst = currentSundayFirst.plusWeeks(1);
-	            
-	            System.out.println("1." + finalAverage);
+	            dates.add("week" + dateCounter);
+	            dateCounter++;
 	        }
-
-            List<Integer> secondDataset = new ArrayList<>();
-            
-            System.out.println(month-1);
-	        
-	        LocalDate firstDayOfMonthSecond = LocalDate.of(year, month-1, 1);
-	        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
-	        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-
-	        int secondindex = 0;
-	        while (currentMondaySecond.getMonth() == firstDayOfMonthSecond.getMonth()) {
-	        	ArrayList<Integer> arrTemp = new ArrayList<>();
-	        	if (currentSundaySecond.isBefore(currentMondaySecond)) {
-	        		currentSundaySecond = currentSundaySecond.plusWeeks(1);
-	        	}
-	        	
-	        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
-	        			+ "FROM tblordercheckout AS a \n"
-	        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-	        			+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
-	        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
-	        			+ "GROUP BY a.OrderRefNumber \n"
-	        			+ "order by a.OrderDate DESC;";
-	        	
-	        	st.execute(getScoreDate);
-	        	
-	        	rs = st.getResultSet();
-	        	
-	        	while(rs.next()) {
-	        		arrTemp.add(rs.getInt(3));
-	        	}
-	        	
-	        	
-	        	int divider = arrTemp.size();
-	        	
-	        	if(divider == 0)
-	        		divider = 1;
-	        	
-	        	int tempAdd = 0;
-	        	
-	        	for(int i = 0; i < arrTemp.size(); i++) {
-					if(arrTemp.get(i) == 0)
-						tempAdd += 1;
-					else
-						tempAdd += arrTemp.get(i);
-	        	}
-	        	
-	        	int finalAverage = Math.round(tempAdd / divider);
-	        	
-	        	secondDataset.add(finalAverage);
-	        	
-	        	currentMondaySecond = currentMondaySecond.plusWeeks(1);
-	        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
-
-	        	secondindex++;
-
-	            System.out.println("2." + finalAverage);
-	        }
+//
+//            List<Integer> secondDataset = new ArrayList<>();
+//	        
+//	        LocalDate firstDayOfMonthSecond = LocalDate.of(year, month-1, 1);
+//	        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+//	        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+//
+//	        int secondindex = 0;
+//	        while (currentMondaySecond.getMonth() == firstDayOfMonthSecond.getMonth()) {
+//	        	ArrayList<Integer> arrTemp = new ArrayList<>();
+//	        	if (currentSundaySecond.isBefore(currentMondaySecond)) {
+//	        		currentSundaySecond = currentSundaySecond.plusWeeks(1);
+//	        	}
+//	        	
+//	        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+//	        			+ "FROM tblordercheckout AS a \n"
+//	        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
+//	        			+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
+//	        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
+//	        			+ "GROUP BY a.OrderRefNumber \n"
+//	        			+ "order by a.OrderDate DESC;";
+//	        	
+//	        	st.execute(getScoreDate);
+//	        	
+//	        	rs = st.getResultSet();
+//	        	
+//	        	while(rs.next()) {
+//	        		arrTemp.add(rs.getInt(3));
+//	        	}
+//	        	
+//	        	
+//	        	int divider = arrTemp.size();
+//	        	
+//	        	if(divider == 0)
+//	        		divider = 1;
+//	        	
+//	        	int tempAdd = 0;
+//	        	
+//	        	for(int i = 0; i < arrTemp.size(); i++) {
+//					if(arrTemp.get(i) == 0)
+//						tempAdd += 1;
+//					else
+//						tempAdd += arrTemp.get(i);
+//	        	}
+//	        	
+//	        	int finalAverage = Math.round(tempAdd / divider);
+//	        	
+//	        	secondDataset.add(finalAverage);
+//	        	
+//	        	currentMondaySecond = currentMondaySecond.plusWeeks(1);
+//	        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
+//
+//	        	secondindex++;
+//
+//	            System.out.println("2." + finalAverage);
+//	        }
 	        
             List<Integer> AverageFuture = new ArrayList<>();
             
-			int minVal = 0;
-			if(FirstIndex < secondindex)
-				minVal = FirstIndex;
-			else
-				minVal = secondindex;
-			
-	        for (int i = firstDataset.size() - 1; i >= minVal; i--) {
-	            firstDataset.remove(i);
-	        }
-	        
-	        for (int i = secondDataset.size() - 1; i >= minVal; i--) {
-	        	secondDataset.remove(i);
-	        }
-
-			for(int i = 0; i < minVal; i++) {
-				date.add("week " + (i+1));
-			}
-			
-
             
-            for(int i = 0; i < minVal; i++) {
-            	int sum = Math.round((Integer.parseInt(firstDataset.get(i).toString()) + Integer.parseInt(secondDataset.get(i).toString()))/2);
+//			int minVal = 0;
+//			if(FirstIndex < secondindex)
+//				minVal = FirstIndex;
+//			else
+//				minVal = secondindex;
+//			
+//	        for (int i = firstDataset.size() - 1; i >= minVal; i--) {
+//	            firstDataset.remove(i);
+//	        }
+//	        
+//	        for (int i = secondDataset.size() - 1; i >= minVal; i--) {
+//	        	secondDataset.remove(i);
+//	        }
+//
+//			for(int i = 0; i < minVal; i++) {
+//				date.add("week " + (i+1));
+//			}
+//            
+            for(int i = 0; i < 4; i++) {
+            	int sum = Math.round((Integer.parseInt(week1.get(i).toString()) + Integer.parseInt(week2.get(i).toString()) + Integer.parseInt(week3.get(i).toString()) + Integer.parseInt(week4.get(i).toString()))/4);
             	AverageFuture.add(sum);
+            	System.out.println("week" + i + ": "+ sum);
             }
 
             List<List<Integer>> datasets = new ArrayList<>();
-            datasets.add(firstDataset);
-            datasets.add(secondDataset);
+            datasets.add(week1);
+            datasets.add(week2);
+            datasets.add(week3);
+            datasets.add(week4);
+//            datasets.add(week5);
+//            datasets.add(secondDataset);
             datasets.add(AverageFuture);
             
     		JLabel graphLegend = new JLabel("Red - Previous     Blue - Present     Green - Possible Future");
     		graphLegend.setHorizontalAlignment(SwingConstants.CENTER);
     		
     		int a = findMaxValue(firstDataset);
-    		int b = findMaxValue(secondDataset);
+//    		int b = findMaxValue(secondDataset);
     		
 
-    		if (a > b) {
-    		    max = a;
-    		} else {
-    		    max = b;
-    		}
+//    		if (a > b) {
+//    		    max = a;
+//    		} else {
+//    		    max = b;
+//    		}
     		
-    		if(max <= 20)
-    			max = 50;
+//    		if(max <= 20)
+//    			max = 50;
+    		
+    		max = a;
+    		
+    		
 			
             graphTest = new GraphTest(datasets, max, dates);
 			graphTest.revalidate();

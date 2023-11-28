@@ -16,7 +16,7 @@ public class GraphTest extends JPanel {
     private List<String> date;
 
     // Define an array of colors for each dataset
-    private static final Color[] LINE_COLORS = {Color.BLUE, Color.RED, Color.GREEN};
+    private static final Color[] LINE_COLORS = {Color.BLUE, Color.RED, Color.GREEN, Color.BLACK, Color.YELLOW, Color.ORANGE};
 
     public GraphTest(List<List<Integer>> datasets, int max, List<String> date) {
         this.datasets = datasets;
