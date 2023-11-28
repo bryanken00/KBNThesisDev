@@ -877,7 +877,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 //			}
 //            
             for(int i = 0; i < 4; i++) {
-            	int sum = Math.round((Integer.parseInt(week1.get(i).toString()) + Integer.parseInt(week2.get(i).toString()) + Integer.parseInt(week3.get(i).toString()) + Integer.parseInt(week4.get(i).toString()))/4);
+            	int sum = Math.round((Integer.parseInt(week1.get(i).toString()) + Integer.parseInt(week2.get(i).toString()) + Integer.parseInt(week3.get(i).toString()) + Integer.parseInt(week4.get(i).toString()) + Integer.parseInt(week4.get(i).toString()))/5);
             	AverageFuture.add(sum);
             	System.out.println("week" + i + ": "+ sum);
             }
@@ -887,7 +887,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
             datasets.add(week2);
             datasets.add(week3);
             datasets.add(week4);
-//            datasets.add(week5);
+            datasets.add(week5);
 //            datasets.add(secondDataset);
             datasets.add(AverageFuture);
             
