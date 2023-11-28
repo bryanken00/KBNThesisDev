@@ -1213,7 +1213,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
 					+ "       a.Description \n"
 					+ "FROM audittrailmarketing As a \n"
-					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID \n"
+					+ "ORDER BY a.DateAction DESC;";
 			st.execute(SQL);
 			ArrayList temp = new ArrayList<>();
 			rs = st.getResultSet();
@@ -1245,7 +1246,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 					+ "       CONCAT(b.FirstName, ' ', b.LastName) AS FullName, \n"
 					+ "       a.Description \n"
 					+ "FROM " + Cat + " As a \n"
-					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID;";
+					+ "JOIN tblaccountinfo AS b ON a.UserID = b.AccountID \n"
+					+ "ORDER BY a.DateAction DESC;";
 			
 			System.out.println(SQL);
 			st.execute(SQL);
@@ -1773,9 +1775,18 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
     		if(rs.next())
     			max = rs.getInt(1);
             	
-    		String X_axis = "SELECT SUM(a.Quantity), b.OrderDate FROM tblordercheckoutdata AS a "
-    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber "
-    				+ "GROUP BY b.OrderDate ";
+            LocalDate currentDate = LocalDate.now();
+
+            LocalDate mondayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate sundayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+            	
+    		String X_axis = "SELECT SUM(a.Quantity) AS Score, b.OrderDate AS Order_Date \r\n"
+    				+ "FROM tblordercheckoutdata AS a \r\n"
+    				+ "JOIN tblordercheckout AS b ON b.OrderRefNumber = a.OrderRefNumber \r\n"
+    				+ "JOIN tblorderstatus AS c ON c.OrderRefNumber = a.OrderRefNumber \r\n"
+    				+ "WHERE c.Status = 'Completed' AND (OrderDate >= '" + mondayOfWeek + "' AND OrderDate <= '" +  sundayOfWeek + "')\r\n"
+    				+ "GROUP BY DATE(Order_Date) \n"
+    				+ "ORDER BY Score DESC;";
     		
     		st.execute(X_axis);
     		rs = st.getResultSet();

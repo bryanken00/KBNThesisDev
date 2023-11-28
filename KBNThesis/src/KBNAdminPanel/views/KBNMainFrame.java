@@ -66,7 +66,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 900, 550);
 		contentPane = new JPanel();
-		contentPane.setBackground(new Color(217, 217, 217));
+		contentPane.setBackground(new Color(255, 255, 255));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
