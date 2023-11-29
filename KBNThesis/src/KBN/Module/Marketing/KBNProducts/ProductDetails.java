@@ -56,7 +56,7 @@ import java.awt.event.ActionEvent;
 public class ProductDetails extends JDialog implements ActionListener {
 	
 	public JTextField txtProdName;
-	public JTextField txtPrice;
+	public JTextField txtProductCost;
 	public JTextField txtVariant;
 	public JLabel lblImg;
 	
@@ -80,6 +80,9 @@ public class ProductDetails extends JDialog implements ActionListener {
 	private String userID = "";
 	private JTextField txtCategory;
 	private JButton btnAddNew;
+	private JTextField txtProfitMargin;
+	private JTextField txtProductPrice;
+	private JButton btnComputePrice;
 
 	public ProductDetails() {
 		setResizable(false);
@@ -144,19 +147,19 @@ public class ProductDetails extends JDialog implements ActionListener {
 		txtProdName.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtProdName.setColumns(10);
 		
-		JLabel lblNewLabel_1_1 = new JLabel("Price:");
+		JLabel lblNewLabel_1_1 = new JLabel("Product Cost:");
 		lblNewLabel_1_1.setBounds(327, 167, 140, 28);
 		dataPanel.add(lblNewLabel_1_1);
 		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
-		txtPrice = new JTextField();
-		txtPrice.setBounds(327, 197, 286, 28);
-		dataPanel.add(txtPrice);
-		txtPrice.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		txtPrice.setColumns(10);
+		txtProductCost = new JTextField();
+		txtProductCost.setBounds(327, 197, 140, 28);
+		dataPanel.add(txtProductCost);
+		txtProductCost.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtProductCost.setColumns(10);
 		
-		JLabel lblNewLabel_1_1_1 = new JLabel("Variant:");
-		lblNewLabel_1_1_1.setBounds(10, 167, 140, 28);
+		JLabel lblNewLabel_1_1_1 = new JLabel("Variant: (Ex. 100 ml, 1Liter, etc)");
+		lblNewLabel_1_1_1.setBounds(10, 167, 286, 28);
 		dataPanel.add(lblNewLabel_1_1_1);
 		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
@@ -172,7 +175,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 		lblNewLabel_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		JLabel lblNewLabel_1_1_1_1_1 = new JLabel("Description:");
-		lblNewLabel_1_1_1_1_1.setBounds(10, 250, 140, 28);
+		lblNewLabel_1_1_1_1_1.setBounds(10, 305, 140, 28);
 		dataPanel.add(lblNewLabel_1_1_1_1_1);
 		lblNewLabel_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
@@ -202,7 +205,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 		txtDescription = new JTextPane();
 		txtDescription.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		JScrollPane descriptionScrollPane = new JScrollPane(txtDescription);
-		descriptionScrollPane.setBounds(10, 280, 286, 78);
+		descriptionScrollPane.setBounds(10, 335, 286, 78);
 		dataPanel.add(descriptionScrollPane);
 		
 		txtCategory = new JTextField();
@@ -221,6 +224,40 @@ public class ProductDetails extends JDialog implements ActionListener {
 		btnAddNew.addActionListener(this);
 		dataPanel.add(btnAddNew);
 		
+		txtProfitMargin = new JTextField();
+		txtProfitMargin.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtProfitMargin.setColumns(10);
+		txtProfitMargin.setBounds(477, 197, 136, 28);
+		dataPanel.add(txtProfitMargin);
+		
+		JLabel lblNewLabel_1_1_2 = new JLabel("Profit Margin: (%)");
+		lblNewLabel_1_1_2.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewLabel_1_1_2.setBounds(477, 167, 157, 28);
+		dataPanel.add(lblNewLabel_1_1_2);
+		
+		JLabel lblNewLabel_1_1_3 = new JLabel("Product Price:");
+		lblNewLabel_1_1_3.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewLabel_1_1_3.setBounds(10, 236, 286, 28);
+		dataPanel.add(lblNewLabel_1_1_3);
+		
+		txtProductPrice = new JTextField();
+		txtProductPrice.setEditable(false);
+		txtProductPrice.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtProductPrice.setColumns(10);
+		txtProductPrice.setBounds(10, 266, 286, 28);
+		txtProductPrice.setFocusable(false);
+		dataPanel.add(txtProductPrice);
+		
+		btnComputePrice = new JButton("Compute Price");
+		btnComputePrice.setForeground(Color.WHITE);
+		btnComputePrice.setFont(new Font("MS Reference Sans Serif", Font.BOLD, 18));
+		btnComputePrice.setFocusable(false);
+		btnComputePrice.setBorderPainted(false);
+		btnComputePrice.setBackground(new Color(8, 104, 0));
+		btnComputePrice.setBounds(387, 260, 188, 35);
+		btnComputePrice.addActionListener(this);
+		dataPanel.add(btnComputePrice);
+		
 		btnAddImg.addActionListener(this);
 		btnSave.addActionListener(this);
 		
@@ -230,12 +267,14 @@ public class ProductDetails extends JDialog implements ActionListener {
         
 		PlainDocument prodName = (PlainDocument) txtProdName.getDocument();
 		PlainDocument prodVariant = (PlainDocument) txtVariant.getDocument();
-		PlainDocument price = (PlainDocument) txtPrice.getDocument();
+		PlainDocument cost = (PlainDocument) txtProductCost.getDocument();
+		PlainDocument profit = (PlainDocument) txtProfitMargin.getDocument();
 		
 		
 		prodName.setDocumentFilter(emailFilter);
 		prodVariant.setDocumentFilter(emailFilter);
-		price.setDocumentFilter(numberFiler);
+		cost.setDocumentFilter(numberFiler);
+		profit.setDocumentFilter(numberFiler);
 		
 	}
 	
@@ -283,7 +322,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 				lblImg.setIcon(new ImageIcon(imgLoader(rs.getString(1))));
 				txtProdName.setText(rs.getString(2));
 				txtVariant.setText(rs.getString(3));
-				txtPrice.setText(rs.getString(4));
+				txtProductCost.setText(rs.getString(4));
 //				cbCategory.addItem(rs.getString(5));
 				for(int i = 0; i < arrCBIdentifier.size(); i++) {
 					if(arrCBIdentifier.get(i).equals(rs.getString(5)))
@@ -344,6 +383,18 @@ public class ProductDetails extends JDialog implements ActionListener {
 				btnAddNew.setText("Add New?");
 			}
 		}
+		
+		if(e.getSource() == btnComputePrice) {
+			double cost = Double.parseDouble(txtProductCost.getText());
+			double margintoConvert = Double.parseDouble(txtProfitMargin.getText());
+			
+			double marginConverted = margintoConvert/100;
+			double margin = cost * marginConverted;
+			
+			double price = cost + margin;
+			
+			txtProductPrice.setText(price + "");
+		}
 	}
 	
 	//Save
@@ -351,7 +402,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 		try {
 			String img = imgPath;
 			String prodName = txtProdName.getText();
-			String prodPrice = txtPrice.getText();
+			String prodPrice = txtProductPrice.getText();
 			String prodVol = txtVariant.getText();
 			String prodQuantity = "0";
 			String prodSold = "0";
@@ -393,9 +444,8 @@ public class ProductDetails extends JDialog implements ActionListener {
 	private void updateProduct() {
 		try {
 			String productID = prodID;
-			String img = imgPath;
 			String prodName = txtProdName.getText();
-			String prodPrice = txtPrice.getText();
+			String prodPrice = txtProductPrice.getText();
 			String prodVol = txtVariant.getText();
 			String Description = txtDescription.getText();
 			
@@ -411,8 +461,7 @@ public class ProductDetails extends JDialog implements ActionListener {
 			}
 			
 			String SQLUpdate = "UPDATE tblproducts \n"
-					+ "SET prodImg = '" + img + "', \n"
-					+ "prodName = '" + prodName + "', \n"
+					+ "SET prodName = '" + prodName + "', \n"
 					+ "prodPrice = '" + prodPrice +"', \n"
 					+ "prodVolume = '" + prodVol + "', \n"
 					+ "Quantity = 0, \n"
@@ -514,12 +563,11 @@ public class ProductDetails extends JDialog implements ActionListener {
 		prodID = "";
 		imgPath = "";
 		txtProdName.setText("");
-		txtPrice.setText("");
+		txtProductCost.setText("");
 		txtVariant.setText("");
 		if(cbCategory != null)
 			cbCategory.setSelectedIndex(0);
 		txtDescription.setText("");
 		lblImg.setIcon(null);
 	}
-
 }
