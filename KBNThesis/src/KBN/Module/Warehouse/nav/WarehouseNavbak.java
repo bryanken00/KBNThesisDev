@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import com.toedter.calendar.JDateChooser;
 
-public class WarehouseNav extends JPanel {
+public class WarehouseNavbak extends JPanel {
 	
 	public JButton btnAddItem;
 	public JButton btnQRCode;
@@ -29,7 +29,7 @@ public class WarehouseNav extends JPanel {
 	public JDateChooser endDate;
 	public JButton btnCompute;
 	
-	public WarehouseNav() {
+	public WarehouseNavbak() {
 		setBackground(new Color(255, 255, 255));
 		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setBounds(0, 0, 255, 721);
@@ -51,7 +51,7 @@ public class WarehouseNav extends JPanel {
 		add(separator_1);
 		
 		JLabel lblLogo_1 = new JLabel("");
-		lblLogo_1.setIcon(new ImageIcon(WarehouseNav.class.getResource("/KBN/resources/kbnlogo.png")));
+		lblLogo_1.setIcon(new ImageIcon(WarehouseNavbak.class.getResource("/KBN/resources/kbnlogo.png")));
 		lblLogo_1.setBounds(10, 11, 241, 65);
 		add(lblLogo_1);
 		
@@ -102,7 +102,7 @@ public class WarehouseNav extends JPanel {
 		btnFinishProduct.setEnabled(false);
 		btnFinishProduct.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnFinishProduct.setBackground(Color.WHITE);
-		btnFinishProduct.setBounds(10, 259, 241, 46);
+		btnFinishProduct.setBounds(10, 391, 241, 46);
 		add(btnFinishProduct);
 		
 		btnArchiveList = new JButton("Archive List");
@@ -112,7 +112,6 @@ public class WarehouseNav extends JPanel {
 		btnArchiveList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnArchiveList.setBackground(Color.WHITE);
 		btnArchiveList.setBounds(10, 457, 241, 46);
-		btnArchiveList.setVisible(false);
 		add(btnArchiveList);
 		
 		btnSummary = new JButton("Summary");
@@ -130,7 +129,7 @@ public class WarehouseNav extends JPanel {
 		btnProcessOrder.setEnabled(false);
 		btnProcessOrder.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnProcessOrder.setBackground(Color.WHITE);
-		btnProcessOrder.setBounds(10, 325, 241, 46);
+		btnProcessOrder.setBounds(10, 589, 241, 46);
 		add(btnProcessOrder);
 		
 		startingDate = new JDateChooser();

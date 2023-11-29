@@ -561,7 +561,7 @@ public class ProductDetails extends JDialog implements ActionListener {
                 os.write(("Content-Type: application/octet-stream\r\n\r\n").getBytes());
 
                 byte[] fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
-                os.write(fileBytes);
+                os.write(fileBytes);	
                 os.write(("\r\n--" + boundary + "--\r\n").getBytes());
             }
 
@@ -591,6 +591,8 @@ public class ProductDetails extends JDialog implements ActionListener {
 		imgPath = "";
 		txtProdName.setText("");
 		txtProductCost.setText("");
+		txtProfitMargin.setText("");
+		txtProductPrice.setText("");
 		txtVariant.setText("");
 		if(cbCategory != null)
 			cbCategory.setSelectedIndex(0);

@@ -70,6 +70,7 @@ import KBNAdminPanel.panels.Forecast.ForecastGraphs;
 import KBNAdminPanel.panels.Forecast.ForecastingPanel;
 import KBNAdminPanel.panels.Forecast.barGen;
 import KBNAdminPanel.panels.ForecastGraph.ForecastPanel;
+import KBNAdminPanel.panels.ForecastGraph.GraphList;
 import KBNAdminPanel.panels.Price.ProductPrice;
 import KBNAdminPanel.panels.SalesReport.SalesReportPanel;
 import KBNAdminPanel.panels.dashboard.Dashboard;
@@ -100,7 +101,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	
 	//Forecast
 	private ForecastPanel forecastPanel;
-	private GraphTest graphTest;
+	private GraphTest graphHistory;
+	private GraphTest graphFuture;
+	private GraphList graphContainer;
 	
 	// Employee
 	private EmployeePanel empPanel;
@@ -193,6 +196,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         
         // Forecast New
         forecastPanel = new ForecastPanel();
+        graphContainer = new GraphList();
+        forecastPanel.Graph.setViewportView(graphContainer);
         
         //Employee
         empPanel = new EmployeePanel();
@@ -248,6 +253,16 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		forecastgraph.graph1.add(bar1);
 		forecastgraph.graph2.add(bar2);
 		
+		
+		// Forecast
+		List<List<Integer>> datasetsFuture = new ArrayList<>();
+		List<String> dates = new ArrayList<>();
+        graphFuture = new GraphTest(datasetsFuture, 50, dates);
+        graphHistory = new GraphTest(datasetsFuture, 50, dates);
+        graphContainer.futureTrend.add(graphFuture);
+        graphContainer.History.add(graphHistory);
+		graphFuture.setBounds(0, 0, 939, 454);
+		graphHistory.setBounds(0, 0, 939, 454);
 
 		dashboard1();
 		dashboard1.setVisible(true);
@@ -278,7 +293,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		navs.btnForecasting.addActionListener(this);
 		navs.btnEmployeeList.addActionListener(this);
 		navs.btnListOfCourier.addActionListener(this);
-		navs.btnProductPrice.addActionListener(this);
 		
 		// Mouse Right Click
 		courierPanel.table.addMouseListener(this);
@@ -679,22 +693,14 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	// Forecast
 	private void getForecastGraph() {
 		try {
-
-			forecastPanel.Graph.removeAll();
-			forecastPanel.Graph.revalidate();
-			forecastPanel.Graph.repaint();
-			
 			String product = forecastPanel.comboBox.getSelectedItem() + "";
-
-	        
+			
 	        String prodName = "";
 	        String prodVariant = "";
 
 	        String[] parts = product.split("\\(|\\)");
 
-	        // Ensure that there are at least two parts
 	        if (parts.length >= 2) {
-	            // Trim to remove leading and trailing whitespaces
 	            prodName = parts[0].trim();
 	            prodVariant = parts[1].trim();
 	        } else {
@@ -741,8 +747,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 							+ "GROUP BY a.OrderRefNumber \n"
 							+ "order by a.OrderDate DESC;";
 					
-					System.out.println(getScoreDate);
-					
 					st.execute(getScoreDate);
 					
 					rs = st.getResultSet();
@@ -780,15 +784,11 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		            	week4.add(finalAverage);
 		            else if(j == 1)
 		            	week5.add(finalAverage);
-		            
-		            System.out.println(j + ". " + finalAverage);
-		            	
 		        	
 		        	currentMondayFirst = currentMondayFirst.minusYears(1);
 		        	currentSundayFirst = currentSundayFirst.minusYears(1);
 		        }
 
-				System.out.println("----------------------------------------------");
 
 	        	currentMondayFirst = currentMondayFirst.plusYears(5);
 	        	currentSundayFirst = currentSundayFirst.plusYears(5);
@@ -798,127 +798,43 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	            dates.add("week" + dateCounter);
 	            dateCounter++;
 	        }
-//
-//            List<Integer> secondDataset = new ArrayList<>();
-//	        
-//	        LocalDate firstDayOfMonthSecond = LocalDate.of(year, month-1, 1);
-//	        LocalDate currentMondaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
-//	        LocalDate currentSundaySecond = firstDayOfMonthSecond.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-//
-//	        int secondindex = 0;
-//	        while (currentMondaySecond.getMonth() == firstDayOfMonthSecond.getMonth()) {
-//	        	ArrayList<Integer> arrTemp = new ArrayList<>();
-//	        	if (currentSundaySecond.isBefore(currentMondaySecond)) {
-//	        		currentSundaySecond = currentSundaySecond.plusWeeks(1);
-//	        	}
-//	        	
-//	        	getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
-//	        			+ "FROM tblordercheckout AS a \n"
-//	        			+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
-//	        			+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
-//	        			+ "AND (a.OrderDate > '" + currentMondaySecond + "' AND a.OrderDate <= '" + currentSundaySecond + "' )"
-//	        			+ "GROUP BY a.OrderRefNumber \n"
-//	        			+ "order by a.OrderDate DESC;";
-//	        	
-//	        	st.execute(getScoreDate);
-//	        	
-//	        	rs = st.getResultSet();
-//	        	
-//	        	while(rs.next()) {
-//	        		arrTemp.add(rs.getInt(3));
-//	        	}
-//	        	
-//	        	
-//	        	int divider = arrTemp.size();
-//	        	
-//	        	if(divider == 0)
-//	        		divider = 1;
-//	        	
-//	        	int tempAdd = 0;
-//	        	
-//	        	for(int i = 0; i < arrTemp.size(); i++) {
-//					if(arrTemp.get(i) == 0)
-//						tempAdd += 1;
-//					else
-//						tempAdd += arrTemp.get(i);
-//	        	}
-//	        	
-//	        	int finalAverage = Math.round(tempAdd / divider);
-//	        	
-//	        	secondDataset.add(finalAverage);
-//	        	
-//	        	currentMondaySecond = currentMondaySecond.plusWeeks(1);
-//	        	currentSundaySecond = currentSundaySecond.plusWeeks(1);
-//
-//	        	secondindex++;
-//
-//	            System.out.println("2." + finalAverage);
-//	        }
 	        
             List<Integer> AverageFuture = new ArrayList<>();
-            
-            
-//			int minVal = 0;
-//			if(FirstIndex < secondindex)
-//				minVal = FirstIndex;
-//			else
-//				minVal = secondindex;
-//			
-//	        for (int i = firstDataset.size() - 1; i >= minVal; i--) {
-//	            firstDataset.remove(i);
-//	        }
-//	        
-//	        for (int i = secondDataset.size() - 1; i >= minVal; i--) {
-//	        	secondDataset.remove(i);
-//	        }
-//
-//			for(int i = 0; i < minVal; i++) {
-//				date.add("week " + (i+1));
-//			}
-//            
             for(int i = 0; i < 4; i++) {
             	int sum = Math.round((Integer.parseInt(week1.get(i).toString()) + Integer.parseInt(week2.get(i).toString()) + Integer.parseInt(week3.get(i).toString()) + Integer.parseInt(week4.get(i).toString()) + Integer.parseInt(week4.get(i).toString()))/5);
             	AverageFuture.add(sum);
             	System.out.println("week" + i + ": "+ sum);
             }
 
-            List<List<Integer>> datasets = new ArrayList<>();
-            datasets.add(week1);
-            datasets.add(week2);
-            datasets.add(week3);
-            datasets.add(week4);
-            datasets.add(week5);
-//            datasets.add(secondDataset);
-            datasets.add(AverageFuture);
+            List<List<Integer>> datasetsHistory = new ArrayList<>();
+            datasetsHistory.add(week1);
+            datasetsHistory.add(week2);
+            datasetsHistory.add(week3);
+            datasetsHistory.add(week4);
+            datasetsHistory.add(week5);
             
-    		JLabel graphLegend = new JLabel("Red - Previous     Blue - Present     Green - Possible Future");
-    		graphLegend.setHorizontalAlignment(SwingConstants.CENTER);
+    		List<List<Integer>> datasetsFuture = new ArrayList<>();
+    		datasetsFuture.add(AverageFuture);
     		
-    		int a = findMaxValue(firstDataset);
-//    		int b = findMaxValue(secondDataset);
+    		max = findMaxValue(firstDataset);
     		
-
-//    		if (a > b) {
-//    		    max = a;
-//    		} else {
-//    		    max = b;
-//    		}
+    		graphContainer.History.removeAll();
+    		graphContainer.History.revalidate();
+    		graphContainer.History.repaint();
     		
-//    		if(max <= 20)
-//    			max = 50;
+    		graphContainer.futureTrend.removeAll();
+    		graphContainer.futureTrend.revalidate();
+    		graphContainer.futureTrend.repaint();
     		
-    		max = a;
-    		
-    		
+            graphHistory = new GraphTest(datasetsHistory, max, dates);
+			graphContainer.History.add(graphHistory);
+			graphHistory.setBounds(0, 0, 939, 454);
 			
-            graphTest = new GraphTest(datasets, max, dates);
-			graphTest.revalidate();
+			graphFuture = new GraphTest(datasetsFuture, max, dates);
+			graphContainer.futureTrend.add(graphFuture);
+			graphFuture.setBounds(0, 0, 939, 454);
             
-			forecastPanel.Graph.add(graphTest);
-            graphTest.setBounds(0, 0, 969, 537);
-            
-            forecastPanel.Graph.add(forecastPanel.Graph.add(graphLegend));
-    		graphLegend.setBounds(529, 11, 430, 14);
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error Forcast: " + e.getMessage());
 		}
@@ -928,11 +844,9 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         if (list == null || list.isEmpty()) {
             throw new IllegalArgumentException("List is null or empty");
         }
-
-        // Initialize max to the first element of the list
+        
         int max = list.get(0);
 
-        // Iterate through the list to find the maximum value
         for (int value : list) {
             if (value > max) {
                 max = value;
@@ -1585,11 +1499,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	    	if(e.getSource() == courierPanel.btnCreate) {
 	    		courierCreate.setVisible(true);
 	    	}
-	    	
-	    if(e.getSource() == navs.btnProductPrice) {
-	    	prodPrice = new ProductPrice();
-	    	prodPrice.setVisible(true);
-	    }
 		
 	}
 

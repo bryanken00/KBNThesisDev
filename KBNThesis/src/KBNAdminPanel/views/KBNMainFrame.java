@@ -103,7 +103,7 @@ public class KBNMainFrame extends JFrame implements ActionListener, MouseListene
 		
 		txtUsername = new JTextField();
 		txtUsername.setHorizontalAlignment(SwingConstants.CENTER);
-		txtUsername.setText("admin");
+		txtUsername.setText("superadmin");
 //		txtUsername.setBounds(22, 111, 256, 30);
 		txtUsername.addKeyListener(this);
 		txtUsername.setBorder(null);
