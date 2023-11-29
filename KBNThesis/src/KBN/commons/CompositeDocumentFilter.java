@@ -44,7 +44,7 @@ public class CompositeDocumentFilter extends DocumentFilter {
 
     private static class LetterOnlyDocumentFilter extends DocumentFilter {
         private boolean containsOnlyLetters(String text) {
-            return text.matches("[a-zA-Z ]*");
+        	return text.matches("[a-zA-Z\\s]*");
         }
 
         @Override

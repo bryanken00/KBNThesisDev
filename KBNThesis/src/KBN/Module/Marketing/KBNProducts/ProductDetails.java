@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import KBN.commons.CompositeDocumentFilter;
 import KBN.commons.DbConnection;
 import KBN.commons.EmailDocumentFilter;
 import KBN.commons.NumberOnlyDocumentFilter;
@@ -264,14 +265,14 @@ public class ProductDetails extends JDialog implements ActionListener {
 
 		NumberOnlyDocumentFilter numberFiler = new NumberOnlyDocumentFilter(10);
         EmailDocumentFilter emailFilter = new EmailDocumentFilter(64);
+        CompositeDocumentFilter text = new CompositeDocumentFilter(64);
         
 		PlainDocument prodName = (PlainDocument) txtProdName.getDocument();
 		PlainDocument prodVariant = (PlainDocument) txtVariant.getDocument();
 		PlainDocument cost = (PlainDocument) txtProductCost.getDocument();
 		PlainDocument profit = (PlainDocument) txtProfitMargin.getDocument();
 		
-		
-		prodName.setDocumentFilter(emailFilter);
+		prodName.setDocumentFilter(text);
 		prodVariant.setDocumentFilter(emailFilter);
 		cost.setDocumentFilter(numberFiler);
 		profit.setDocumentFilter(numberFiler);
