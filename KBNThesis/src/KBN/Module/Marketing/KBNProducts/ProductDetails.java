@@ -485,20 +485,47 @@ public class ProductDetails extends JDialog implements ActionListener {
 	}
 	
 	private void uploadIMG() {
-        JFileChooser fileChooser = new JFileChooser();
-        
-        // Create a filter to only accept image files with extensions jpg, jpeg, png, and gif
-        FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
-            "Image Files", "jpg", "jpeg", "png", "gif");
-        
-        fileChooser.setFileFilter(imageFilter); // Set the filter on the file chooser
-        
-        int returnValue = fileChooser.showOpenDialog(null);
-        
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            uploadFile(selectedFile);
-        }
+	    int response = JOptionPane.showConfirmDialog(
+	            null,
+	            "Once you upload the image, any changes will be automatically updated.\nDo you want to proceed?",
+	            "Confirmation",
+	            JOptionPane.YES_NO_OPTION
+	    );
+
+	    if (response == JOptionPane.YES_OPTION) {
+	        JFileChooser fileChooser = new JFileChooser();
+
+	        // Create a filter to only accept image files with extensions jpg, jpeg, png, and gif
+	        FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+	                "Image Files", "jpg", "jpeg", "png", "gif");
+
+	        fileChooser.setFileFilter(imageFilter); // Set the filter on the file chooser
+
+	        int returnValue = fileChooser.showOpenDialog(null);
+
+	        if (returnValue == JFileChooser.APPROVE_OPTION) {
+	            File selectedFile = fileChooser.getSelectedFile();
+	            
+	            System.out.println(selectedFile);
+	            uploadFile(selectedFile);
+
+	            if (btnSave.getText().equals("Update")) {
+	                String SQL = "UPDATE tblproducts\r\n"
+	                        + "SET prodImg = '" + imgPath + "' \n"
+	                        + "WHERE prodID = '" + prodID + "';";
+
+	                try {
+	                    st.execute(SQL);
+	                } catch (Exception e) {
+	                    JOptionPane.showMessageDialog(null, "Update Imgage.");
+	                }
+	            }
+	        } else if (returnValue == JFileChooser.CANCEL_OPTION || returnValue == JFileChooser.ERROR_OPTION) {
+	            JOptionPane.showMessageDialog(null, "Image upload canceled.");
+	        }
+	    } else if (response == JOptionPane.NO_OPTION) {
+	    } else if (response == JOptionPane.CLOSED_OPTION) {
+	    }
 	}
 	
 	private void uploadFile(File file) {
@@ -546,7 +573,6 @@ public class ProductDetails extends JDialog implements ActionListener {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        System.out.println("Response: " + line);
                         lblImg.setIcon(new ImageIcon(imgLoader(line)));
                         imgPath = line;
                     }
