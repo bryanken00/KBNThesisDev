@@ -63,36 +63,26 @@ public class Modules extends JFrame implements ActionListener{
 		
 		lblUsername = new JLabel("");
 		lblUsername.setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 15));
-		lblUsername.setBounds(669, 17, 135, 40);
+		lblUsername.setBounds(739, 11, 135, 40);
 		panel.add(lblUsername);
-		
-		JLabel lblLogo = new JLabel("");
-		lblLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/tempPicture.png")));
-		lblLogo.setBounds(29, 11, 99, 53);
-		panel.add(lblLogo);
 		
 		JLabel lblNewLabel_1 = new JLabel("KBN SKIN ESSENTIALS");
 		lblNewLabel_1.setFont(new Font("Imprint MT Shadow", Font.BOLD, 21));
-		lblNewLabel_1.setBounds(138, 11, 272, 53);
+		lblNewLabel_1.setBounds(10, 11, 272, 53);
 		panel.add(lblNewLabel_1);
 		
-		JLabel lblLogo_1 = new JLabel("");
-		lblLogo_1.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/tempPicture.png")));
-		lblLogo_1.setBounds(814, 11, 61, 53);
-		panel.add(lblLogo_1);
-		
 		JLabel lblMarketingLogo = new JLabel("");
-		lblMarketingLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/tempPicture.png")));
+		lblMarketingLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/Marketing.png")));
 		lblMarketingLogo.setBounds(33, 168, 250, 200);
 		contentPane.add(lblMarketingLogo);
 		
 		JLabel lblProductionLogo = new JLabel("");
-		lblProductionLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/tempPicture.png")));
+		lblProductionLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/Production.png")));
 		lblProductionLogo.setBounds(316, 168, 250, 200);
 		contentPane.add(lblProductionLogo);
 		
 		JLabel lblWarehouseLogo = new JLabel("");
-		lblWarehouseLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/tempPicture.png")));
+		lblWarehouseLogo.setIcon(new ImageIcon(Modules.class.getResource("/KBN/resources/Warehouse.png")));
 		lblWarehouseLogo.setBounds(599, 168, 250, 200);
 		contentPane.add(lblWarehouseLogo);
 		
