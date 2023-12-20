@@ -43,7 +43,8 @@ public class EmailDocumentFilter extends DocumentFilter {
 
     private static class LetterOnlyDocumentFilter extends DocumentFilter {
         private boolean containsOnlyLetters(String text) {
-        	return text.matches("[a-zA-Z0-9@_.-]*");
+//        	return text.matches("[a-zA-Z0-9@_.-]*");
+        	return text.matches("[a-zA-Z0-9@_.\\s-]*");
         }
 
         @Override

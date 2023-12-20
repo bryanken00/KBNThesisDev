@@ -36,6 +36,7 @@ import KBN.Module.Marketing.ClientProfile.AddProduct;
 import KBN.Module.Marketing.ClientProfile.ClientProfile;
 import KBN.Module.Marketing.ClientProfile.ClientProfileScrollablePanel;
 import KBN.Module.Marketing.ClientProfile.OrderHistory;
+import KBN.Module.Marketing.ClientProfile.UpdateProduct;
 import KBN.Module.Marketing.ClientProfile.rebrandingProductsList;
 import KBN.Module.Marketing.ConfirmationProduct.ConfirmationListPanel;
 import KBN.Module.Marketing.ConfirmationProduct.ConfirmationListPanelData;
@@ -135,6 +136,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private OrderHistory orderHistory;
 	private rebrandingProductsList rp;
 	private AddProduct addProduct;
+	private UpdateProduct updateProduct;
 	
 	//deliveries
 	private DeliveryStatus delStatus;
@@ -792,6 +794,20 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 			    }
 			}
 		}
+		
+		if(rp.btnProcessOrder != null) {
+			for(int i = 0; i < rp.btnProcessOrder.length; i++) {
+				if(e.getSource() == rp.btnProcessOrder[i]) {
+					updateProduct = new UpdateProduct();
+					updateProduct.setUserID(uID);
+					updateProduct.renderCategories();
+					updateProduct.setProductID(rp.prodID[i]);
+					updateProduct.setdata();
+					updateProduct.setVisible(true);
+					break;
+				}
+			}
+		}
 	}
 	
 
@@ -828,6 +844,11 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		}
 		if(e.getSource() == cp.lblProducts) {
 			clientProfileOwnProductsRefresher(uID);
+			
+			if(rp.btnProcessOrder != null)
+				clientProfileProductListRemove();
+			
+			clientProfileProductListAdd();
 			cp.scrollOrderPanel.setViewportView(rp);
 		}
 		if(e.getSource() == cp.lblAddProduct) {
@@ -2047,6 +2068,18 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 	private void clientProfileOrderListActionList() {
 		for(int i = 0; i < ClientProfileCounter; i++) {
 			cpsp.btnProcessOrder[i].addActionListener(this);
+		}
+	}
+	
+	private void clientProfileProductListAdd() {
+		for(int i = 0; i < rp.btnProcessOrder.length; i++) {
+			rp.btnProcessOrder[i].addActionListener(this);
+		}
+	}
+	
+	private void clientProfileProductListRemove() {
+		for(int i = 0; i < rp.btnProcessOrder.length; i++) {
+			rp.btnProcessOrder[i].removeActionListener(this);
 		}
 	}
 	
@@ -3312,12 +3345,13 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 				OwnProdCount = rs.getInt(1);
 			rp.orderCountSetter(OwnProdCount);
 			
-			String SQLProdList = "SELECT prodName FROM tblrebrandingproducts WHERE userID = '" + userID + "'";
+			String SQLProdList = "SELECT prodName, prodID FROM tblrebrandingproducts WHERE userID = '" + userID + "'";
 			st.execute(SQLProdList);
 			rs = st.getResultSet();
 			int counter = 0;
 			while(rs.next()) {
 				rp.lblProd[counter].setText(rs.getString(1));
+				rp.prodID[counter] = rs.getString(2);
 				counter++;
 			}
 		}catch (Exception e) {

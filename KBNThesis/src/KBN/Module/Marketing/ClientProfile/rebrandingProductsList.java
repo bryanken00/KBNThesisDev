@@ -17,6 +17,7 @@ public class rebrandingProductsList extends JPanel {
 	public JButton btnProcessOrder[];
 	public JLabel lblProd[];
 	public JSeparator separator[];
+	public String prodID[];
 	
 	private int oCount;
 	
@@ -34,6 +35,7 @@ public class rebrandingProductsList extends JPanel {
 		btnProcessOrder = new JButton[oCount];
 		lblProd = new JLabel[oCount];
 		separator = new JSeparator[oCount];
+		prodID = new String[oCount];
 		this.setPreferredSize(new Dimension(2, 130*oCount));
 		for(int i = 0; i < oCount; i++) {
 			orderHistoryPanelMaker(i);
@@ -56,7 +58,6 @@ public class rebrandingProductsList extends JPanel {
 		lblProd[i] = new JLabel("For Approval");
 		lblProd[i].setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblProd[i].setHorizontalAlignment(SwingConstants.CENTER);
-		lblProd[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		lblProd[i].setBounds(10, 10, 218, 77);
 		panel[i].add(lblProd[i]);
 		
@@ -64,7 +65,8 @@ public class rebrandingProductsList extends JPanel {
 		btnProcessOrder[i].setText("View Details");
 		btnProcessOrder[i].setFont(new Font("MS Reference Sans Serif", Font.PLAIN, 12));
 		btnProcessOrder[i].setFocusable(false);
-		btnProcessOrder[i].setBorderPainted(false);
+//		btnProcessOrder[i].setBorderPainted(false);
+		btnProcessOrder[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		btnProcessOrder[i].setBackground(Color.WHITE);
 		btnProcessOrder[i].setBounds(360, 25, 127, 51);
 		panel[i].add(btnProcessOrder[i]);
