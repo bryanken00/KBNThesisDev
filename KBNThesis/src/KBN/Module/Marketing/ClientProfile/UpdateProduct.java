@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -47,12 +48,14 @@ import java.awt.Dimension;
 
 import javax.swing.JTextPane;
 
-public class AddProduct extends JDialog implements ActionListener {
+public class UpdateProduct extends JDialog implements ActionListener {
 	
 	private DbConnection dbConn;
 	private Statement st;
 	private ResultSet rs;
 	private dataSetter dataSet;
+	
+	private String productID = "";
 	
 	private JTextField txtProduct;
 	private JTextField txtVariant;
@@ -74,8 +77,12 @@ public class AddProduct extends JDialog implements ActionListener {
 	private JTextField txtPrice;
 	private JLabel lblNewLabel_1_1_1;
 	private JButton btnComputePrice;
+	
+	private ArrayList<String> categoryProduct;
+	
+	private boolean imgUpdateChecker = false;
 
-	public AddProduct() {
+	public UpdateProduct() {
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setResizable(false);
 		setBounds(100, 100, 989, 522);
@@ -169,7 +176,7 @@ public class AddProduct extends JDialog implements ActionListener {
 		separator.setBounds(10, 53, 613, 19);
 		dataPanel.add(separator);
 		
-		btnSave = new JButton("Save");
+		btnSave = new JButton("Update");
 		btnSave.setForeground(Color.WHITE);
 		btnSave.setFont(new Font("MS Reference Sans Serif", Font.BOLD, 18));
 		btnSave.setFocusable(false);
@@ -258,25 +265,68 @@ public class AddProduct extends JDialog implements ActionListener {
 		profit.setDocumentFilter(numberFiler);
 	}
 	
+	public void setProductID(String prodID) {
+		this.productID = prodID;
+	}
+	
 	public void renderCategories() {
 		try {
 			cbCategory.removeAllItems();
 			String SQL = "SELECT DISTINCT prodcategory FROM tblrebrandingproducts WHERE userID = '" + rebrandingID + "'";
-			ArrayList<String> temp = new ArrayList<>();
+			categoryProduct = new ArrayList<>();
 			
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
-				temp.add(rs.getString(1));
+				categoryProduct.add(rs.getString(1));
 			}
-			 DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(temp.toArray(new String[0]));
+			 DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(categoryProduct.toArray(new String[0]));
 			 cbCategory.setModel(model);
-			temp.clear();
+			 categoryProduct.clear();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error renderCategories: " + e.getMessage());
 		}
 	}
 	
+	public void setdata() {
+		try {
+			String sql = "SELECT prodName, prodVolume, prodPrice, prodCategory, prodImg FROM tblrebrandingproducts WHERE prodID = '" + productID + "';";
+			st.execute(sql);
+			rs = st.getResultSet();
+			String productName = "";
+			String price = "";
+			String imagePATH = "";
+			String vol = "";
+			
+			String category = "";
+			
+			ArrayList temp = new ArrayList<>();
+			
+			for(int i = 0; i < cbCategory.getItemCount(); i++) {
+				temp.add(cbCategory.getItemAt(i));
+			}
+			
+			while(rs.next()) {
+				productName = rs.getString(1);
+				vol = rs.getString(2);
+				price = rs.getString(3);
+				category = rs.getString(4);
+				imagePATH = rs.getString(5);
+			}
+			
+	        for (int i = 0; i < temp.size(); i++) {
+	            if (temp.get(i).equals(category)) {
+	            	cbCategory.setSelectedIndex(i);
+	            }
+	        }
+			txtProduct.setText(productName);
+			txtVariant.setText(vol);
+			txtPrice.setText(price);
+			lblImg.setIcon(new ImageIcon(imgLoader(imagePATH)));
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Error setdata: " + e.getMessage());
+		}
+	}
 	
 	private void uploadIMG() {
         JFileChooser fileChooser = new JFileChooser();
@@ -344,6 +394,7 @@ public class AddProduct extends JDialog implements ActionListener {
                     while ((line = reader.readLine()) != null) {
                         lblImg.setIcon(new ImageIcon(imgLoader(line)));
                         imgPath = line;
+                        imgUpdateChecker = true;
                     }
                 }
             } else {
@@ -424,27 +475,48 @@ public class AddProduct extends JDialog implements ActionListener {
 		rebrandingID = rUID;
 	}
 	
-	
 	private void btnSaveFunc() {
 		try {
 			String prodName = txtProduct.getText();
-			String prodVariant = txtVariant.getText();
-			String prodPrice = txtPrice.getText();
-			String productCategory;
-			
-			String sqlProdName = prodName + " (" + prodVariant + ")";
-			if(addNew)
-				productCategory = txtNewCat.getText();
+			String prodCategory = "";
+			if(txtNewCat.getText().isBlank() || txtNewCat.getText().isBlank())
+				prodCategory = cbCategory.getSelectedItem() + "";
 			else
-				productCategory = cbCategory.getSelectedItem() + "";
-			String SQLInsert = "INSERT INTO tblrebrandingproducts(userID, prodImg, prodName, prodVolume, prodPrice, prodCategory, Sold) "
-					+ "VALUES('" + rebrandingID + "','" + imgPath + "','" + prodName + "','" + prodVariant + "','" + prodPrice + "','" + productCategory + "','0');";
-			st.execute(SQLInsert);
-			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + dataSet.getAccountID() + "','Rebranding Add Product to " + rebrandingID + " - " + sqlProdName + "');";
+				prodCategory = txtNewCat.getText();
+			String prodVariant = txtVariant.getText();
+			String price = "";
+			price = txtPrice.getText();
+//			imgUpdateChecker
+			String SQL = "";
+			if(imgUpdateChecker)
+				SQL = "UPDATE tblrebrandingproducts "
+						+ "SET prodName = '" + prodName + "', "
+						+ "prodCategory = '" + prodCategory + "', "
+						+ "prodVolume = '" + prodVariant + "', "
+						+ "prodPrice = '" + price + "' "
+						+ "WHERE prodID = '" + productID + "';";
+			else
+				SQL = "UPDATE tblrebrandingproducts "
+						+ "SET prodName = '" + prodName + "', "
+						+ "prodCategory = '" + prodCategory + "', "
+						+ "prodVolume = '" + prodVariant + "', "
+						+ "prodPrice = '" + price + "', "
+						+ "prodImg = '" + imgPath + "' "
+						+ "WHERE prodID = '" + productID + "';";
+			
+			st.executeUpdate(SQL);
+			
+
+			String sqlProdName = prodName + " (" + prodVariant + ")";
+			
+			String AuditTrail = "INSERT INTO audittrailmarketing(DateAction,userID,Description) VALUES(NOW(),'" + dataSet.getAccountID() + "','Rebranding Update Product " + rebrandingID + " - " + sqlProdName + "');";
+			
 			st.execute(AuditTrail);
-			JOptionPane.showMessageDialog(null, "Product Added!");
+			
+			JOptionPane.showMessageDialog(null, "Product Updated!");
+			
+			
 			clearFields();
-			this.dispose();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error btnSaveFunc: " + e.getMessage());
 		}
