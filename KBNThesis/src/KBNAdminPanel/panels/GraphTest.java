@@ -1,4 +1,5 @@
 package KBNAdminPanel.panels;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,10 @@ public class GraphTest extends JPanel {
     private List<String> date;
 
     // Define an array of colors for each dataset
-    private static final Color[] LINE_COLORS = {Color.BLUE, Color.RED, Color.GREEN, Color.BLACK, Color.YELLOW, Color.ORANGE};
+    private static final Color[] LINE_COLORS = {Color.BLUE, Color.RED, Color.GREEN, Color.BLACK, Color.YELLOW};
+
+    private static final int LEGEND_WIDTH = 100;
+    private static final int LEGEND_HEIGHT = 20;
 
     public GraphTest(List<List<Integer>> datasets, int max, List<String> date) {
         this.datasets = datasets;
@@ -73,6 +77,9 @@ public class GraphTest extends JPanel {
 
         // Draw x and y axes, hatch marks, and labels
         drawAxesAndLabels(g2, xScale, yScale);
+
+        // Draw the legend
+        drawLegend(g2);
     }
 
     private void drawAxesAndLabels(Graphics2D g2, double xScale, double yScale) {
@@ -108,6 +115,52 @@ public class GraphTest extends JPanel {
             g2d.rotate(-Math.PI / 2);
             g2d.drawString(label, -labelHeight - 5, 0);
             g2d.dispose();
+        }
+    }
+
+    private void drawLegend(Graphics2D g2) {
+        int legendX = BORDER_GAP;
+        int legendY = 0;
+
+        // Calculate available space on the right side
+        int availableSpace = getWidth() - BORDER_GAP * 2;
+
+        // Check if there is enough space for the legend, if not, move it to the top
+        if (availableSpace < datasets.size() * LEGEND_WIDTH + 5) {
+            legendY = getHeight() - LEGEND_HEIGHT - BORDER_GAP;
+        }
+
+        for (int i = 0; i < datasets.size(); i++) {
+            g2.setColor(LINE_COLORS[i % LINE_COLORS.length]);
+
+            // Draw colored rectangle for the legend
+            g2.fillRect(legendX + i * LEGEND_WIDTH, legendY, LEGEND_WIDTH, LEGEND_HEIGHT);
+
+            // Draw the dataset name with the corresponding color
+            g2.setColor(Color.BLACK);
+            g2.drawString(getColorName(LINE_COLORS[i % LINE_COLORS.length]), legendX + i * LEGEND_WIDTH + LEGEND_WIDTH / 2, legendY + LEGEND_HEIGHT / 2 + 5);
+        }
+    }
+
+
+
+
+
+    // Helper method to get the name of the color
+    private String getColorName(Color color) {
+        if (color.equals(Color.BLUE)) {
+            return "Blue";
+        } else if (color.equals(Color.RED)) {
+            return "Red";
+        } else if (color.equals(Color.GREEN)) {
+            return "Green";
+        } else if (color.equals(Color.BLACK)) {
+            return "Black";
+        } else if (color.equals(Color.YELLOW)) {
+            return "Yellow";
+        } else {
+            // Default to the color name
+            return color.toString();
         }
     }
 }
