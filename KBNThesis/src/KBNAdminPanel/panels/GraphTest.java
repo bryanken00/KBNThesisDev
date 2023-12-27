@@ -86,11 +86,29 @@ public class GraphTest extends JPanel {
         drawLegend(g2);
     }
 
+    private static final int QUANTITY_LABEL_SPACER = 0; // Adjust as needed
+    private static final int QUANTITY_LABEL_FONT_SIZE = 18; // Adjust as needed
+
     private void drawAxesAndLabels(Graphics2D g2, double xScale, double yScale) {
         // Draw x and y axes
         int xAxisY = getHeight() - BORDER_GAP - LEGEND_HEIGHT - LEGEND_SPACER; // Adjust as needed
         g2.drawLine(BORDER_GAP, xAxisY, getWidth() - BORDER_GAP, xAxisY);
         g2.drawLine(BORDER_GAP, xAxisY, BORDER_GAP, BORDER_GAP);
+
+        // Draw Quantity label on the left side vertically
+        String quantityLabel = "AVERAGE";
+        Font originalFont = g2.getFont();
+        Font quantityLabelFont = originalFont.deriveFont((float) QUANTITY_LABEL_FONT_SIZE);
+        g2.setFont(quantityLabelFont);
+
+        int quantityLabelHeight = g2.getFontMetrics().getHeight();
+        int quantityLabelX = BORDER_GAP - 2 * quantityLabelHeight - QUANTITY_LABEL_SPACER; // Adjust as needed
+        int quantityLabelY = (getHeight() - BORDER_GAP - LEGEND_HEIGHT - LEGEND_SPACER) / 2;
+        for (int i = 0; i < quantityLabel.length(); i++) {
+            g2.drawString(String.valueOf(quantityLabel.charAt(i)), quantityLabelX, quantityLabelY + i * quantityLabelHeight);
+        }
+
+        g2.setFont(originalFont); // Restore the original font
 
         // Create hatch marks for y-axis
         for (int i = 0; i < Y_HATCH_CNT; i++) {
@@ -122,6 +140,12 @@ public class GraphTest extends JPanel {
             g2d.dispose();
         }
     }
+
+
+
+
+
+
 
     private void drawLegend(Graphics2D g2) {
         // Calculate the total width of the legend
