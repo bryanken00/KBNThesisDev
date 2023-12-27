@@ -2,6 +2,7 @@ package KBNAdminPanel.panels;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 
@@ -30,6 +31,9 @@ public class GraphTest extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
     }
 
+    private static final int LEGEND_SPACER = 20; // Adjust as needed
+    private static final int LEGEND_ITEM_SPACER = 10; // Adjust as needed
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -38,7 +42,7 @@ public class GraphTest extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         double xScale = ((double) getWidth() - 2 * BORDER_GAP) / (date.size() - 1);
-        double yScale = ((double) getHeight() - 2 * BORDER_GAP) / (MAX_SCORE - 1);
+        double yScale = ((double) getHeight() - 2 * BORDER_GAP - LEGEND_HEIGHT - LEGEND_SPACER) / (MAX_SCORE - 1);
 
         // Iterate over each dataset and draw its corresponding line
         for (int i = 0; i < datasets.size(); i++) {
@@ -84,14 +88,15 @@ public class GraphTest extends JPanel {
 
     private void drawAxesAndLabels(Graphics2D g2, double xScale, double yScale) {
         // Draw x and y axes
-        g2.drawLine(BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT, BORDER_GAP, BORDER_GAP - MOVE_AMOUNT);
-        g2.drawLine(BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT, getWidth() - BORDER_GAP, getHeight() - BORDER_GAP - MOVE_AMOUNT);
+        int xAxisY = getHeight() - BORDER_GAP - LEGEND_HEIGHT - LEGEND_SPACER; // Adjust as needed
+        g2.drawLine(BORDER_GAP, xAxisY, getWidth() - BORDER_GAP, xAxisY);
+        g2.drawLine(BORDER_GAP, xAxisY, BORDER_GAP, BORDER_GAP);
 
         // Create hatch marks for y-axis
         for (int i = 0; i < Y_HATCH_CNT; i++) {
             int x0 = BORDER_GAP;
             int x1 = GRAPH_POINT_WIDTH + BORDER_GAP;
-            int y0 = getHeight() - (((i + 1) * (getHeight() - BORDER_GAP * 2)) / Y_HATCH_CNT + BORDER_GAP) - MOVE_AMOUNT;
+            int y0 = xAxisY - (((i + 1) * (xAxisY - BORDER_GAP * 2)) / Y_HATCH_CNT + BORDER_GAP) - MOVE_AMOUNT;
             int y1 = y0;
             g2.drawLine(x0, y0, x1, y1);
 
@@ -103,7 +108,7 @@ public class GraphTest extends JPanel {
         for (int i = 0; i < date.size(); i++) {
             int x0 = (int) ((i * xScale) + BORDER_GAP);
             int x1 = x0;
-            int y0 = getHeight() - BORDER_GAP;
+            int y0 = xAxisY;
             int y1 = y0 - GRAPH_POINT_WIDTH;
             g2.drawLine(x0, y0, x1, y1);
 
@@ -119,32 +124,31 @@ public class GraphTest extends JPanel {
     }
 
     private void drawLegend(Graphics2D g2) {
-        int legendX = BORDER_GAP;
-        int legendY = 0;
+        // Calculate the total width of the legend
+        int totalLegendWidth = datasets.size() * LEGEND_WIDTH + (datasets.size() - 1) * LEGEND_ITEM_SPACER;
 
-        // Calculate available space on the right side
-        int availableSpace = getWidth() - BORDER_GAP * 2;
+        // Calculate the starting X coordinate for the legend to be centered
+        int legendX = (getWidth() - totalLegendWidth) / 2;
 
-        // Check if there is enough space for the legend, if not, move it to the top
-        if (availableSpace < datasets.size() * LEGEND_WIDTH + 5) {
-            legendY = getHeight() - LEGEND_HEIGHT - BORDER_GAP;
-        }
+        // Calculate the Y coordinate for the legend just above the date labels
+        int legendY = getHeight() - BORDER_GAP + LEGEND_SPACER; // Adjust as needed
 
         for (int i = 0; i < datasets.size(); i++) {
             g2.setColor(LINE_COLORS[i % LINE_COLORS.length]);
 
             // Draw colored rectangle for the legend
-            g2.fillRect(legendX + i * LEGEND_WIDTH, legendY, LEGEND_WIDTH, LEGEND_HEIGHT);
+            g2.fillRect(legendX + i * (LEGEND_WIDTH + LEGEND_ITEM_SPACER), legendY, LEGEND_WIDTH, LEGEND_HEIGHT);
 
             // Draw the dataset name with the corresponding color
             g2.setColor(Color.BLACK);
-            g2.drawString(getColorName(LINE_COLORS[i % LINE_COLORS.length]), legendX + i * LEGEND_WIDTH + LEGEND_WIDTH / 2, legendY + LEGEND_HEIGHT / 2 + 5);
+            g2.drawString(getColorName(LINE_COLORS[i % LINE_COLORS.length]), legendX + i * (LEGEND_WIDTH + LEGEND_ITEM_SPACER) + LEGEND_WIDTH / 2, legendY + LEGEND_HEIGHT / 2 + 5);
         }
     }
 
-
-
-
+    
+    
+    
+    
 
     // Helper method to get the name of the color
     private String getColorName(Color color) {
@@ -162,5 +166,29 @@ public class GraphTest extends JPanel {
             // Default to the color name
             return color.toString();
         }
+    }
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Graph Test");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // Create sample datasets and date labels
+            List<List<Integer>> datasets = new ArrayList<>();
+            datasets.add(Arrays.asList(20, 40, 60, 80, 100));
+            datasets.add(Arrays.asList(40, 30, 20, 70, 50));
+            List<String> date = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May");
+
+            // Create an instance of GraphTest
+            GraphTest graphTest = new GraphTest(datasets, 100, date);
+
+            // Add the GraphTest instance to the JFrame
+            frame.add(graphTest);
+
+            // Set JFrame properties
+            frame.setSize(800, 600);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 }
