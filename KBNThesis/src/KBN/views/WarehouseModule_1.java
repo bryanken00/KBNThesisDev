@@ -1258,7 +1258,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 			}
 		}
 		// PanelOrderData
-		private void panelOrderData(String refNumber, String uID) {
+		private void panelOrderData(String refNumber, String uID, String approvedby) {
 			String ref = refNumber;
 			String userID = uID;
 			procOrder.main.setRowCount(0);
@@ -1281,7 +1281,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					
 					// Order Info
 					procOrder.lblPONumber.setText(rs.getString(1));
-					procOrder.lblMarketingName.setText("Wala pa");
+					procOrder.lblMarketingName.setText(approvedby);
 					procOrder.lblCustomerName.setText(rs.getString(2));
 					procOrder.lblOrderDate.setText(rs.getDate(3) + "");
 					procOrder.lblAddres.setText(rs.getString(8));
@@ -1588,7 +1588,7 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 					else
 						procOrder.btnProcessOrder.setEnabled(false);
 				}
-				panelOrderData(procOrderData.refNumber[i], procOrderData.userID[i]);
+				panelOrderData(procOrderData.refNumber[i], procOrderData.userID[i],procOrderData.lblApprovedName[i].getText());
 			}
 		}
 		
