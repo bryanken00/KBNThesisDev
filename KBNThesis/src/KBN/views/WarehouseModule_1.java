@@ -1340,6 +1340,8 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
 				riderName.clear();
 				
 				auditTrailInsert("Process Order - " + ref);
+				
+				procOrder.btnProcessOrder.setEnabled(false);
 			} catch (Exception e) {
 				printingError("Error setCourier: " + e.getMessage());
 			}

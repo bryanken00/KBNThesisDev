@@ -3827,13 +3827,14 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 		try {
 			dTB1.main.setRowCount(0);
 			ArrayList arrDelList = new ArrayList<>();
-			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID \n"
-					+ "FROM tblordercheckout AS a \n"
-					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber \n"
-					+ "JOIN tblcourierdeliverydate AS c ON b.OrderRefNumber = c.OrderRefNumber \n"
-					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber \n"
-					+ "JOIN tblcourierinformation AS e ON e.courierID = b.courierID \n"
+			String SQL = "SELECT DATE(a.OrderDate), a.OrderRefNumber, b.deliveryID, DATE(c.DeliveryDate), a.address, d.Status, b.courierID \r\n"
+					+ "FROM tblordercheckout AS a \r\n"
+					+ "JOIN tblcourierdelivery AS b ON b.OrderRefNumber = a.OrderRefNumber \r\n"
+					+ "JOIN tblcourierdeliverydate AS c ON b.OrderRefNumber = c.OrderRefNumber \r\n"
+					+ "JOIN tblorderstatus AS d ON d.OrderRefNumber = a.OrderRefNumber\r\n"
 					+ "WHERE d.Status = 'Delivery'";
+			
+//			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {
@@ -3877,7 +3878,7 @@ public class MarketingModule extends JFrame implements ActionListener, MouseList
 					+ "JOIN tblcourierdeliverycompleted AS e ON e.deliveryID = b.deliveryID \n"
 					+ "JOIN tblcourierinformation AS f ON f.courierID = b.courierID \n"
 					+ "WHERE d.Status = 'Completed';";
-//			System.out.println(SQL);
+			System.out.println(SQL);
 			st.execute(SQL);
 			rs = st.getResultSet();
 			while(rs.next()) {

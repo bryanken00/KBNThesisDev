@@ -264,7 +264,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		graphFuture.setBounds(0, 0, 939, 454);
 		graphHistory.setBounds(0, 0, 939, 454);
 
-		dashboard1();
+//		dashboard1();
 		dashboard1.setVisible(true);
 		
 		btnChecker = navs.btnDashboard;
@@ -718,7 +718,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
             List<String> dates = new ArrayList<>();
             List<Integer> firstDataset = new ArrayList<>();
             
-	        LocalDate firstDayOfMonthFirst = LocalDate.of(year-1, month, 1); // October 2023
+	        LocalDate firstDayOfMonthFirst = LocalDate.of(year-1, month, 1);
 	        LocalDate currentMondayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
 	        LocalDate currentSundayFirst = firstDayOfMonthFirst.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 	        int FirstIndex = 0;
@@ -816,7 +816,23 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
     		List<List<Integer>> datasetsFuture = new ArrayList<>();
     		datasetsFuture.add(AverageFuture);
     		
-    		max = findMaxValue(firstDataset);
+            int highestScore = findHighestScore(week1, week2, week3, week4, week5) + 20;
+            
+            int maxFuture = findMaxValueFuture(datasetsFuture) + 20;
+            
+            if(highestScore < 80)
+            	highestScore = 100;
+            if(maxFuture < 80)
+            	maxFuture = 100;
+            
+            List<Integer> yearFuture = new ArrayList<>();
+            yearFuture.add(year);
+            
+            List<Integer> yearsHistory = new ArrayList<>();
+            
+            for(int i = 0; i < 5; i++) {
+            	yearsHistory.add(year - (i+1));
+            }
     		
     		graphContainer.History.removeAll();
     		graphContainer.History.revalidate();
@@ -825,31 +841,42 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
     		graphContainer.futureTrend.removeAll();
     		graphContainer.futureTrend.revalidate();
     		graphContainer.futureTrend.repaint();
-    		
-            graphHistory = new GraphTest(datasetsHistory, max, dates);
+
+            graphHistory = new GraphTest(datasetsHistory, highestScore, dates,yearsHistory);
 			graphContainer.History.add(graphHistory);
 			graphHistory.setBounds(0, 0, 939, 454);
 			
-			graphFuture = new GraphTest(datasetsFuture, max, dates);
+			graphFuture = new GraphTest(datasetsFuture, maxFuture, dates, yearFuture);
 			graphContainer.futureTrend.add(graphFuture);
 			graphFuture.setBounds(0, 0, 939, 454);
-            
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error Forcast: " + e.getMessage());
 		}
 	}
 	
-    private static int findMaxValue(List<Integer> list) {
-        if (list == null || list.isEmpty()) {
-            throw new IllegalArgumentException("List is null or empty");
-        }
-        
-        int max = list.get(0);
+    private static int findHighestScore(List<Integer>... lists) {
+        int highestScore = Integer.MIN_VALUE;
 
-        for (int value : list) {
-            if (value > max) {
-                max = value;
+        for (List<Integer> list : lists) {
+            for (int score : list) {
+                if (score > highestScore) {
+                    highestScore = score;
+                }
+            }
+        }
+
+        return highestScore;
+    }
+    
+    private static int findMaxValueFuture(List<List<Integer>> datasets) {
+        int max = Integer.MIN_VALUE;
+
+        for (List<Integer> dataset : datasets) {
+            for (int value : dataset) {
+                if (value > max) {
+                    max = value;
+                }
             }
         }
 
