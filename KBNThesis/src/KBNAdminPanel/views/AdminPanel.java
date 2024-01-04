@@ -264,7 +264,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		graphFuture.setBounds(0, 0, 939, 454);
 		graphHistory.setBounds(0, 0, 939, 454);
 
-//		dashboard1();
+		dashboard1();
 		dashboard1.setVisible(true);
 		
 		btnChecker = navs.btnDashboard;
@@ -800,7 +800,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	        }
 	        
             List<Integer> AverageFuture = new ArrayList<>();
-            for(int i = 0; i < 4; i++) {
+            
+            for(int i = 0; i < 5; i++) {
             	int sum = Math.round((Integer.parseInt(week1.get(i).toString()) + Integer.parseInt(week2.get(i).toString()) + Integer.parseInt(week3.get(i).toString()) + Integer.parseInt(week4.get(i).toString()) + Integer.parseInt(week4.get(i).toString()))/5);
             	AverageFuture.add(sum);
             	System.out.println("week" + i + ": "+ sum);
