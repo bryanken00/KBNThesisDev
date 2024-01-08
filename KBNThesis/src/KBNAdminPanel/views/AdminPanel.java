@@ -316,6 +316,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		forecast.product4.addItemListener(this);
 		forecast.product5.addItemListener(this);
 		forecastPanel.btnForecast.addActionListener(this);
+		forecastPanel.lblInfo.addMouseListener(this);
 		
 		forecast.btnCompareToDate.addActionListener(this);
 		
@@ -1684,7 +1685,10 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() == forecastPanel.lblInfo) {
+			String message = "The Vertical line is the average sales, and the Horizontal line is the number of weeks in the month";
+	        JOptionPane.showMessageDialog(this, message, "Instructions", JOptionPane.INFORMATION_MESSAGE);
+		}
 		
 	}
 

@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import com.toedter.calendar.JMonthChooser;
 import com.toedter.calendar.JYearChooser;
 import java.awt.Panel;
+import javax.swing.ImageIcon;
 
 public class ForecastPanel extends JPanel {
 	public JScrollPane Graph;
@@ -21,6 +22,7 @@ public class ForecastPanel extends JPanel {
 	public JComboBox comboBox;
 	public JMonthChooser monthChooser;
 	public JYearChooser yearChooser;
+	public JLabel lblInfo;
 	
 	public ForecastPanel() {
 		setBackground(new Color(255, 255, 255));
@@ -42,10 +44,16 @@ public class ForecastPanel extends JPanel {
 		header.setLayout(null);
 		
 		JLabel lblEmployeeList = new JLabel("Time Series: Simple Moving Average (SMA)");
-		lblEmployeeList.setBounds(10, 5, 949, 47);
+		lblEmployeeList.setBounds(10, 5, 829, 47);
 		lblEmployeeList.setHorizontalAlignment(SwingConstants.LEFT);
 		lblEmployeeList.setFont(new Font("Tahoma", Font.PLAIN, 28));
 		header.add(lblEmployeeList);
+		
+		lblInfo = new JLabel("");
+		lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
+		lblInfo.setIcon(new ImageIcon(ForecastPanel.class.getResource("/KBNAdminPanel/resources/info.png")));
+		lblInfo.setBounds(913, 5, 46, 47);
+		header.add(lblInfo);
 		
 		Graph = new JScrollPane();
 //		Graph.setLayout(null);
