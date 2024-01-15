@@ -66,9 +66,6 @@ import KBNAdminPanel.panels.Employee.EmployeeCreate;
 import KBNAdminPanel.panels.Employee.EmployeeList;
 import KBNAdminPanel.panels.Employee.EmployeeListGenerator;
 import KBNAdminPanel.panels.Employee.EmployeePanel;
-import KBNAdminPanel.panels.Forecast.ForecastGraphs;
-import KBNAdminPanel.panels.Forecast.ForecastingPanel;
-import KBNAdminPanel.panels.Forecast.barGen;
 import KBNAdminPanel.panels.ForecastGraph.ForecastPanel;
 import KBNAdminPanel.panels.ForecastGraph.GraphList;
 import KBNAdminPanel.panels.Price.ProductPrice;
@@ -87,12 +84,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	//Class
 	private Navs navs;
 	private SalesReportPanel salesPanel;
-	
-	//Forecast Class
-	private ForecastingPanel forecast;
-	private ForecastGraphs forecastgraph;
-	private barGen bar1;
-	private barGen bar2;
 	
 	private AuditTrail auditTrail;
 	
@@ -186,12 +177,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
         
         setUsername();
         
-        // Forecast
-        forecast = new ForecastingPanel();
-        forecastgraph = new ForecastGraphs();
-        bar1 = new barGen();
-        bar2 = new barGen();
-        
         auditTrail = new AuditTrail();
         
         // Forecast New
@@ -238,7 +223,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		
 		//Container
 		container.add(salesPanel);
-		container.add(forecast);
 		container.add(forecastPanel);
 		container.add(empPanel);
 		container.add(empCreate);
@@ -248,10 +232,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		container.add(auditTrail);
 		
 		empPanel.container.add(empList);
-		
-		forecast.graph.add(forecastgraph);
-		forecastgraph.graph1.add(bar1);
-		forecastgraph.graph2.add(bar2);
 		
 		
 		// Forecast
@@ -273,7 +253,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	private void panelVisible() {
 		dashboard1.setVisible(false);
 		salesPanel.setVisible(false);
-		forecast.setVisible(false);
 		empPanel.setVisible(false);
 		empCreate.setVisible(false);
 		courierPanel.setVisible(false);
@@ -309,16 +288,8 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		
 		courierPanel.btnCreate.addActionListener(this);
 		
-		//Forecast
-		forecast.product1.addItemListener(this);
-		forecast.product2.addItemListener(this);
-		forecast.product3.addItemListener(this);
-		forecast.product4.addItemListener(this);
-		forecast.product5.addItemListener(this);
 		forecastPanel.btnForecast.addActionListener(this);
 		forecastPanel.lblInfo.addMouseListener(this);
-		
-		forecast.btnCompareToDate.addActionListener(this);
 		
 		//Employee
 		empPanel.btnCreate.addActionListener(this);
@@ -579,115 +550,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			salesPanel.setVisible(true);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error SalesReportPanel: " + e.getMessage());
-		}
-	}
-	
-	private void renderingKBNProducts() {
-		try {
-			forecast.product1.addItem("None");
-			forecast.product2.addItem("None");
-			forecast.product3.addItem("None");
-			forecast.product4.addItem("None");
-			forecast.product5.addItem("None");
-			
-			String SQL = "SELECT prodName, prodVolume FROM tblproducts";
-			st.execute(SQL);
-			rs = st.getResultSet();
-			while(rs.next())
-				products.add(rs.getString(1) + "-" + rs.getString(2));
-			
-			for(int i = 0; i < products.size(); i++) {
-				forecast.product1.addItem(products.get(i));
-				forecast.product2.addItem(products.get(i));
-				forecast.product3.addItem(products.get(i));
-				forecast.product4.addItem(products.get(i));
-				forecast.product5.addItem(products.get(i));
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(navs, "Error ProductsRendering: " + e.getMessage());
-		}
-	}
-	
-	private void getSoldQuantityPresent(String itemName) {
-		try {
-			int quantity = 0;
-			String prodName = itemName.split("-")[0];
-			String prodVariant = itemName.split("-")[1];
-			int barNumber = Integer.parseInt(itemName.split("-")[2]);
-			String gettingTotalQuantity = "SELECT a.ProductName, a.volume, SUM(a.Quantity) As total "
-					+ "FROM tblordercheckoutdata AS a "
-					+ "JOIN tblorderstatus AS b ON b.OrderRefNumber = a.OrderRefNumber "
-					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = a.OrderRefNumber "
-					+ "WHERE a.ProductName = '" + prodName +"' AND a.volume = '" + prodVariant + "' AND b.Status = 'Completed';";
-			
-			st.execute(gettingTotalQuantity);
-			rs = st.getResultSet();
-			while(rs.next()) {
-				if(rs.getString(3) == null)
-					quantity = 0;
-				else
-					quantity = rs.getInt(3);
-			}
-			
-			if(barNumber == 1) {
-				bar1.bar1.setBounds(18, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 2) {
-				bar1.bar2.setBounds(80, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 3) {
-				bar1.bar3.setBounds(142, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 4) {
-				bar1.bar4.setBounds(204, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 5) {
-				bar1.bar5.setBounds(266, 508 - quantity, 44, 0 + quantity);
-			}else {
-				return;
-			}
-			quantity = 0;
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
-		}
-	}
-	
-	private void getSoldQuantityPrev(String itemName, String dateStart, String dateEnd) {
-		try {
-			int quantity = 0;
-			String prodName = itemName.split("-")[0];
-			String prodVariant = itemName.split("-")[1];
-			int barNumber = Integer.parseInt(itemName.split("-")[2]);
-			String gettingTotalQuantity = "SELECT a.ProductName, a.volume, SUM(a.Quantity) As total "
-					+ "FROM tblordercheckoutdata AS a "
-					+ "JOIN tblorderstatus AS b ON b.OrderRefNumber = a.OrderRefNumber "
-					+ "JOIN tblordercheckout AS c ON c.OrderRefNumber = a.OrderRefNumber "
-					+ "WHERE a.ProductName = '" + prodName +"' AND a.volume = '" + prodVariant + "' AND b.Status = 'Completed' AND c.OrderDate >= '" + dateStart + "' AND c.OrderDate <= '" + dateEnd + "';";
-			
-			
-			System.out.println(gettingTotalQuantity);
-			st.execute(gettingTotalQuantity);
-			rs = st.getResultSet();
-			while(rs.next()) {
-				if(rs.getString(3) == null)
-					quantity = 0;
-				else
-					quantity = rs.getInt(3);
-			}
-			
-			if(barNumber == 1) {
-				bar2.bar1.setBounds(18, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 2) {
-				bar2.bar2.setBounds(80, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 3) {
-				bar2.bar3.setBounds(142, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 4) {
-				bar2.bar4.setBounds(204, 508 - quantity, 44, 0 + quantity);
-			} else if(barNumber == 5) {
-				bar2.bar5.setBounds(266, 508 - quantity, 44, 0 + quantity);
-			}else {
-				return;
-			}
-			
-			quantity = 0;
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error getSoldQuantityPresent: " + e.getMessage());
 		}
 	}
 	
@@ -1396,30 +1258,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 			getForecastGraph();
 		}
 		
-		if(e.getSource() == forecast.btnCompareToDate) {
-			
-			int month = forecast.monthChooser.getMonth() + 1;
-			int year = forecast.yearChooser.getYear();
-			String prodName = forecast.product1.getSelectedItem().toString();
-			String prodName1 = forecast.product2.getSelectedItem().toString();
-			String prodName2 = forecast.product3.getSelectedItem().toString();
-			String prodName3 = forecast.product4.getSelectedItem().toString();
-			String prodName4 = forecast.product5.getSelectedItem().toString();
-	        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
-	        LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
-
-	        if(!forecast.product1.getSelectedItem().equals("None"))
-	        	getSoldQuantityPrev(prodName + "-1",firstDayOfMonth + "",lastDayOfMonth + "");
-	        if(!forecast.product2.getSelectedItem().equals("None"))
-	        	getSoldQuantityPrev(prodName1 + "-2",firstDayOfMonth + "",lastDayOfMonth + "");
-	        if(!forecast.product3.getSelectedItem().equals("None"))
-	        	getSoldQuantityPrev(prodName2 + "-3",firstDayOfMonth + "",lastDayOfMonth + "");
-	        if(!forecast.product4.getSelectedItem().equals("None"))
-	        	getSoldQuantityPrev(prodName3 + "-4",firstDayOfMonth + "",lastDayOfMonth + "");
-	        if(!forecast.product5.getSelectedItem().equals("None"))
-	        	getSoldQuantityPrev(prodName4 + "-5",firstDayOfMonth + "",lastDayOfMonth + "");
-		}
-		
 		if(e.getSource() == navs.btnEmployeeList) {
 			isUpdateEmpInfo = false;
 	        empGen = new EmployeeListGenerator();
@@ -1535,61 +1373,6 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 	public void itemStateChanged(ItemEvent e) {
 	    if (e.getStateChange() == ItemEvent.SELECTED) {
 	    	
-	        if (e.getSource() == forecast.product1) {
-	        	if(forecast.product1.getSelectedItem().equals("None")) {
-	        		bar1.bar1.setVisible(false);
-	        		bar2.bar1.setVisible(false);
-	        	}else {
-	        		bar1.bar1.setVisible(true);
-	        		bar2.bar1.setVisible(true);
-	        		getSoldQuantityPresent(forecast.product1.getSelectedItem() + "-1");
-	        	}
-	        }
-	        
-	        if (e.getSource() == forecast.product2) {
-	        	if(forecast.product2.getSelectedItem().equals("None")) {
-	        		bar1.bar2.setVisible(false);
-	        		bar2.bar2.setVisible(false);
-	        	}else {
-	        		bar1.bar2.setVisible(true);
-	        		bar2.bar2.setVisible(true);
-	        		getSoldQuantityPresent(forecast.product2.getSelectedItem() + "-2");
-	        	}
-	        }
-	        
-	        if (e.getSource() == forecast.product3) {
-	        	if(forecast.product3.getSelectedItem().equals("None")) {
-	        		bar1.bar3.setVisible(false);
-	        		bar2.bar3.setVisible(false);
-	        	}else {
-	        		bar1.bar3.setVisible(true);
-	        		bar2.bar3.setVisible(true);
-	        		getSoldQuantityPresent(forecast.product3.getSelectedItem() + "-3");
-	        	}
-	        }
-	        
-	        if (e.getSource() == forecast.product4) {
-	        	if(forecast.product4.getSelectedItem().equals("None")) {
-	        		bar1.bar4.setVisible(false);
-	        		bar2.bar4.setVisible(false);
-	        	}else {
-	        		bar1.bar4.setVisible(true);
-	        		bar2.bar4.setVisible(true);
-	        		getSoldQuantityPresent(forecast.product4.getSelectedItem() + "-4");
-	        	}
-	        }
-	        
-	        if (e.getSource() == forecast.product5) {
-	        	if(forecast.product5.getSelectedItem().equals("None")) {
-	        		bar1.bar5.setVisible(false);
-	        		bar2.bar5.setVisible(false);
-	        	}else {
-	        		bar1.bar5.setVisible(true);
-	        		bar2.bar5.setVisible(true);
-	        		getSoldQuantityPresent(forecast.product5.getSelectedItem() + "-5");
-	        	}
-	        }
-	        
 	        //Employee
         	String accType = empCreate.cbAccType.getSelectedItem() + "";
         	String department = empCreate.cbDepartment.getSelectedItem() + "";

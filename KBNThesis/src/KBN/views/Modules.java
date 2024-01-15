@@ -23,7 +23,6 @@ public class Modules extends JFrame implements ActionListener{
 
 	//class
 	private dataSetter dataSet;
-	private WarehouseModule rm;
 	private MarketingModule mm;
 	private WarehouseModule_1 rm1;
 	
