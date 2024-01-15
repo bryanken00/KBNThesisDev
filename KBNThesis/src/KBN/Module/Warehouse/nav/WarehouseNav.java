@@ -102,7 +102,7 @@ public class WarehouseNav extends JPanel {
 		btnFinishProduct.setEnabled(false);
 		btnFinishProduct.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnFinishProduct.setBackground(Color.WHITE);
-		btnFinishProduct.setBounds(10, 259, 241, 46);
+		btnFinishProduct.setBounds(10, 391, 241, 46);
 		add(btnFinishProduct);
 		
 		btnArchiveList = new JButton("Archive List");
@@ -112,7 +112,6 @@ public class WarehouseNav extends JPanel {
 		btnArchiveList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnArchiveList.setBackground(Color.WHITE);
 		btnArchiveList.setBounds(10, 457, 241, 46);
-		btnArchiveList.setVisible(false);
 		add(btnArchiveList);
 		
 		btnSummary = new JButton("Summary");
@@ -130,7 +129,7 @@ public class WarehouseNav extends JPanel {
 		btnProcessOrder.setEnabled(false);
 		btnProcessOrder.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnProcessOrder.setBackground(Color.WHITE);
-		btnProcessOrder.setBounds(10, 325, 241, 46);
+		btnProcessOrder.setBounds(10, 589, 241, 46);
 		add(btnProcessOrder);
 		
 		startingDate = new JDateChooser();
@@ -161,11 +160,6 @@ public class WarehouseNav extends JPanel {
 		endDate.setVisible(false);
 		btnCompute.setVisible(false);
 		btnExport.setVisible(false);
-		
-		
-		btnRawMats.setVisible(false);
-		btnPackMats.setVisible(false);
-		btnSummary.setVisible(false);
 
 	}
 }

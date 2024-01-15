@@ -740,12 +740,12 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
 		                currentSundayFirst = currentSundayFirst.plusWeeks(1);
 		            }
 		            
-					getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, round(AVG(b.Quantity)) AS AVGMonthh, DATE(a.OrderDate) \n"
+					getScoreDate = "SELECT a.OrderRefNumber, CONCAT(b.ProductName, ' (', b.volume, ')') AS ProductName, SUM(b.Quantity) AS AVGMonthh, DATE(a.OrderDate) \n"
 							+ "FROM tblordercheckout AS a \n"
 							+ "JOIN tblordercheckoutdata AS b ON a.OrderRefNumber = b.OrderRefNumber \n"
 							+ "WHERE b.ProductName = '" + prodName + "' AND volume = '" + prodVariant + "' \n"
 							+ "AND (a.OrderDate >= '" + currentMondayFirst + "' AND a.OrderDate <= '" + currentSundayFirst + "' )"
-							+ "GROUP BY a.OrderRefNumber \n"
+							+ "GROUP BY ProductName \n"
 							+ "order by a.OrderDate DESC;";
 					
 					st.execute(getScoreDate);
@@ -818,7 +818,7 @@ public class AdminPanel extends JFrame implements ActionListener , ItemListener,
     		List<List<Integer>> datasetsFuture = new ArrayList<>();
     		datasetsFuture.add(AverageFuture);
     		
-            int highestScore = findHighestScore(week1, week2, week3, week4, week5) + 20;
+            int highestScore = findHighestScore(week1, week2, week3, week4, week5) + 40;
             
             int maxFuture = findMaxValueFuture(datasetsFuture) + 20;
             

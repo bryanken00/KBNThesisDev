@@ -236,16 +236,13 @@ public class WarehouseModule_1 extends JFrame implements ActionListener, MouseLi
         warehouseButtons();
         panelVisible();
         
+        rawMats.setVisible(true);
         
-        //Temp
-        finishProduct();
-//      rawMats.setVisible(true);
-//        
-//		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth";
-//		rawMatsTable(sql);
-//		
-//		wNav.btnAddItem.setVisible(true);
-//		wNav.btnQRCode.setVisible(true);
+		String sql = "SELECT itemID, SUPPLIER, MATERIAL_NAME, CODE_NAME, DATE_TODAY, todayCurrentVolume, APPEARANCE, RELEASED_VOLUME, REJECT_VOLUME, HOLD_VOLUME, PROD_RETURN FROM tblcurrentmonth";
+		rawMatsTable(sql);
+		
+		wNav.btnAddItem.setVisible(true);
+		wNav.btnQRCode.setVisible(true);
 	}
 	
 	private void printingError(String errorMessage) {
